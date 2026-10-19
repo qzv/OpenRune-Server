@@ -4,6 +4,7 @@ import dev.openrune.rscm.RSCM
 import dev.openrune.rscm.RSCMType
 import jakarta.inject.Inject
 import org.rsmod.api.combat.commons.CombatAttack
+import org.rsmod.api.combat.commons.player.PlayerAttackHook
 import org.rsmod.api.combat.manager.PlayerAttackManager
 import org.rsmod.api.combat.manager.RangedAmmoManager
 import org.rsmod.api.combat.player.activateMagicSpecial
@@ -44,6 +45,7 @@ constructor(
     private val ammunition: RangedAmmoManager,
     private val spellsReg: SpellAttackRegistry,
     private val attackValidateHooks: Set<NpcAttackValidateHook>,
+    private val attackHooks: Set<PlayerAttackHook>,
 ) {
     suspend fun attack(access: ProtectedAccess, target: Npc, attack: CombatAttack.PlayerAttack) {
         when (attack) {
@@ -68,6 +70,7 @@ constructor(
         // default to the weapon's standard attack delay.
         val attackRate = speeds.actual(player)
         manager.setNextAttackDelay(player, attackRate)
+        attackHooks.forEach { it.onAttack(player, npc, attack) }
 
         // Important: Special attack handlers are responsible for explicitly calling `opnpc2` (or a
         // helper function that does so) to re-engage in combat after performing the special attack.
@@ -118,6 +121,7 @@ constructor(
         // default to the weapon's standard attack delay.
         val attackRate = speeds.actual(player)
         manager.setNextAttackDelay(player, attackRate)
+        attackHooks.forEach { it.onAttack(player, npc, attack) }
 
         // Important: Special attack handlers are responsible for explicitly calling `opnpc2` (or a
         // helper function that does so) to re-engage in combat after performing the special attack.
@@ -241,6 +245,7 @@ constructor(
 
         val attackRate = MAGIC_SPELL_ATTACK_RATE
         manager.setNextAttackDelay(player, attackRate)
+        attackHooks.forEach { it.onAttack(player, npc, attack) }
 
         val spell = spellsReg[RSCM.getReverseMapping(RSCMType.OBJ, attack.spell.obj.id)]
         if (spell != null) {
@@ -267,6 +272,7 @@ constructor(
         // default to the weapon's standard attack delay.
         val attackRate = MAGIC_STAFF_ATTACK_RATE
         manager.setNextAttackDelay(player, attackRate)
+        attackHooks.forEach { it.onAttack(player, npc, attack) }
 
         // Important: Special attack handlers are responsible for explicitly calling `opnpc2` (or a
         // helper function that does so) to re-engage in combat after performing the special attack.
