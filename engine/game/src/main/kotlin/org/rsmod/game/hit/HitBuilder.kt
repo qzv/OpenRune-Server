@@ -20,8 +20,10 @@ public class HitBuilder(
     private val zeroDamageHitmarkTint: Int?,
     private val maxDamageHitmarkLit: Int?,
     private val targetMaxDamageThreshold: Int,
-    private val sourceMaxDamageThreshold: Int,
+    sourceMaxDamageThreshold: Int,
 ) {
+    public var sourceMaxDamageThreshold: Int = sourceMaxDamageThreshold
+
     /**
      * Percentage (0-100) of a protection prayer's damage block that this hit ignores. `0` (the
      * default) preserves the prayer's normal full block.
