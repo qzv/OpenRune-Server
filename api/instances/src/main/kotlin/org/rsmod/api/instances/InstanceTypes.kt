@@ -211,6 +211,7 @@ public data class InstanceSpec(
     /** A varp that keeps each player's best kill time in ticks; null keeps it for the session. */
     val bestTimeVarp: String? = null,
     val graveCoords: CoordGrid? = null,
+    val keepUntradeablesOnDeath: Boolean = true,
 )
 
 public sealed interface InstanceAccess {

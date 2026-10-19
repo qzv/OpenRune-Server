@@ -44,7 +44,12 @@ public class StandardPvmDeathHook @Inject constructor() : PlayerDeathHook {
             dropDuration = DROP_DURATION_STANDARD,
             revealDelay = PVP_REVEAL_DELAY,
             supplyPile = false,
-            untradeableHandling = UntradeableHandling.KEEP,
+            untradeableHandling =
+                if (context.instanceGrave?.keepUntradeables == false) {
+                    UntradeableHandling.DROP
+                } else {
+                    UntradeableHandling.KEEP
+                },
             grave = context.instanceGrave,
         )
 

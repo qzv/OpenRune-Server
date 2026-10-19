@@ -12,6 +12,10 @@ internal class InstanceGraveHook @Inject constructor(private val manager: Instan
     override fun grave(player: Player, deathCoords: CoordGrid): DeathGrave? {
         val session = manager.sessionForPlayer(player) ?: return null
         val coords = manager.graveCoords(session) ?: return null
-        return DeathGrave(coords = coords, deathCoords = manager.templateCoord(session, deathCoords))
+        return DeathGrave(
+            coords = coords,
+            deathCoords = manager.templateCoord(session, deathCoords),
+            keepUntradeables = session.spec.keepUntradeablesOnDeath,
+        )
     }
 }

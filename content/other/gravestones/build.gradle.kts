@@ -8,4 +8,5 @@ dependencies {
     implementation(projects.api.pluginCommons)
     integrationImplementation(projects.api.pluginCommons)
     integrationImplementation(projects.api.deathPlugin)
+    integrationImplementation(projects.api.instances)
 }

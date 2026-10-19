@@ -13,6 +13,7 @@ public data class DeathGrave(
     val coords: CoordGrid? = null,
     val relocate: Boolean = false,
     val deathCoords: CoordGrid? = null,
+    val keepUntradeables: Boolean = true,
 )
 
 public fun interface PlayerInstanceGraveHook {

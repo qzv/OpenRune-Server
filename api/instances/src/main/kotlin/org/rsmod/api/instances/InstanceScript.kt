@@ -55,6 +55,8 @@ public abstract class InstanceScript(
 
     protected open fun graveCoords(): CoordGrid? = null
 
+    protected open fun keepUntradeablesOnDeath(): Boolean = true
+
     /** When true the instance is destroyed as soon as the last player leaves (no reclaim/rejoin). */
     protected open fun destroyWhenEmpty(): Boolean = false
 
@@ -99,6 +101,7 @@ public abstract class InstanceScript(
                 recordsKillTime = ::recordsKillTime,
                 bestTimeVarp = bestTimeVarp(),
                 graveCoords = graveCoords(),
+                keepUntradeablesOnDeath = keepUntradeablesOnDeath(),
             )
     }
 
