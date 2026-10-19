@@ -247,10 +247,14 @@ public object MagicAccuracyOperations {
         return 1.45
     }
 
-    public fun calculateEffectiveDefence(player: Player, attackStyle: AttackStyle?): Int {
+    public fun calculateEffectiveDefence(
+        player: Player,
+        attackStyle: AttackStyle?,
+        defenceLevel: Int = player.defenceLvl,
+    ): Int {
         val armourBonus = AccuracyOperations.defensiveArmourBonus(player)
         return calculateEffectiveDefence(
-            visDefenceLevel = player.defenceLvl,
+            visDefenceLevel = defenceLevel,
             visMagicLevel = player.magicLvl,
             armourBonus = armourBonus,
             vars = player.vars,

@@ -231,10 +231,14 @@ public object RangedAccuracyOperations {
         return 1.1
     }
 
-    public fun calculateEffectiveDefence(player: Player, attackStyle: AttackStyle?): Int {
+    public fun calculateEffectiveDefence(
+        player: Player,
+        attackStyle: AttackStyle?,
+        defenceLevel: Int = player.defenceLvl,
+    ): Int {
         val armourBonus = AccuracyOperations.defensiveArmourBonus(player)
         return calculateEffectiveDefence(
-            visLevel = player.defenceLvl,
+            visLevel = defenceLevel,
             armourBonus = armourBonus,
             vars = player.vars,
             attackStyle = attackStyle,

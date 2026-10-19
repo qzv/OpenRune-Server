@@ -8,12 +8,19 @@ import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.weapon.styles.AttackStyles
 import org.rsmod.api.config.refs.params
 import org.rsmod.api.player.bonus.WornBonuses
+import org.rsmod.api.player.hook.PlayerDefenceLevelHook
+import org.rsmod.api.player.hook.applyTo
+import org.rsmod.api.player.stat.defenceLvl
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 
 public class NvPRangedAccuracy
 @Inject
-constructor(private val bonuses: WornBonuses, private val attackStyles: AttackStyles) {
+constructor(
+    private val bonuses: WornBonuses,
+    private val attackStyles: AttackStyles,
+    private val defenceHooks: Set<PlayerDefenceLevelHook>,
+) {
     public fun getHitChance(npc: Npc, target: Player): Int =
         computeHitChance(source = npc, sourceType = npc.visType, target = target)
 
@@ -32,7 +39,11 @@ constructor(private val bonuses: WornBonuses, private val attackStyles: AttackSt
     public fun computeDefenceRoll(target: Player): Int {
         val targetAttackStyle = attackStyles.get(target)
         val effectiveDefence =
-            RangedAccuracyOperations.calculateEffectiveDefence(target, targetAttackStyle)
+            RangedAccuracyOperations.calculateEffectiveDefence(
+                target,
+                targetAttackStyle,
+                defenceHooks.applyTo(target, target.defenceLvl),
+            )
         val defenceBonus = bonuses.defensiveRangedBonus(target)
         return PlayerRangedAccuracy.calculateBaseDefenceRoll(effectiveDefence, defenceBonus)
     }
