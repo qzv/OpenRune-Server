@@ -2,6 +2,7 @@ package org.rsmod.api.game.process.npc
 
 import jakarta.inject.Inject
 import org.rsmod.api.npc.events.NpcMovementEvent
+import org.rsmod.api.route.RouteFactory
 import org.rsmod.api.route.StepFactory
 import org.rsmod.events.EventBus
 import org.rsmod.game.entity.Npc
@@ -21,6 +22,7 @@ public class NpcMovementProcessor
 constructor(
     private val collision: CollisionFlagMap,
     private val stepFactory: StepFactory,
+    private val routeFactory: RouteFactory,
     private val eventBus: EventBus,
 ) {
     public fun process(npc: Npc) {
@@ -40,11 +42,22 @@ constructor(
     }
 
     private fun Npc.routeTo(request: RouteRequest) {
-        val dest = request.destination(this)
         cachedMoveSpeed = tempMoveSpeed ?: defaultMoveSpeed
         moveSpeed = cachedMoveSpeed
         routeDestination.clear()
-        routeDestination.add(dest)
+        val target = chaseSlotRequest(request) ?: request
+        if (routefinds) {
+            val route = routeFactory.create(avatar, target)
+            route.forEach { routeDestination.add(CoordGrid(it.x, it.z, it.level)) }
+            return
+        }
+        routeDestination.add(target.destination(this))
+    }
+
+    private fun Npc.chaseSlotRequest(request: RouteRequest): RouteRequest? {
+        if (request !is RouteRequestPathingEntity) return null
+        val slot = chaseSlot?.slot(this, request.destination) ?: return null
+        return RouteRequestCoord(slot)
     }
 
     private fun Npc.isFrozen(): Boolean = vars["varn.freeze_end_clock"] > currentMapClock

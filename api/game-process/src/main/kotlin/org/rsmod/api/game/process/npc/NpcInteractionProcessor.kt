@@ -336,11 +336,22 @@ constructor(
         )
 
     private fun Npc.isWithinOpRange(interaction: InteractionPlayer): Boolean =
-        boundValidator.touches(source = avatar, target = interaction.target.avatar)
+        !isOffChaseSlot(interaction) &&
+            boundValidator.touches(source = avatar, target = interaction.target.avatar)
+
+    private fun Npc.isOffChaseSlot(interaction: InteractionPlayer): Boolean {
+        val chase = chaseSlot ?: return false
+        val avatar = interaction.target.avatar
+        val slot = chase.slot(this, avatar) ?: return false
+        return coords != slot && !chase.holds(this, avatar)
+    }
 
     private fun Npc.isWithinApRange(interaction: InteractionPlayer): Boolean {
         val isUnderTarget = isUnderTarget(interaction)
         if (isUnderTarget) {
+            return false
+        }
+        if (isOffChaseSlot(interaction)) {
             return false
         }
         val isWithinApRange =
