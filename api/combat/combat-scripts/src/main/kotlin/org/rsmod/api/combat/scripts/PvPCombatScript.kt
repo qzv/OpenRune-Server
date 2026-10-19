@@ -3,6 +3,7 @@ package org.rsmod.api.combat.scripts
 import jakarta.inject.Inject
 import org.rsmod.api.combat.PvPCombat
 import org.rsmod.api.combat.commons.magic.MagicSpell
+import org.rsmod.api.combat.commons.player.PlayerAttackRangeHook
 import org.rsmod.api.combat.commons.styles.AttackStyle
 import org.rsmod.api.combat.manager.MagicRuneManager
 import org.rsmod.api.combat.player.aggressiveNpc
@@ -39,6 +40,7 @@ constructor(
     private val runes: MagicRuneManager,
     private val autocast: AutocastWeapons,
     private val attackValidateHooks: Set<PvPAttackValidateHook>,
+    private val attackRangeHooks: Set<@JvmSuppressWildcards PlayerAttackRangeHook>,
 ) : PluginScript() {
     override fun ScriptContext.startup() {
         onApPlayer1 { attemptCombatAp(it.target) }
@@ -53,7 +55,7 @@ constructor(
     private suspend fun ProtectedAccess.attemptCombatAp(target: Player) {
         val type = types.get(player)
         val style = styles.get(player)
-        val attackRange = attackRange(style)
+        val attackRange = attackRange(style, attackRangeHooks)
 
         // Weapons such as salamanders have an attack range of `1` but can attack with both ranged
         // and magic. These attacks should be treated as ap range, not op.
