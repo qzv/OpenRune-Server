@@ -53,6 +53,8 @@ public abstract class InstanceScript(
 
     protected open fun spawnOnFirstJoin(): Boolean = false
 
+    protected open fun logoutExits(): List<CoordGrid> = emptyList()
+
     protected open fun graveCoords(): CoordGrid? = null
 
     protected open fun keepUntradeablesOnDeath(): Boolean = true
@@ -100,6 +102,7 @@ public abstract class InstanceScript(
             .copy(
                 recordsKillTime = ::recordsKillTime,
                 bestTimeVarp = bestTimeVarp(),
+                logoutExits = logoutExits(),
                 graveCoords = graveCoords(),
                 keepUntradeablesOnDeath = keepUntradeablesOnDeath(),
             )

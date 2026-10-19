@@ -8,6 +8,7 @@ dependencies {
     implementation(projects.api.player)
     implementation(projects.api.registry)
     implementation(projects.api.pluginCommons)
+    implementation(projects.api.random)
     implementation(projects.api.repo)
     implementation(projects.api.script)
     implementation(projects.engine.events)

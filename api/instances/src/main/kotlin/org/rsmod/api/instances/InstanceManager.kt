@@ -26,6 +26,7 @@ import org.rsmod.api.invtx.invAdd
 import org.rsmod.api.invtx.invTakeFee
 import org.rsmod.api.player.output.ChatType
 import org.rsmod.api.player.output.mes
+import org.rsmod.api.random.GameRandom
 import org.rsmod.api.repo.npc.NpcRepository
 import org.rsmod.api.repo.region.RegionRepository
 import org.rsmod.events.EventBus
@@ -50,6 +51,7 @@ constructor(
     private val eventBus: EventBus,
     private val areaResolver: InstanceAreaResolver,
     private val worldClock: MapClock,
+    private val random: GameRandom,
     private val collision: CollisionFlagMap
 ) {
     private val nextId = AtomicLong(1)
@@ -389,7 +391,9 @@ constructor(
     public fun handleLogout(player: Player, currentTick: Int) {
         val session = sessionForPlayer(player)
         if (session != null) {
-            val exit = session.placement.exitCoord
+            val exits = session.spec.logoutExits
+            val exit =
+                if (exits.isEmpty()) session.placement.exitCoord else exits[random.of(exits.size)]
             removeOccupant(player, session, currentTick)
             player.attr[InstanceAttributes.LOGIN_EXIT_COORD] = exit.packed
             return
