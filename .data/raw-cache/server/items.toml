@@ -32889,6 +32889,11 @@ inherit = "obj.gauntlet_chestplate_t1_hm"
 tradeable = false
 [item.params]
 "param.equipment_sound"=2241
+"param.item_block_sound1"=2766
+"param.item_block_sound2"=2767
+"param.item_block_sound3"=2768
+"param.item_block_sound4"=2769
+"param.item_block_sound5"=2770
 
 
 [[item]]
@@ -32937,6 +32942,11 @@ inherit = "obj.gauntlet_chestplate_t1"
 tradeable = false
 [item.params]
 "param.equipment_sound"=2241
+"param.item_block_sound1"=2766
+"param.item_block_sound2"=2767
+"param.item_block_sound3"=2768
+"param.item_block_sound4"=2769
+"param.item_block_sound5"=2770
 
 
 [[item]]
@@ -34754,6 +34764,11 @@ inherit = "obj.crystal_chestplate_iorwerth"
 tradeable = false
 [item.params]
 "param.equipment_sound"=2241
+"param.item_block_sound1"=2766
+"param.item_block_sound2"=2767
+"param.item_block_sound3"=2768
+"param.item_block_sound4"=2769
+"param.item_block_sound5"=2770
 
 
 [[item]]
