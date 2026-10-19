@@ -26,7 +26,7 @@ constructor(
         val ownerName = message.name
         if (ownerName == null) {
             if (friendChat.isInChannel(characterId)) {
-                db.request(request = { friendChat.leave(characterId) }, response = {})
+                db.request(request = friendChat.leave(characterId), response = {})
             }
             return
         }
@@ -41,7 +41,7 @@ constructor(
         player.friendChatMes(FriendChatMessages.ATTEMPTING_TO_JOIN)
         val uid = player.uid
         db.request(
-            request = { friendChat.join(characterId, ownerName) },
+            request = friendChat.join(characterId, ownerName),
             response = { result ->
                 val current = uid.resolve(playerList) ?: return@request
                 result.fold(

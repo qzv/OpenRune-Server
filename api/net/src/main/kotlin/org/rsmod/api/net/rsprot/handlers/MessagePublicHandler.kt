@@ -49,7 +49,7 @@ constructor(
             return
         }
         val crown = modLevel.clientCode
-        db.request(request = { friendChat.message(characterId, crown, text) }, response = {})
+        db.request(request = friendChat.message(characterId, crown, text), response = {})
     }
 
     private companion object {

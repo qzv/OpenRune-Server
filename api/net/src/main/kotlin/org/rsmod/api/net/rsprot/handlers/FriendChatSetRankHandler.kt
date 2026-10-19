@@ -19,7 +19,7 @@ constructor(
         }
         val targetName = message.name
         val rank = message.rank
-        db.request(request = { friendChat.setRank(characterId, targetName, rank) }, response = {})
+        db.request(request = friendChat.setRank(characterId, targetName, rank), response = {})
     }
 
     private companion object {

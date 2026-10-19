@@ -5,7 +5,7 @@ import dev.openrune.rscm.RSCM.asRSCM
 import dev.openrune.rscm.RSCMType
 import jakarta.inject.Inject
 import org.rsmod.api.db.gateway.GameDbManager
-import org.rsmod.api.db.gateway.model.GameDbResult
+import org.rsmod.api.db.gateway.model.GameDbRequest
 import org.rsmod.api.db.gateway.model.fold
 import org.rsmod.api.net.central.CentralFriendChatService
 import org.rsmod.api.net.central.CentralSocialResult
@@ -83,7 +83,7 @@ constructor(
         val characterId = player.characterId
         if (event.op.slot == DISABLE_OP) {
             ifSetText(OPT_PREFIX, CHAT_DISABLED)
-            update { friendChat.setChannelName(characterId, "") }
+            update(friendChat.setChannelName(characterId, ""))
             return
         }
         val input = stringDialog(PREFIX_PROMPT, mode = PREFIX_PROMPT_MODE)
@@ -93,13 +93,13 @@ constructor(
             return
         }
         ifSetText(OPT_PREFIX, name)
-        update { friendChat.setChannelName(characterId, name) }
+        update(friendChat.setChannelName(characterId, name))
     }
 
     private fun ProtectedAccess.setThreshold(
         event: IfModalButton,
         component: String,
-        apply: (Int, Int) -> GameDbResult<CentralSocialResult>,
+        apply: (Int, Int) -> GameDbRequest<CentralSocialResult>,
     ) {
         val rank = event.op.slot - OP_TO_RANK
         val label = thresholdLabel(component, rank)
@@ -108,11 +108,11 @@ constructor(
         }
         ifSetText(component, label)
         val characterId = player.characterId
-        update { apply(characterId, rank) }
+        update(apply(characterId, rank))
     }
 
-    private fun update(request: () -> GameDbResult<CentralSocialResult>) {
-        db.request(request = { request() }, response = {})
+    private fun update(request: GameDbRequest<CentralSocialResult>) {
+        db.request(request = request, response = {})
     }
 
     private fun Player.leaveOnLogout() {

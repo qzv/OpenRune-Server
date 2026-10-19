@@ -26,7 +26,7 @@ constructor(
         val uid = player.uid
         val targetName = message.name
         db.request(
-            request = { friendChat.kick(characterId, targetName) },
+            request = friendChat.kick(characterId, targetName),
             response = { result ->
                 val current = uid.resolve(playerList) ?: return@request
                 result.fold(
