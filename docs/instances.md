@@ -73,7 +73,7 @@ All fields are required unless noted otherwise. `ENTER_COORD` / `EXIT_COORD` can
 | `ENTER_OBJECT` | Loc | The location (object) players click to enter. `InstanceCreateScript` binds op-1 to the default create/join menu automatically. |
 | `EXIT_OBJECT` | Loc | The location players click to leave. Op-1 is bound to `leaveFlow()` automatically. |
 | `ENTER_COORD` | CoordGrid | Spawn point inside the instance. Can be overridden by `InstanceArea`. |
-| `EXIT_COORD` | CoordGrid | Where the player is sent on leave or death. Can be overridden by `InstanceArea`. |
+| `EXIT_COORD` | CoordGrid | Where the player is sent on leave or death, and where the grave of a death inside the instance goes unless the script overrides `graveCoords()`. Can be overridden by `InstanceArea`. |
 | `FEE` | Int | Coins deducted from the player's inventory on creation. 0 = free. |
 | `MAX_PLAYERS` | Int | Hard cap on occupants. Join is rejected if the session is full. |
 | `TIME_LIMIT_MINUTES` | Int | Minutes until the arena expires. 0 = no limit. Warnings are sent at 50 %, 25 %, 12.5 %, 1 min, and 30 sec remaining. |

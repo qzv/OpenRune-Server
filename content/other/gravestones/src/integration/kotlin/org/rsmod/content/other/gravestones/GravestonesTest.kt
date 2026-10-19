@@ -407,6 +407,71 @@ class GravestonesTest {
         }
 
     @Test
+    fun GameTestState.`an instance death keeps the lost objs in a grave outside the instance`() =
+        runGraveTest { deps ->
+            player.inv[0] = InvObj(pricey, 1)
+            player.inv[1] = InvObj(cheap, 1)
+            player.inv[2] = InvObj(stack, 9)
+            player.inv[3] = InvObj(cheap, 1)
+            val context =
+                PlayerDeathContext(
+                    player = player,
+                    coords = INSTANCE_DEATH,
+                    inWilderness = false,
+                    wildernessLevel = 0,
+                    inRevenantCaves = false,
+                    inInstance = true,
+                    isSkulled = false,
+                    hasProtectItem = false,
+                    recentPvpDamage = false,
+                    gamemode = 0,
+                    killer = null,
+                    instanceGrave = DeathGrave(coords = OUTSIDE, deathCoords = TEMPLATE_DEATH),
+                )
+            val handling = checkNotNull(StandardPvmDeathHook().handleDeath(context)).copy(keepCount = 1)
+            val result = deps.drops.selectDrops(player, context, handling)
+            deps.drops.applyDrops(player, result, handling, INSTANCE_DEATH)
+
+            val grave = checkNotNull(player.graveCoords)
+            assertTrue(grave.level == OUTSIDE.level && grave.chebyshevDistance(OUTSIDE) <= 3)
+            assertEquals(TEMPLATE_DEATH.packed, player.vars["varp.gravestone_creation_death_coord"])
+            assertEquals(1, player.inv.count(pricey.internalName))
+            assertEquals(2, player.inv.count(cheap.internalName) + player.grave.count(cheap.internalName))
+            assertEquals(9, player.inv.count(stack.internalName) + player.grave.count(stack.internalName))
+            assertFalse(player.grave.isEmpty())
+            assertTrue(deps.objs.findAll(INSTANCE_DEATH).none())
+        }
+
+    @Test
+    fun GameTestState.`an instance death without an instance grave keeps the old floor drops`() =
+        runGraveTest { deps ->
+            player.inv[0] = InvObj(pricey, 1)
+            player.inv[1] = InvObj(cheap, 1)
+            val context =
+                PlayerDeathContext(
+                    player = player,
+                    coords = DEATH,
+                    inWilderness = false,
+                    wildernessLevel = 0,
+                    inRevenantCaves = false,
+                    inInstance = true,
+                    isSkulled = false,
+                    hasProtectItem = false,
+                    recentPvpDamage = false,
+                    gamemode = 0,
+                    killer = null,
+                )
+            val handling = checkNotNull(StandardPvmDeathHook().handleDeath(context)).copy(keepCount = 1)
+            val result = deps.drops.selectDrops(player, context, handling)
+            deps.drops.applyDrops(player, result, handling, DEATH)
+
+            assertNull(player.graveCoords)
+            assertEquals(1, player.inv.count(pricey.internalName))
+            val dropped = deps.objs.findAll(DEATH).count { it.type == cheap.id }
+            assertEquals(1, player.inv.count(cheap.internalName) + dropped)
+        }
+
+    @Test
     fun GameTestState.`a relocating death moves the existing grave`() =
         runGraveTest { deps ->
             deps.graves.store(player, DEATH, DeathGrave(), listOf(InvObj(cheap, 1)))
@@ -525,6 +590,9 @@ class GravestonesTest {
 
     private companion object {
         val DEATH = CoordGrid(0, 50, 50, 21, 18)
+        val INSTANCE_DEATH = DEATH.translate(12, 0)
+        val OUTSIDE = DEATH.translate(10, 10)
+        val TEMPLATE_DEATH = CoordGrid(1828, 3104, 0)
         const val GRAVE_SIZE = 120
         const val FREE_ITEMS = "component.gravestone_generic:freeitems"
         const val PAY_ITEMS = "component.gravestone_generic:payitems"

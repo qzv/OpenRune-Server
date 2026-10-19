@@ -18,6 +18,8 @@ import org.rsmod.api.instances.events.InstanceTimeTickEvent
 import org.rsmod.api.instances.region.InstanceAreaResolver
 import org.rsmod.api.instances.region.enterCoord
 import org.rsmod.api.instances.region.localCoord
+import org.rsmod.api.instances.region.regionMapSquareX
+import org.rsmod.api.instances.region.regionMapSquareZ
 import org.rsmod.api.instances.timer.InstanceKillTimer
 import org.rsmod.api.instances.timer.InstanceTiming
 import org.rsmod.api.invtx.invAdd
@@ -35,6 +37,7 @@ import org.rsmod.game.entity.Player
 import org.rsmod.game.entity.PlayerList
 import org.rsmod.game.region.Region
 import org.rsmod.map.CoordGrid
+import org.rsmod.map.square.MapSquareGrid
 import org.rsmod.routefinder.collision.CollisionFlagMap
 
 @Singleton
@@ -234,6 +237,24 @@ constructor(
         )
         return session.localCoord(region, local)
     }
+
+    public fun templateCoord(session: InstanceSession, coord: CoordGrid): CoordGrid? {
+        val area = session.spec.area
+        if (area !is InstanceArea.CopyRegions || area.rotation != InstanceRegionRotation.NONE) {
+            return null
+        }
+        val region = regions[session.id] ?: return null
+        val minX = area.regionIds.minOf { it.regionMapSquareX() } * MapSquareGrid.LENGTH
+        val minZ = area.regionIds.minOf { it.regionMapSquareZ() } * MapSquareGrid.LENGTH
+        return CoordGrid(
+            minX + coord.x - region.southWest.x,
+            minZ + coord.z - region.southWest.z,
+            coord.level,
+        )
+    }
+
+    public fun graveCoords(session: InstanceSession): CoordGrid? =
+        session.spec.graveCoords ?: session.placement.exitCoord.takeUnless { it == CoordGrid.ZERO }
 
     public fun attachNpc(instanceId: InstanceId, npc: Npc) {
         spawnedNpcs.getOrPut(instanceId) { mutableListOf() }.add(npc)

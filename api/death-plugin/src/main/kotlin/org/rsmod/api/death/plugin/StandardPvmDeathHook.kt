@@ -37,8 +37,6 @@ public class StandardPvmDeathHook @Inject constructor() : PlayerDeathHook {
             grave = DeathGrave(),
         )
 
-    // TODO: Live puts the lost items in a grave outside the instance; each instance has to say
-    // where.
     private fun instancePvmDeath(context: PlayerDeathContext): PlayerDeathHandling =
         PlayerDeathHandling(
             keepCount = standardKeepCount(context.hasProtectItem),
@@ -47,6 +45,7 @@ public class StandardPvmDeathHook @Inject constructor() : PlayerDeathHook {
             revealDelay = PVP_REVEAL_DELAY,
             supplyPile = false,
             untradeableHandling = UntradeableHandling.KEEP,
+            grave = context.instanceGrave,
         )
 
     private fun pvpOutsideWilderness(context: PlayerDeathContext): PlayerDeathHandling =

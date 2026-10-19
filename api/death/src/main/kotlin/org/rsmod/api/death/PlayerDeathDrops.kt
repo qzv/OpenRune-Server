@@ -172,8 +172,9 @@ constructor(
             dropItem(player, item, coords, handling, receiver = null)
         }
 
+        val droppedCoords = handling.grave?.coords ?: coords
         for (item in dropped) {
-            dropItem(player, item, coords, handling, handling.dropReceiver)
+            dropItem(player, item, droppedCoords, handling, handling.dropReceiver)
         }
 
         if (handling.untradeableHandling == UntradeableHandling.COINS && result.coinsForKiller > 0) {

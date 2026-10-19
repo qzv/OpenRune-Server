@@ -18,6 +18,7 @@ import org.rsmod.api.script.onEvent
 import org.rsmod.api.table.InstanceSettingsRow
 import org.rsmod.game.MapClock
 import org.rsmod.game.entity.Player
+import org.rsmod.map.CoordGrid
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
 
@@ -51,6 +52,8 @@ public abstract class InstanceScript(
     protected fun settingsRowId(): Int = rowData.rowId
 
     protected open fun spawnOnFirstJoin(): Boolean = false
+
+    protected open fun graveCoords(): CoordGrid? = null
 
     /** When true the instance is destroyed as soon as the last player leaves (no reclaim/rejoin). */
     protected open fun destroyWhenEmpty(): Boolean = false
@@ -92,7 +95,11 @@ public abstract class InstanceScript(
         }
         return resolved
             .withArea(area.withDbCoords(rowData), rowData.rowId)
-            .copy(recordsKillTime = ::recordsKillTime, bestTimeVarp = bestTimeVarp())
+            .copy(
+                recordsKillTime = ::recordsKillTime,
+                bestTimeVarp = bestTimeVarp(),
+                graveCoords = graveCoords(),
+            )
     }
 
     protected fun onEnterObject(action: suspend ProtectedAccess.() -> Unit) {

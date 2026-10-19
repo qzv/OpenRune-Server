@@ -23,6 +23,7 @@ public data class PlayerDeathContext(
     val recentPvpDamage: Boolean,
     val gamemode: Int,
     val killer: Player?,
+    val instanceGrave: DeathGrave? = null,
 ) {
     val isUIM: Boolean get() = gamemode == PlayerGamemode.ULTIMATE_IRONMAN
     val isHardcoreIronman: Boolean get() = gamemode == PlayerGamemode.HARDCORE_IRONMAN

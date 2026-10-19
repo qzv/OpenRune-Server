@@ -9,7 +9,15 @@ import org.rsmod.map.CoordGrid
  * real-world tile, for deaths in an instance; null puts the grave where the player died. With
  * [relocate], an existing grave moves to this death's tile instead of staying where it was.
  */
-public data class DeathGrave(val coords: CoordGrid? = null, val relocate: Boolean = false)
+public data class DeathGrave(
+    val coords: CoordGrid? = null,
+    val relocate: Boolean = false,
+    val deathCoords: CoordGrid? = null,
+)
+
+public fun interface PlayerInstanceGraveHook {
+    public fun grave(player: Player, deathCoords: CoordGrid): DeathGrave?
+}
 
 public interface PlayerGraveHook {
     /**

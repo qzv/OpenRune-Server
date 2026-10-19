@@ -132,7 +132,7 @@ constructor(
         player.feePaid = false
         if (existing && grave.relocate) {
             val worldCoords = grave.coords ?: deathCoords
-            player.creationDeathCoord = worldCoords
+            player.creationDeathCoord = grave.deathCoords ?: worldCoords
             player.graveCoords = graveTile(worldCoords)
             spawn(player)
         }
@@ -143,7 +143,7 @@ constructor(
             worldQueues.add(1) { player.mes(MERGED_MESSAGE) }
         } else {
             val worldCoords = grave.coords ?: deathCoords
-            player.creationDeathCoord = worldCoords
+            player.creationDeathCoord = grave.deathCoords ?: worldCoords
             player.graveCoords = graveTile(worldCoords)
             player.hasMerged = false
             if (!player.metDeath) {

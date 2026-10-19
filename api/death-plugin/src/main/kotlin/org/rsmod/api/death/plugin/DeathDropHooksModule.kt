@@ -7,6 +7,7 @@ import org.rsmod.api.death.PlayerDeathCleanupHook
 import org.rsmod.api.death.PlayerDeathHook
 import org.rsmod.api.death.PlayerDeathStorageHook
 import org.rsmod.api.death.PlayerGraveHook
+import org.rsmod.api.death.PlayerInstanceGraveHook
 import org.rsmod.api.death.PlayerRespawnHook
 import org.rsmod.api.death.PvPAttackValidateHook
 import org.rsmod.api.death.PvPPlayerHitHook
@@ -23,6 +24,7 @@ public class DeathDropHooksModule : PluginModule() {
         newSetBinding<PlayerDeathHook>()
         newSetBinding<PlayerDeathStorageHook>()
         newSetBinding<PlayerGraveHook>()
+        newSetBinding<PlayerInstanceGraveHook>()
         newSetBinding<PlayerRespawnHook>()
         newSetBinding<PvPAttackValidateHook>()
         newSetBinding<PvPSkullHook>()

@@ -32,6 +32,7 @@ constructor(
     private val cleanupHooks: Set<PlayerDeathCleanupHook>,
     private val storageHooks: Set<PlayerDeathStorageHook>,
     private val respawnHooks: Set<PlayerRespawnHook>,
+    private val instanceGraveHooks: Set<PlayerInstanceGraveHook>,
     private val areaChecker: AreaChecker,
 ) {
     private var Player.specialAttackType by intVarp("varp.sa_attack")
@@ -121,6 +122,12 @@ constructor(
             recentPvpDamage = recentPvp,
             gamemode = player.gamemode,
             killer = killer,
+            instanceGrave =
+                if (player.inInstance) {
+                    instanceGraveHooks.firstNotNullOfOrNull { it.grave(player, deathCoords) }
+                } else {
+                    null
+                },
         )
     }
 
