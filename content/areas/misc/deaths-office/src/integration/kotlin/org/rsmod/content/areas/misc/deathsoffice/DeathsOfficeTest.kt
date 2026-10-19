@@ -1,5 +1,7 @@
 package org.rsmod.content.areas.misc.deathsoffice
 
+import com.google.inject.AbstractModule
+import com.google.inject.multibindings.Multibinder
 import dev.openrune.ServerCacheManager
 import dev.openrune.definition.type.widget.IfEvent
 import dev.openrune.rscm.RSCM.asRSCM
@@ -8,10 +10,12 @@ import dev.openrune.types.ItemServerType
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
+import org.rsmod.api.death.PlayerGraveFeeHook
 import org.rsmod.api.player.ui.ifOpenMainModal
 import org.rsmod.api.player.ui.ifSetEvents
 import org.rsmod.api.testing.GameTestState
 import org.rsmod.api.testing.scope.GameTestScope
+import org.rsmod.content.other.gravestones.Gravestones
 import org.rsmod.content.other.gravestones.deathOffice
 import org.rsmod.game.inv.InvObj
 import org.rsmod.map.CoordGrid
@@ -153,12 +157,18 @@ class DeathsOfficeTest {
         }
 
     private fun GameTestState.runOfficeTest(body: GameTestScope.() -> Unit) =
-        runGameTest(DeathsOfficeScript::class) {
+        runInjectedGameTest(Gravestones::class, GraveFeeHooks(), DeathsOfficeScript::class) {
             player.placeAt(CoordGrid(3171, 5726))
             player.clearAllInvs()
             player.deathOffice.fillNulls()
             body()
         }
+
+    private class GraveFeeHooks : AbstractModule() {
+        override fun configure() {
+            Multibinder.newSetBinder(binder(), PlayerGraveFeeHook::class.java)
+        }
+    }
 
     private fun GameTestScope.openOffice() {
         player.ifOpenMainModal("interface.death_office", eventBus)

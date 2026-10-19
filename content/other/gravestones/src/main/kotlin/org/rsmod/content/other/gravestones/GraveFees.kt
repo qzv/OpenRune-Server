@@ -18,7 +18,7 @@ object GraveFees {
 
     fun isPaid(value: Long): Boolean = value >= FREE_UNDER
 
-    fun slotFee(value: Long, count: Int, ironman: Boolean): Long {
+    fun slotFee(value: Long, count: Int, ironman: Boolean, reduced: Boolean = false): Long {
         val each =
             when {
                 value >= BAND_10M -> FEE_FROM_10M
@@ -26,13 +26,14 @@ object GraveFees {
                 value >= FREE_UNDER -> FEE_UNDER_1M
                 else -> return 0
             }
-        return discount(each * count, ironman).coerceAtMost(discount(FEE_CAP, ironman))
+        return discount(each * count, ironman, reduced)
+            .coerceAtMost(discount(FEE_CAP, ironman, reduced))
     }
 
-    fun totalFee(slots: List<Pair<Long, Int>>, ironman: Boolean): Int =
+    fun totalFee(slots: List<Pair<Long, Int>>, ironman: Boolean, reduced: Boolean = false): Int =
         slots
-            .sumOf { (value, count) -> slotFee(value, count, ironman) }
-            .coerceAtMost(discount(FEE_CAP, ironman))
+            .sumOf { (value, count) -> slotFee(value, count, ironman, reduced) }
+            .coerceAtMost(discount(FEE_CAP, ironman, reduced))
             .toInt()
 
     /**
@@ -68,5 +69,8 @@ object GraveFees {
 
     private const val OFFICE_PERCENT = 5L
 
-    private fun discount(fee: Long, ironman: Boolean): Long = if (ironman) fee / 2 else fee
+    private fun discount(fee: Long, ironman: Boolean, reduced: Boolean = false): Long {
+        val halved = if (ironman) fee / 2 else fee
+        return if (reduced) halved / 4 else halved
+    }
 }

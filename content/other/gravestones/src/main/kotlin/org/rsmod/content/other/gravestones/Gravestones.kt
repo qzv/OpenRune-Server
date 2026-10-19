@@ -3,6 +3,7 @@ package org.rsmod.content.other.gravestones
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.rsmod.api.death.DeathGrave
+import org.rsmod.api.death.PlayerGraveFeeHook
 import org.rsmod.api.death.PlayerGraveHook
 import org.rsmod.api.market.MarketPrices
 import org.rsmod.api.player.SupplyItems
@@ -97,6 +98,7 @@ constructor(
     private val random: GameRandom,
     private val marketPrices: MarketPrices,
     private val eventBus: EventBus,
+    private val feeHooks: Set<PlayerGraveFeeHook>,
 ) : PlayerGraveHook {
     private val visibleSlots = HashMap<Int, Npc>()
 
@@ -317,10 +319,17 @@ constructor(
             return 0
         }
         val slots = player.grave.filterNotNull { true }.map { value(it) to it.count }
-        return GraveFees.totalFee(slots, player.isAnyIronman)
+        return GraveFees.totalFee(slots, player.isAnyIronman, reducedFee(player))
     }
 
-    // TODO: Live also discounts deaths at some bosses until a kill count (`script1797`).
+    private fun reducedFee(player: Player): Boolean {
+        if (player.hasMerged) {
+            return false
+        }
+        val deathCoords = player.creationDeathCoord ?: return false
+        return feeHooks.any { it.reducedFee(player, deathCoords) }
+    }
+
     fun sendFeeThresholds(player: Player) {
         val values = player.grave.map { obj -> obj?.let(::value) }
         val (under100k, under1m, under10m) = GraveFees.thresholds(values)

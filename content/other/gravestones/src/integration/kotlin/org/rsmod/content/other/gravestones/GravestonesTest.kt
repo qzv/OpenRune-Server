@@ -16,6 +16,7 @@ import org.rsmod.api.death.DeathGrave
 import org.rsmod.api.death.PlayerDeathContext
 import org.rsmod.api.death.PlayerDeathDrops
 import org.rsmod.api.death.PlayerDeathHandling
+import org.rsmod.api.death.PlayerGraveFeeHook
 import org.rsmod.api.death.PlayerGraveHook
 import org.rsmod.api.death.UntradeableHandling
 import org.rsmod.api.death.plugin.StandardPvmDeathHook
@@ -25,6 +26,7 @@ import org.rsmod.api.player.ui.ifSetEvents
 import org.rsmod.api.repo.obj.ObjRepository
 import org.rsmod.api.testing.GameTestState
 import org.rsmod.api.testing.scope.GameTestScope
+import org.rsmod.game.entity.Player
 import org.rsmod.game.inv.InvObj
 import org.rsmod.map.CoordGrid
 
@@ -472,6 +474,34 @@ class GravestonesTest {
         }
 
     @Test
+    fun GameTestState.`a fee hook quarters the fee of a grave from its death tile`() =
+        runGraveTest { deps ->
+            val lost = listOf(InvObj(pricey, 1), InvObj(pricey, 1))
+            val slots = lost.map { deps.graves.value(it) to it.count }
+            deps.graves.store(player, INSTANCE_DEATH, DeathGrave(coords = OUTSIDE, deathCoords = TEMPLATE_DEATH), lost)
+
+            val reduced = GraveFees.totalFee(slots, ironman = false, reduced = true)
+            assertTrue(reduced > 0)
+            assertEquals(reduced, deps.graves.fee(player))
+        }
+
+    @Test
+    fun GameTestState.`a fee hook leaves other graves and merged graves at the full fee`() =
+        runGraveTest { deps ->
+            val lost = listOf(InvObj(pricey, 1))
+            val slots = lost.map { deps.graves.value(it) to it.count }
+            deps.graves.store(player, DEATH, DeathGrave(), lost)
+            assertEquals(GraveFees.totalFee(slots, ironman = false), deps.graves.fee(player))
+
+            deps.graves.remove(player)
+            player.grave.fillNulls()
+            deps.graves.store(player, INSTANCE_DEATH, DeathGrave(coords = OUTSIDE, deathCoords = TEMPLATE_DEATH), lost)
+            deps.graves.store(player, INSTANCE_DEATH, DeathGrave(coords = OUTSIDE, deathCoords = TEMPLATE_DEATH), lost)
+            val merged = player.grave.filterNotNull { true }.map { deps.graves.value(it) to it.count }
+            assertEquals(GraveFees.totalFee(merged, ironman = false), deps.graves.fee(player))
+        }
+
+    @Test
     fun GameTestState.`a relocating death moves the existing grave`() =
         runGraveTest { deps ->
             deps.graves.store(player, DEATH, DeathGrave(), listOf(InvObj(cheap, 1)))
@@ -523,6 +553,9 @@ class GravestonesTest {
             Multibinder.newSetBinder(binder(), PlayerGraveHook::class.java)
                 .addBinding()
                 .to(Gravestones::class.java)
+            Multibinder.newSetBinder(binder(), PlayerGraveFeeHook::class.java)
+                .addBinding()
+                .toInstance(PlayerGraveFeeHook { _: Player, coords -> coords == TEMPLATE_DEATH })
         }
     }
 

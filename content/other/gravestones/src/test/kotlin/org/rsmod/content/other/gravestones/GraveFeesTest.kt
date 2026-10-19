@@ -26,6 +26,23 @@ class GraveFeesTest {
     }
 
     @Test
+    fun `a reduced fee is a quarter, capped at 125,000`() {
+        assertEquals(250L, GraveFees.slotFee(100_000, 1, ironman = false, reduced = true))
+        assertEquals(5_000L, GraveFees.slotFee(1_000_000, 2, ironman = false, reduced = true))
+        assertEquals(125_000L, GraveFees.slotFee(10_000_000, 9, ironman = false, reduced = true))
+        val slots = List(8) { 10_000_000L to 1 }
+        assertEquals(125_000, GraveFees.totalFee(slots, ironman = false, reduced = true))
+    }
+
+    @Test
+    fun `a reduced ironman fee is halved, then quartered, rounding down each time`() {
+        assertEquals(1_875L, GraveFees.slotFee(100_000, 15, ironman = true, reduced = true))
+        assertEquals(62_500L, GraveFees.slotFee(10_000_000, 9, ironman = true, reduced = true))
+        val slots = List(3) { 100_000L to 1 } + List(1) { 1_000_000L to 1 }
+        assertEquals(1_625, GraveFees.totalFee(slots, ironman = true, reduced = true))
+    }
+
+    @Test
     fun `ironmen pay half, rounded down like the client's scale`() {
         assertEquals(500L, GraveFees.slotFee(100_000, 1, ironman = true))
         assertEquals(1_500L, GraveFees.slotFee(100_000, 3, ironman = true))
