@@ -98,6 +98,9 @@ class BossEncounter(
      */
     var nextAttackTick: Int? = null
 
+    internal fun entryReady(phase: PhaseSpec, tick: Int): Boolean =
+        !phase.entryOnAttack || (tick >= busyUntil && attackReady(tick))
+
     internal fun attackReady(tick: Int): Boolean {
         val attackRate = attackRateOverride ?: currentPhase?.attackRate ?: spec.stats.attackRate
         return tick >= (nextAttackTick ?: (lastAbilityTick + attackRate))

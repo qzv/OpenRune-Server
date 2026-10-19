@@ -49,6 +49,7 @@ class BossSpecBuilder(private val npcTypes: List<String>) {
         transmog: String? = null,
         lockMovement: Boolean = false,
         exitAfter: Int? = null,
+        entryOnAttack: Boolean = false,
         nextPhase: String? = null,
         idleAnim: String? = null,
         attackRate: Int? = null,
@@ -59,6 +60,7 @@ class BossSpecBuilder(private val npcTypes: List<String>) {
             PhaseSpec(
                 name = name,
                 entryHp = entryHp,
+                entryOnAttack = entryOnAttack,
                 transmog = transmog,
                 lockMovement = lockMovement,
                 exitAfter = exitAfter,
