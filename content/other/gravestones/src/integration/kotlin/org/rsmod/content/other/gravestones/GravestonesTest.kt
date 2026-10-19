@@ -26,6 +26,7 @@ import org.rsmod.api.player.ui.ifSetEvents
 import org.rsmod.api.repo.obj.ObjRepository
 import org.rsmod.api.testing.GameTestState
 import org.rsmod.api.testing.scope.GameTestScope
+import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 import org.rsmod.game.inv.InvObj
 import org.rsmod.map.CoordGrid
@@ -515,6 +516,91 @@ class GravestonesTest {
         }
 
     @Test
+    fun GameTestState.`loot pays the fee and takes every obj`() =
+        runGraveTest { deps ->
+            deps.graves.store(player, DEATH, DeathGrave(), listOf(InvObj(pricey, 1), InvObj(cheap, 1)))
+            val fee = deps.graves.fee(player)
+            assertTrue(fee > 0)
+            val bank = player.invMap.getOrPut("inv.bank")
+            bank[0] = InvObj("obj.coins", fee * 2)
+
+            player.opNpc3(graveNpc())
+            advance(ticks = 3)
+
+            assertEquals(fee, bank.count("obj.coins"))
+            assertEquals(1, player.inv.count(pricey.internalName))
+            assertEquals(1, player.inv.count(cheap.internalName))
+            assertEquals(0, player.grave.count(pricey.internalName) + player.grave.count(cheap.internalName))
+        }
+
+    @Test
+    fun GameTestState.`loot with a part-full inv pays once and the next loot takes the rest`() =
+        runGraveTest { deps ->
+            deps.graves.store(player, DEATH, DeathGrave(), listOf(InvObj(pricey, 1), InvObj(cheap, 1)))
+            val fee = deps.graves.fee(player)
+            val bank = player.invMap.getOrPut("inv.bank")
+            bank[0] = InvObj("obj.coins", fee * 3)
+            player.fillInv()
+            player.inv[0] = null
+            val npc = graveNpc()
+
+            player.opNpc3(npc)
+            advance(ticks = 3)
+
+            assertEquals(fee * 2, bank.count("obj.coins"))
+            assertTrue(player.feePaid)
+            val held = player.inv.count(pricey.internalName) + player.inv.count(cheap.internalName)
+            assertEquals(1, held)
+            assertEquals(1, player.grave.count(pricey.internalName) + player.grave.count(cheap.internalName))
+
+            player.inv[1] = null
+            player.opNpc3(npc)
+            advance(ticks = 3)
+
+            assertEquals(fee * 2, bank.count("obj.coins"))
+            assertEquals(1, player.inv.count(pricey.internalName))
+            assertEquals(1, player.inv.count(cheap.internalName))
+        }
+
+    @Test
+    fun GameTestState.`loot with a full inv twice in a tick charges once and moves nothing`() =
+        runGraveTest { deps ->
+            deps.graves.store(player, DEATH, DeathGrave(), listOf(InvObj(pricey, 1)))
+            val fee = deps.graves.fee(player)
+            val bank = player.invMap.getOrPut("inv.bank")
+            bank[0] = InvObj("obj.coins", fee * 3)
+            player.fillInv()
+            val npc = graveNpc()
+
+            player.opNpc3(npc)
+            player.opNpc3(npc)
+            advance(ticks = 3)
+            player.opNpc3(npc)
+            advance(ticks = 3)
+
+            assertEquals(fee * 2, bank.count("obj.coins"))
+            assertEquals(1, player.grave.count(pricey.internalName))
+            assertEquals(0, player.inv.count(pricey.internalName))
+        }
+
+    @Test
+    fun GameTestState.`loot without the coins changes nothing`() =
+        runGraveTest { deps ->
+            deps.graves.store(player, DEATH, DeathGrave(), listOf(InvObj(pricey, 1), InvObj(cheap, 1)))
+            val fee = deps.graves.fee(player)
+            val bank = player.invMap.getOrPut("inv.bank")
+            bank[0] = InvObj("obj.coins", fee - 1)
+
+            player.opNpc3(graveNpc())
+            advance(ticks = 3)
+
+            assertEquals(fee - 1, bank.count("obj.coins"))
+            assertFalse(player.feePaid)
+            assertEquals(1, player.grave.count(pricey.internalName))
+            assertEquals(1, player.grave.count(cheap.internalName))
+        }
+
+    @Test
     fun GameTestState.`the grave's op opens it for its owner`() =
         runGraveTest { deps ->
             deps.graves.store(player, DEATH, DeathGrave(), listOf(InvObj(cheap, 1)))
@@ -595,6 +681,12 @@ class GravestonesTest {
         val result = deps.drops.selectDrops(player, context, handling)
         deps.drops.applyDrops(player, result, handling, DEATH)
         return player.inv.filterNotNull { true } + player.grave.filterNotNull { true }
+    }
+
+    private fun GameTestScope.graveNpc(): Npc {
+        val grave = checkNotNull(player.graveCoords)
+        player.teleport(grave.translateX(1))
+        return checkNotNull(npcRepo.findAll(grave).firstOrNull())
     }
 
     private fun GameTestScope.openGrave() {

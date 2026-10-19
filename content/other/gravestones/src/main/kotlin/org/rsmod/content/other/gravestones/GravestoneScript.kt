@@ -36,7 +36,6 @@ class GravestoneScript @Inject constructor(private val graves: Gravestones) : Pl
         for (style in GRAVE_STYLES) {
             onOpNpc1(style) { if (owns(it.npc)) openGrave() }
             onApNpc1(style) { approach(it.npc) { openGrave() } }
-            // UNVERIFIED: Loot takes what Take-All in the free section would.
             onOpNpc3(style) { if (owns(it.npc)) loot() }
             onApNpc3(style) { approach(it.npc) { loot() } }
         }
@@ -109,7 +108,16 @@ class GravestoneScript @Inject constructor(private val graves: Gravestones) : Pl
 
     private suspend fun ProtectedAccess.loot() {
         graves.sendFeeThresholds(player)
-        take(freeSlots())
+        val fee = graves.fee(player)
+        if (fee > 0) {
+            if (payDeathFee(fee) == null) {
+                mes("You don't have enough coins with you or in your bank to pay the fee.")
+                return
+            }
+            mes("Death charges you ${"%,d".format(fee)} x Coins.")
+            player.feePaid = true
+        }
+        take(ITEM_SLOTS.filter { player.grave[it] != null }, loot = true)
     }
 
     private suspend fun ProtectedAccess.takeSlot(slot: Int) {
@@ -152,19 +160,26 @@ class GravestoneScript @Inject constructor(private val graves: Gravestones) : Pl
      * gravestone" on, whatever was worn goes back on (kept items too), first so the kept items free
      * the inventory slots the grave's objs came from.
      */
-    private suspend fun ProtectedAccess.take(slots: List<Int>) {
+    private suspend fun ProtectedAccess.take(slots: List<Int>, loot: Boolean = false) {
         val grave = player.grave
         val ordered = slots.sortedByDescending { slot -> grave[slot]?.let { getInvObj(it).isEquipable } }
         if (player.autoEquip) {
             reequipWorn()
         }
         var noSpace = false
+        var moved = false
         for (slot in ordered) {
-            if (!moveToInv(slot)) {
+            if (moveToInv(slot)) {
+                moved = true
+            } else {
                 noSpace = true
             }
         }
-        if (noSpace) {
+        if (noSpace && loot) {
+            if (!moved) {
+                mes("Your inventory is too full.")
+            }
+        } else if (noSpace) {
             // UNVERIFIED: the message when the inventory fills up.
             mes("You don't have enough inventory space.")
         }
