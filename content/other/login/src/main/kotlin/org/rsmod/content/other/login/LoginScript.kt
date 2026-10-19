@@ -17,6 +17,7 @@ import org.rsmod.api.inv.weight.InvWeight
 import org.rsmod.api.net.central.OpenRuneCentralWorldLink
 import org.rsmod.api.net.central.writeCentralSocialSnapshot
 import org.rsmod.api.net.central.writeCentralSocialSnapshotEmpty
+import org.rsmod.api.net.central.writeFriendChatNotInChannel
 import org.rsmod.api.player.output.Camera
 import org.rsmod.api.player.output.ChatType
 import org.rsmod.api.player.output.MiscOutput
@@ -92,11 +93,16 @@ constructor(
         when (val result = openRuneCentral.socialSnapshot(characterId)) {
             is OpenRuneCentralWorldLink.CentralSocialSnapshotResult.Ok -> {
                 writeCentralSocialSnapshot(result.snapshot)
+                writeFriendChatNotInChannel()
+                result.snapshot.rejoinChannelOwner?.let { owner ->
+                    runClientScript(CHATCHANNEL_LOGIN.asRSCM(RSCMType.CLIENTSCRIPT), owner)
+                }
             }
 
             is OpenRuneCentralWorldLink.CentralSocialSnapshotResult.Failed -> {
                 mes("Social list did not load: ${result.message}")
                 writeCentralSocialSnapshotEmpty()
+                writeFriendChatNotInChannel()
             }
         }
     }
@@ -187,5 +193,6 @@ constructor(
 
     private companion object {
         const val TUTORIAL_DEFAULT_SETTINGS = "clientscript.[clientscript,tutorial_default_settings]"
+        const val CHATCHANNEL_LOGIN = "clientscript.[clientscript,chatchannel_login]"
     }
 }

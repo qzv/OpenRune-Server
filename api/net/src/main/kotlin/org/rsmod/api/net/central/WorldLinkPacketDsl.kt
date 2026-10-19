@@ -2,6 +2,7 @@ package org.rsmod.api.net.central
 
 import dev.or2.central.worldlink.protocol.GameToCentralPackets
 import dev.or2.central.worldlink.protocol.discord.GameToCentralDiscordPackets
+import dev.or2.central.worldlink.protocol.social.GameToCentralFriendChatPackets
 import dev.or2.central.worldlink.protocol.social.GameToCentralSocialPackets
 
 /**
@@ -18,6 +19,11 @@ public inline fun ByteArray.dispatchCentralServerPush(
     crossinline onDiscordIdSync: (ServerDiscordIdSyncPayload) -> Unit = {},
     crossinline onPrivateMessage: (ServerPrivateMessagePayload) -> Unit = {},
     crossinline onFriendPresence: (ServerFriendPresencePayload) -> Unit = {},
+    crossinline onFriendChatChannel: (ServerFriendChatChannelPayload) -> Unit = {},
+    crossinline onFriendChatMember: (ServerFriendChatMemberPayload) -> Unit = {},
+    crossinline onFriendChatLeft: (ServerFriendChatLeftPayload) -> Unit = {},
+    crossinline onFriendChatMessage: (ServerFriendChatMessagePayload) -> Unit = {},
+    crossinline onFriendChatNotice: (ServerFriendChatNoticePayload) -> Unit = {},
     crossinline onOther: (Int) -> Unit = {},
 ) {
     when (val op = this[0].toInt() and 0xFF) {
@@ -30,6 +36,11 @@ public inline fun ByteArray.dispatchCentralServerPush(
         WorldLinkFrameSpecs.OP_SERVER_DISCORD_ID_SYNC -> onDiscordIdSync(WorldLinkFrameSpecs.decodeServerDiscordIdSync(this))
         WorldLinkFrameSpecs.OP_SERVER_PRIVATE_MESSAGE -> onPrivateMessage(WorldLinkFrameSpecs.decodeServerPrivateMessage(this))
         WorldLinkFrameSpecs.OP_SERVER_FRIEND_PRESENCE -> onFriendPresence(WorldLinkFrameSpecs.decodeServerFriendPresence(this))
+        WorldLinkFrameSpecs.OP_SERVER_FRIENDCHAT_CHANNEL -> onFriendChatChannel(WorldLinkFrameSpecs.decodeServerFriendChatChannel(this))
+        WorldLinkFrameSpecs.OP_SERVER_FRIENDCHAT_MEMBER -> onFriendChatMember(WorldLinkFrameSpecs.decodeServerFriendChatMember(this))
+        WorldLinkFrameSpecs.OP_SERVER_FRIENDCHAT_LEFT -> onFriendChatLeft(WorldLinkFrameSpecs.decodeServerFriendChatLeft(this))
+        WorldLinkFrameSpecs.OP_SERVER_FRIENDCHAT_MESSAGE -> onFriendChatMessage(WorldLinkFrameSpecs.decodeServerFriendChatMessage(this))
+        WorldLinkFrameSpecs.OP_SERVER_FRIENDCHAT_NOTICE -> onFriendChatNotice(WorldLinkFrameSpecs.decodeServerFriendChatNotice(this))
         else -> onOther(op)
     }
 }
@@ -75,6 +86,25 @@ internal object WorldLinkPackets {
 
     fun pmRelay(payload: dev.or2.central.worldlink.protocol.social.SocialPackets.PmRelayPayload): ByteArray =
         GameToCentralSocialPackets.pmRelay(payload)
+
+    fun friendChatJoin(characterId: Int, ownerName: String): ByteArray =
+        GameToCentralFriendChatPackets.join(characterId, ownerName)
+
+    fun friendChatLeave(characterId: Int): ByteArray = GameToCentralFriendChatPackets.leave(characterId)
+
+    fun friendChatMessage(characterId: Int, senderCrown: Int, message: String): ByteArray =
+        GameToCentralFriendChatPackets.message(characterId, senderCrown, message)
+
+    fun friendChatKick(characterId: Int, targetName: String): ByteArray =
+        GameToCentralFriendChatPackets.kick(characterId, targetName)
+
+    fun friendSetRank(characterId: Int, targetName: String, rank: Int): ByteArray =
+        GameToCentralFriendChatPackets.setRank(characterId, targetName, rank)
+
+    fun friendChatSettings(characterId: Int, setting: Int, rank: Int, channelName: String): ByteArray =
+        GameToCentralFriendChatPackets.settings(characterId, setting, rank, channelName)
+
+    fun friendChatSync(characterId: Int): ByteArray = GameToCentralFriendChatPackets.sync(characterId)
 
     fun gameDiscordLinkPending(accountId: Int, discordUsername: String): ByteArray =
         GameToCentralDiscordPackets.linkPending(accountId, discordUsername)

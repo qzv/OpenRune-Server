@@ -1,8 +1,8 @@
 package org.rsmod.api.net.central
 
 import dev.or2.central.worldlink.protocol.CentralPushPackets
-import dev.or2.central.worldlink.protocol.PacketLimits
 import dev.or2.central.worldlink.protocol.PacketCatalog
+import dev.or2.central.worldlink.protocol.PacketLimits
 import dev.or2.central.worldlink.protocol.WorldOpcodes
 
 public typealias ServerRevokeLoginPayload = CentralPushPackets.RevokeLogin
@@ -14,6 +14,11 @@ public typealias ServerDisplayNameSyncPayload = CentralPushPackets.DisplayNameSy
 public typealias ServerDiscordIdSyncPayload = CentralPushPackets.DiscordIdSync
 public typealias ServerPrivateMessagePayload = dev.or2.central.worldlink.protocol.social.PrivateMessagePush
 public typealias ServerFriendPresencePayload = dev.or2.central.worldlink.protocol.social.FriendPresencePush
+public typealias ServerFriendChatChannelPayload = dev.or2.central.worldlink.protocol.social.FriendChatChannelPush
+public typealias ServerFriendChatMemberPayload = dev.or2.central.worldlink.protocol.social.FriendChatMemberPush
+public typealias ServerFriendChatLeftPayload = dev.or2.central.worldlink.protocol.social.FriendChatLeftPush
+public typealias ServerFriendChatMessagePayload = dev.or2.central.worldlink.protocol.social.FriendChatMessagePush
+public typealias ServerFriendChatNoticePayload = dev.or2.central.worldlink.protocol.social.FriendChatNoticePush
 
 /** Shared world-link constants and validation (see `central-worldlink`). */
 public object WorldLinkFrameSpecs {
@@ -48,6 +53,12 @@ public object WorldLinkFrameSpecs {
     public const val OP_SERVER_DISCORD_ID_SYNC: Int = WorldOpcodes.OP_SERVER_DISCORD_ID_SYNC
     public const val OP_SERVER_PRIVATE_MESSAGE: Int = WorldOpcodes.OP_SERVER_PRIVATE_MESSAGE
     public const val OP_SERVER_FRIEND_PRESENCE: Int = WorldOpcodes.OP_SERVER_FRIEND_PRESENCE
+    public const val OP_SERVER_FRIENDCHAT_CHANNEL: Int = WorldOpcodes.OP_SERVER_FRIENDCHAT_CHANNEL
+    public const val OP_SERVER_FRIENDCHAT_MEMBER: Int = WorldOpcodes.OP_SERVER_FRIENDCHAT_MEMBER
+    public const val OP_SERVER_FRIENDCHAT_LEFT: Int = WorldOpcodes.OP_SERVER_FRIENDCHAT_LEFT
+    public const val OP_SERVER_FRIENDCHAT_MESSAGE: Int = WorldOpcodes.OP_SERVER_FRIENDCHAT_MESSAGE
+    public const val OP_SERVER_FRIENDCHAT_NOTICE: Int = WorldOpcodes.OP_SERVER_FRIENDCHAT_NOTICE
+    public const val OP_WORLD_FRIENDCHAT_SYNC_OK: Int = WorldOpcodes.OP_WORLD_FRIENDCHAT_SYNC_OK
     public const val OP_WORLD_SOCIAL_OK: Int = WorldOpcodes.OP_WORLD_SOCIAL_OK
     public const val OP_WORLD_SOCIAL_FAIL: Int = WorldOpcodes.OP_WORLD_SOCIAL_FAIL
     public const val OP_WORLD_SOCIAL_SYNC_OK: Int = WorldOpcodes.OP_WORLD_SOCIAL_SYNC_OK
@@ -107,10 +118,31 @@ public object WorldLinkFrameSpecs {
     public fun decodeServerFriendPresence(frame: ByteArray): ServerFriendPresencePayload =
         CentralPushPackets.decodeFriendPresence(frame)
 
+    public fun decodeServerFriendChatChannel(frame: ByteArray): ServerFriendChatChannelPayload =
+        CentralPushPackets.decodeFriendChatChannel(frame)
+
+    public fun decodeServerFriendChatMember(frame: ByteArray): ServerFriendChatMemberPayload =
+        CentralPushPackets.decodeFriendChatMember(frame)
+
+    public fun decodeServerFriendChatLeft(frame: ByteArray): ServerFriendChatLeftPayload =
+        CentralPushPackets.decodeFriendChatLeft(frame)
+
+    public fun decodeServerFriendChatMessage(frame: ByteArray): ServerFriendChatMessagePayload =
+        CentralPushPackets.decodeFriendChatMessage(frame)
+
+    public fun decodeServerFriendChatNotice(frame: ByteArray): ServerFriendChatNoticePayload =
+        CentralPushPackets.decodeFriendChatNotice(frame)
+
+    public fun decodeFriendChatSyncOk(frame: ByteArray): dev.or2.central.worldlink.protocol.social.FriendChatSync =
+        dev.or2.central.worldlink.protocol.readInboundFrame(frame).use { reader ->
+            dev.or2.central.worldlink.protocol.social.FriendChatPackets.decodeSyncOk(reader)
+        }
+
     public data class CentralSocialFriend(
         val displayName: String,
         val previousDisplayName: String?,
         val worldId: Int,
+        val rank: Int = 0,
     )
 
     public data class CentralSocialIgnore(
@@ -124,5 +156,6 @@ public object WorldLinkFrameSpecs {
         val tradeChat: Int,
         val friends: List<CentralSocialFriend>,
         val ignores: List<CentralSocialIgnore>,
+        val rejoinChannelOwner: String? = null,
     )
 }

@@ -2861,8 +2861,8 @@ public class ProtectedAccess(
      *   the coroutine suspension.
      * @see [resumeWithMainModalProtectedAccess]
      */
-    public suspend fun stringDialog(title: String): String {
-        mesLayerMode9(player, title)
+    public suspend fun stringDialog(title: String, mode: Int = 0): String {
+        mesLayerMode9(player, title, mode)
         val modal = player.ui.getModalOrNull("component.toplevel_osrs_stretch:mainmodal")
         val input = coroutine.pause(ResumePStringDialogInput::class)
         return resumeWithMainModalProtectedAccess(input.text, modal)

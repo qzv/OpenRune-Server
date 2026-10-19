@@ -24,7 +24,7 @@ private fun privateMessageCounterSeed(): Int {
     return (hourOfYear * 50_000) and 0xFFFFFF
 }
 
-private fun nextPrivateMessageCounter(worldId: Int): Int {
+internal fun nextPrivateMessageCounter(worldId: Int): Int {
     while (true) {
         val current = privateMessageCounter.get()
         val next = (current + 1) and 0xFFFFFF
@@ -51,7 +51,7 @@ fun Player.writeCentralSocialSnapshot(snapshot: WorldLinkFrameSpecs.CentralSocia
                     name = friend.displayName,
                     previousName = friend.previousDisplayName,
                     worldId = friend.worldId,
-                    rank = 0,
+                    rank = friend.rank,
                     properties = 0,
                     notes = "",
                     worldName = "OpenRune",
@@ -63,7 +63,7 @@ fun Player.writeCentralSocialSnapshot(snapshot: WorldLinkFrameSpecs.CentralSocia
                     added = false,
                     name = friend.displayName,
                     previousName = friend.previousDisplayName,
-                    rank = 0,
+                    rank = friend.rank,
                     properties = 0,
                     notes = "",
                 )
@@ -95,6 +95,7 @@ fun Player.writeCentralSocialSnapshotEmpty() {
 fun Player.writeCentralFriendPresence(
     push: ServerFriendPresencePayload,
     serverConfig: ServerConfig,
+    rank: Int,
 ) {
     val friend =
         if (push.friendWorldId > 0) {
@@ -103,7 +104,7 @@ fun Player.writeCentralFriendPresence(
                 name = push.friendDisplayName,
                 previousName = push.friendPreviousDisplayName,
                 worldId = push.friendWorldId,
-                rank = 0,
+                rank = rank,
                 properties = 0,
                 notes = "",
                 worldName = formatWorldName(push.friendWorldId, serverConfig),
@@ -115,7 +116,7 @@ fun Player.writeCentralFriendPresence(
                 added = false,
                 name = push.friendDisplayName,
                 previousName = push.friendPreviousDisplayName,
-                rank = 0,
+                rank = rank,
                 properties = 0,
                 notes = "",
             )
@@ -150,7 +151,7 @@ fun Player.writeCentralPrivateMessage(
     )
 }
 
-private fun formatWorldName(
+internal fun formatWorldName(
     worldId: Int,
     serverConfig: ServerConfig? = null,
 ): String {

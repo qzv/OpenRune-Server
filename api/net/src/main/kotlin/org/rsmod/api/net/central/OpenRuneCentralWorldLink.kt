@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
+import org.rsmod.api.net.central.netty.WorldLinkNettyBlockingClient
+import org.rsmod.api.net.central.netty.WorldLinkNettyBlockingSession
 import org.rsmod.api.player.output.ChatType
 import org.rsmod.api.player.output.MiscOutput
 import org.rsmod.api.player.output.mes
-import org.rsmod.api.net.central.netty.WorldLinkNettyBlockingClient
-import org.rsmod.api.net.central.netty.WorldLinkNettyBlockingSession
 import org.rsmod.api.registry.player.PlayerRegistry
 import org.rsmod.api.server.config.OpenRuneCentralGameConfig
 import org.rsmod.api.server.config.ServerConfig
@@ -66,6 +66,12 @@ constructor(
 
     private val pendingCentralFriendPresence =
         ConcurrentLinkedQueue<ServerFriendPresencePayload>()
+
+    private val pendingCentralFriendChat = ConcurrentLinkedQueue<Any>()
+
+    private val friendChatChannels = ConcurrentHashMap<Int, String>()
+
+    private val friendRanks = ConcurrentHashMap<Int, ConcurrentHashMap<String, Int>>()
 
     @Volatile
     private var passwordAuthConfig: PasswordAuthConfig? = null
@@ -192,7 +198,97 @@ constructor(
     public fun deleteFriend(
         characterId: Int,
         targetName: String,
-    ): CentralSocialResult = runSocialAction(WorldLinkPackets.friendDel(characterId, targetName))
+    ): CentralSocialResult {
+        val result = runSocialAction(WorldLinkPackets.friendDel(characterId, targetName))
+        if (result == CentralSocialResult.Ok) {
+            friendRanks[characterId]?.remove(targetName.friendRankKey())
+        }
+        return result
+    }
+
+    public fun isInFriendChat(characterId: Int): Boolean = friendChatChannels.containsKey(characterId)
+
+    public fun friendRank(
+        characterId: Int,
+        friendName: String,
+    ): Int = friendRanks[characterId]?.get(friendName.friendRankKey()) ?: 0
+
+    public fun forgetFriendChat(characterId: Int) {
+        friendChatChannels.remove(characterId)
+        friendRanks.remove(characterId)
+    }
+
+    public fun joinFriendChat(
+        characterId: Int,
+        ownerName: String,
+    ): CentralSocialResult = runSocialAction(WorldLinkPackets.friendChatJoin(characterId, ownerName))
+
+    public fun leaveFriendChat(characterId: Int): CentralSocialResult =
+        runSocialAction(WorldLinkPackets.friendChatLeave(characterId))
+
+    public fun sendFriendChatMessage(
+        characterId: Int,
+        senderCrown: Int,
+        message: String,
+    ): CentralSocialResult = runSocialAction(WorldLinkPackets.friendChatMessage(characterId, senderCrown, message))
+
+    public fun kickFromFriendChat(
+        characterId: Int,
+        targetName: String,
+    ): CentralSocialResult = runSocialAction(WorldLinkPackets.friendChatKick(characterId, targetName))
+
+    public fun setFriendRank(
+        characterId: Int,
+        targetName: String,
+        rank: Int,
+    ): CentralSocialResult {
+        val ranks = friendRanks.computeIfAbsent(characterId) { ConcurrentHashMap() }
+        val key = targetName.friendRankKey()
+        val previous = ranks.put(key, rank)
+        val result = runSocialAction(WorldLinkPackets.friendSetRank(characterId, targetName, rank))
+        if (result != CentralSocialResult.Ok) {
+            if (previous == null) ranks.remove(key) else ranks[key] = previous
+        }
+        return result
+    }
+
+    public fun setFriendChatSetting(
+        characterId: Int,
+        setting: Int,
+        rank: Int,
+        channelName: String,
+    ): CentralSocialResult =
+        runSocialAction(WorldLinkPackets.friendChatSettings(characterId, setting, rank, channelName))
+
+    public fun friendChatSync(characterId: Int): CentralFriendChatSync? {
+        val cfg = settings ?: return null
+        if (characterId <= 0) {
+            return null
+        }
+        val sync =
+            try {
+                runCentralSocialRoundTrip(cfg) { session ->
+                    session.send(WorldLinkPackets.friendChatSync(characterId))
+                    parseFriendChatSyncResponse(session.recvInbound(SOCKET_TIMEOUT_MS.toLong()))
+                }
+            } catch (e: Exception) {
+                logger.warn(e) { "Central chat-channel sync failed for characterId=$characterId" }
+                null
+            } ?: return null
+        val ranks = ConcurrentHashMap<String, Int>()
+        for (entry in sync.ranks) {
+            ranks[entry.displayName.friendRankKey()] = entry.rank
+        }
+        friendRanks[characterId] = ranks
+        return sync
+    }
+
+    private fun parseFriendChatSyncResponse(response: ByteArray): CentralFriendChatSync? {
+        if (response.isEmpty() || response[0].toInt() and 0xFF != WorldLinkFrameSpecs.OP_WORLD_FRIENDCHAT_SYNC_OK) {
+            return null
+        }
+        return WorldLinkFrameSpecs.decodeFriendChatSyncOk(response)
+    }
 
     public fun addIgnore(
         characterId: Int,
@@ -258,7 +354,8 @@ constructor(
             return CentralSocialSnapshotResult.Failed("Social is not available right now.")
         }
         return when (val result = requestSocialSync(characterId)) {
-            is SocialSyncResult.Ok -> CentralSocialSnapshotResult.Ok(result.snapshot.toClientSnapshot())
+            is SocialSyncResult.Ok ->
+                CentralSocialSnapshotResult.Ok(result.snapshot.toClientSnapshot(friendChatSync(characterId)))
             is SocialSyncResult.Fail ->
                 CentralSocialSnapshotResult.Failed(socialFailMessage(result.reason))
             SocialSyncResult.Unavailable ->
@@ -317,7 +414,41 @@ constructor(
         while (true) {
             val push = pollFriendPresence() ?: break
             val player = playerRegistry.findOnlineByCharacterId(push.ownerCharacterId) ?: continue
-            player.writeCentralFriendPresence(push, serverConfig)
+            val rank = friendRank(push.ownerCharacterId, push.friendDisplayName)
+            player.writeCentralFriendPresence(push, serverConfig, rank)
+        }
+        while (true) {
+            deliverFriendChat(playerRegistry, pendingCentralFriendChat.poll() ?: break)
+        }
+    }
+
+    private fun deliverFriendChat(
+        playerRegistry: PlayerRegistry,
+        push: Any,
+    ) {
+        when (push) {
+            is ServerFriendChatChannelPayload -> {
+                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                friendChatChannels[push.recipientCharacterId] = push.channelName
+                player.writeCentralFriendChatChannel(push, serverConfig)
+            }
+            is ServerFriendChatMemberPayload -> {
+                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                player.writeCentralFriendChatMember(push, serverConfig)
+            }
+            is ServerFriendChatLeftPayload -> {
+                friendChatChannels.remove(push.recipientCharacterId)
+                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                player.writeCentralFriendChatLeft(push)
+            }
+            is ServerFriendChatMessagePayload -> {
+                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                player.writeCentralFriendChatMessage(push)
+            }
+            is ServerFriendChatNoticePayload -> {
+                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                player.writeCentralFriendChatNotice(push)
+            }
         }
     }
 
@@ -847,6 +978,11 @@ constructor(
                             pendingCentralPrivateMessages.add(push)
                         },
                         onFriendPresence = { pendingCentralFriendPresence.add(it) },
+                        onFriendChatChannel = { pendingCentralFriendChat.add(it) },
+                        onFriendChatMember = { pendingCentralFriendChat.add(it) },
+                        onFriendChatLeft = { pendingCentralFriendChat.add(it) },
+                        onFriendChatMessage = { pendingCentralFriendChat.add(it) },
+                        onFriendChatNotice = { pendingCentralFriendChat.add(it) },
                         onOther = { op ->
                             logger.debug {
                                 "Ignoring Central world-link opcode 0x${op.toString(16)} on push channel " +
@@ -1067,6 +1203,12 @@ public class InflightCentralAuth internal constructor(
     internal val future: CompletableFuture<CentralAuthResult>,
 )
 
+public typealias CentralFriendChatSync = dev.or2.central.worldlink.protocol.social.FriendChatSync
+
+private fun String.friendRankKey(): String = replace(NBSP, ' ').trim().lowercase()
+
+private const val NBSP: Char = '\u00A0'
+
 public sealed class SocialSyncResult {
     public data class Ok(val snapshot: SocialSyncSnapshot) : SocialSyncResult()
 
@@ -1083,8 +1225,11 @@ public sealed class SocialActionResult {
     public data object Unavailable : SocialActionResult()
 }
 
-private fun SocialSyncSnapshot.toClientSnapshot(): WorldLinkFrameSpecs.CentralSocialSnapshot =
-    WorldLinkFrameSpecs.CentralSocialSnapshot(
+private fun SocialSyncSnapshot.toClientSnapshot(
+    friendChat: CentralFriendChatSync?,
+): WorldLinkFrameSpecs.CentralSocialSnapshot {
+    val ranks = friendChat?.ranks.orEmpty().associate { it.displayName.friendRankKey() to it.rank }
+    return WorldLinkFrameSpecs.CentralSocialSnapshot(
         publicChat = publicChat,
         privateChat = privateChat,
         tradeChat = tradeChat,
@@ -1094,6 +1239,7 @@ private fun SocialSyncSnapshot.toClientSnapshot(): WorldLinkFrameSpecs.CentralSo
                     displayName = friend.displayName,
                     previousDisplayName = friend.previousDisplayName,
                     worldId = friend.worldId,
+                    rank = ranks[friend.displayName.friendRankKey()] ?: 0,
                 )
             },
         ignores =
@@ -1103,4 +1249,6 @@ private fun SocialSyncSnapshot.toClientSnapshot(): WorldLinkFrameSpecs.CentralSo
                     previousDisplayName = ignore.previousDisplayName,
                 )
             },
+        rejoinChannelOwner = friendChat?.rejoinOwnerName,
     )
+}

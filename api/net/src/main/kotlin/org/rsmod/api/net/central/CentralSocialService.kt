@@ -1,5 +1,6 @@
 package org.rsmod.api.net.central
 
+import dev.or2.central.worldlink.protocol.social.FriendChatPackets
 import jakarta.inject.Inject
 import org.rsmod.api.db.gateway.model.GameDbResult
 import org.rsmod.api.net.central.WorldLinkFrameSpecs.PRIVATE_MESSAGE_MAX_CHARS
@@ -186,6 +187,82 @@ constructor(
                 privateChatFilter = privateChatFilter,
             ),
         )
+    }
+}
+
+data class FriendChatSetup(
+    val channelName: String?,
+    val enterRank: Int,
+    val talkRank: Int,
+    val kickRank: Int,
+)
+
+class CentralFriendChatService
+@Inject
+constructor(
+    private val central: OpenRuneCentralWorldLink,
+) {
+    fun join(
+        characterId: Int,
+        ownerName: String,
+    ): GameDbResult<CentralSocialResult> = GameDbResult.Ok(central.joinFriendChat(characterId, ownerName))
+
+    fun leave(characterId: Int): GameDbResult<CentralSocialResult> =
+        GameDbResult.Ok(central.leaveFriendChat(characterId))
+
+    fun message(
+        characterId: Int,
+        senderCrown: Int,
+        message: String,
+    ): GameDbResult<CentralSocialResult> =
+        GameDbResult.Ok(central.sendFriendChatMessage(characterId, senderCrown, message))
+
+    fun kick(
+        characterId: Int,
+        targetName: String,
+    ): GameDbResult<CentralSocialResult> = GameDbResult.Ok(central.kickFromFriendChat(characterId, targetName))
+
+    fun setRank(
+        characterId: Int,
+        targetName: String,
+        rank: Int,
+    ): GameDbResult<CentralSocialResult> = GameDbResult.Ok(central.setFriendRank(characterId, targetName, rank))
+
+    fun setChannelName(
+        characterId: Int,
+        channelName: String,
+    ): GameDbResult<CentralSocialResult> =
+        GameDbResult.Ok(central.setFriendChatSetting(characterId, FriendChatPackets.SETTING_NAME, 0, channelName))
+
+    fun setEnterRank(
+        characterId: Int,
+        rank: Int,
+    ): GameDbResult<CentralSocialResult> =
+        GameDbResult.Ok(central.setFriendChatSetting(characterId, FriendChatPackets.SETTING_ENTER, rank, ""))
+
+    fun setTalkRank(
+        characterId: Int,
+        rank: Int,
+    ): GameDbResult<CentralSocialResult> =
+        GameDbResult.Ok(central.setFriendChatSetting(characterId, FriendChatPackets.SETTING_TALK, rank, ""))
+
+    fun setKickRank(
+        characterId: Int,
+        rank: Int,
+    ): GameDbResult<CentralSocialResult> =
+        GameDbResult.Ok(central.setFriendChatSetting(characterId, FriendChatPackets.SETTING_KICK, rank, ""))
+
+    fun settings(characterId: Int): GameDbResult<FriendChatSetup?> {
+        val settings = central.friendChatSync(characterId)?.settings ?: return GameDbResult.Ok(null)
+        return GameDbResult.Ok(
+            FriendChatSetup(settings.channelName, settings.enterRank, settings.talkRank, settings.kickRank),
+        )
+    }
+
+    fun isInChannel(characterId: Int): Boolean = central.isInFriendChat(characterId)
+
+    fun forget(characterId: Int) {
+        central.forgetFriendChat(characterId)
     }
 }
 
