@@ -1,12 +1,12 @@
 package org.rsmod.api.inv
 
-import dev.openrune.definition.type.widget.ComponentType
 import dev.openrune.rscm.RSCM
 import dev.openrune.rscm.RSCMType
 import dev.openrune.types.aconverted.interf.IfButtonOp
 import dev.openrune.util.Wearpos
 import jakarta.inject.Inject
 import org.rsmod.api.enums.EquipmentEnums.equipment_tab_to_slots_map
+import org.rsmod.api.player.hook.PlayerWornButtonHook
 import org.rsmod.api.player.interact.WornInteractions
 import org.rsmod.api.player.output.UpdateInventory.resendSlot
 import org.rsmod.api.player.protect.ProtectedAccess
@@ -25,6 +25,7 @@ constructor(
     private val eventBus: EventBus,
     private val interactions: WornInteractions,
     private val protectedAccess: ProtectedAccessLauncher,
+    private val buttonHooks: Set<@JvmSuppressWildcards PlayerWornButtonHook>,
 ) : PluginScript() {
     override fun ScriptContext.startup() {
         val mappedComponents = mappedComponents()
@@ -47,6 +48,10 @@ constructor(
             interactions.examine(player, player.worn, wornSlot)
             return
         }
+        if (buttonHooks.any { it.intercept(player, wornSlot, event.op) }) {
+            resendSlot(player.worn, 0)
+            return
+        }
         player.opWorn(wornSlot, event.op)
     }
 
@@ -60,6 +65,6 @@ constructor(
         val invalidComponent = resolver.values.filter { it == null }
         check(invalidComponent.isEmpty()) { "Equipment enum must not have null values: $resolver" }
 
-        return resolver.associate { checkNotNull(Wearpos[it.key]) to checkNotNull(RSCM.getReverseMapping(RSCMType.COMPONENT,it.value!!.packed)) }
+        return resolver.associate { checkNotNull(Wearpos[it.key]) to checkNotNull(RSCM.getReverseMapping(RSCMType.COMPONENT, it.value!!.packed)) }
     }
 }

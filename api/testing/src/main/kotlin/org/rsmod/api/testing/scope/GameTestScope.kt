@@ -67,6 +67,7 @@ import org.rsmod.api.player.hook.PlayerLogoutRequestHook
 import org.rsmod.api.player.hook.PlayerObjTakeValidateHook
 import org.rsmod.api.player.hook.PlayerPostTickHook
 import org.rsmod.api.player.hook.PlayerTeleportValidateHook
+import org.rsmod.api.player.hook.PlayerWornButtonHook
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.protect.ProtectedAccessLauncher
 import org.rsmod.api.player.protect.clearPendingAction
@@ -921,6 +922,7 @@ constructor(
             Multibinder.newSetBinder(binder(), PlayerDefenceLevelHook::class.java)
             Multibinder.newSetBinder(binder(), PlayerHealCapHook::class.java)
             Multibinder.newSetBinder(binder(), PlayerLogoutRequestHook::class.java)
+            Multibinder.newSetBinder(binder(), PlayerWornButtonHook::class.java)
             bind(NpcHitModifier::class.java).to(StandardNpcHitModifier::class.java)
             bind(PlayerHitModifier::class.java).to(StandardPlayerHitModifier::class.java)
             bind(NpcHitProcessor::class.java).to(StandardNpcHitProcessor::class.java)
