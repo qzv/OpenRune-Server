@@ -17,6 +17,7 @@ data class BossStats(val attackRate: Int = 4)
 data class PhaseSpec(
     val name: String,
     val entryHp: Double? = null,
+    val entryOnAttack: Boolean = false,
     val transmog: String? = null,
     val lockMovement: Boolean = false,
     /**

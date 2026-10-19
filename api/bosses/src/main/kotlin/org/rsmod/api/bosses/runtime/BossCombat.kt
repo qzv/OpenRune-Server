@@ -218,7 +218,7 @@ object BossCombat {
             if (name in encounter.firedPhaseEntries) continue
             val hpFraction =
                 encounter.npc.hitpoints.toDouble() / encounter.npc.baseHitpointsLvl.coerceAtLeast(1)
-            if (hpFraction <= entryHp) {
+            if (hpFraction <= entryHp && encounter.entryReady(phase, tick)) {
                 encounter.firedPhaseEntries += name
                 encounter.transitionTo(name, tick)
                 phase.entry?.let { runEntry(access, target, it, spec, encounter, deps) }
