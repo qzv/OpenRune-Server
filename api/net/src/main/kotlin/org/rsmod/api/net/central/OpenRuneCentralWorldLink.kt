@@ -33,6 +33,7 @@ public class OpenRuneCentralWorldLink
 constructor(
     private val serverConfig: ServerConfig,
     private val gameUpdate: GameUpdate,
+    friendChatState: CentralFriendChatState,
 ) {
     private val logger = InlineLogger()
 
@@ -69,9 +70,9 @@ constructor(
 
     private val pendingCentralFriendChat = ConcurrentLinkedQueue<Any>()
 
-    private val friendChatChannels = ConcurrentHashMap<Int, String>()
+    private val friendChatChannels = friendChatState.channels
 
-    private val friendRanks = ConcurrentHashMap<Int, ConcurrentHashMap<String, Int>>()
+    private val friendRanks = friendChatState.friendRanks
 
     @Volatile
     private var passwordAuthConfig: PasswordAuthConfig? = null
