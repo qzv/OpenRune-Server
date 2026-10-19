@@ -228,3 +228,47 @@ angle = 8
 lengthAdjustment = 20
 progress = 128
 stepMultiplier = 3
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.yama_special"
+startHeight = 2000
+endHeight = 0
+delay = 65
+angle = 60
+lengthAdjustment = 115
+progress = 100
+stepMultiplier = 0
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.yama_special_contract"
+startHeight = 2000
+endHeight = 0
+delay = 65
+angle = 60
+lengthAdjustment = 85
+progress = 100
+stepMultiplier = 0
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.yama_shadow_stomp"
+startHeight = 10
+endHeight = 10
+delay = 0
+angle = 127
+lengthAdjustment = 90
+progress = 150
+stepMultiplier = 0
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.yama_judge_fireball"
+startHeight = 345
+endHeight = 0
+delay = 0
+angle = 30
+lengthAdjustment = 120
+progress = 128
+stepMultiplier = 0
