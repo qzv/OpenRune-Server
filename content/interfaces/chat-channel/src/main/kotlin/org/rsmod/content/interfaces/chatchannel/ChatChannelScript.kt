@@ -46,6 +46,7 @@ constructor(
         onIfModalButton(OPT_ENTER) { setThreshold(it, OPT_ENTER, friendChat::setEnterRank) }
         onIfModalButton(OPT_TALK) { setThreshold(it, OPT_TALK, friendChat::setTalkRank) }
         onIfModalButton(OPT_KICK) { setThreshold(it, OPT_KICK, friendChat::setKickRank) }
+        onEvent<SessionStateEvent.Login> { player.inChannelOnLogout = 0 }
         onEvent<SessionStateEvent.Logout> { player.leaveOnLogout() }
     }
 
