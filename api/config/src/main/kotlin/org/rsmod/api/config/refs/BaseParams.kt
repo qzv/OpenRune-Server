@@ -144,6 +144,7 @@ object BaseParams {
     val tormented_demon: ParamInt = param("tormented_demon")
     val shade: ParamInt = param("shade")
     val demonbane_resistant: ParamInt = param("demonbane_resistant")
+    val demonbane_effectiveness: ParamInt = param("demonbane_effectiveness")
     val slayer_helm: ParamInt = param("slayer_helm")
     val blackmask: ParamInt = param("blackmask")
     val leafy: ParamInt = param("leafy")

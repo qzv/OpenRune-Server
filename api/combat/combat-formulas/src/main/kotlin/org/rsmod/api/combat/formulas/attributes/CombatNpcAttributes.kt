@@ -11,7 +11,6 @@ public enum class CombatNpcAttributes {
     Golem,
     Leafy,
     Rat,
-    DemonbaneResistance,
     Size2,
     Size3,
     Size4,

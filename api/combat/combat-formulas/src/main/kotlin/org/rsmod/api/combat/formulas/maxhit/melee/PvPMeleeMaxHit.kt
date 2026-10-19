@@ -5,6 +5,7 @@ import java.util.EnumSet
 import kotlin.math.ceil
 import org.rsmod.api.combat.commons.styles.MeleeAttackStyle
 import org.rsmod.api.combat.commons.types.MeleeAttackType
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.attributes.CombatMeleeAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.collector.CombatMeleeAttributeCollector
@@ -98,7 +99,12 @@ constructor(
             MeleeMaxHitOperations.calculateEffectiveStrength(source, attackStyle)
         val strengthBonus = bonuses.strengthBonus(source)
         val baseDamage = PlayerMeleeMaxHit.calculateBaseDamage(effectiveStrength, strengthBonus)
-        return MeleeMaxHitOperations.modifyBaseDamage(baseDamage, meleeAttributes, npcAttributes)
+        return MeleeMaxHitOperations.modifyBaseDamage(
+            baseDamage = baseDamage,
+            meleeAttributes = meleeAttributes,
+            npcAttributes = npcAttributes,
+            demonbanePercent = DemonbaneEffectiveness.STANDARD_PERCENT,
+        )
     }
 
     public fun modifyPostSpec(

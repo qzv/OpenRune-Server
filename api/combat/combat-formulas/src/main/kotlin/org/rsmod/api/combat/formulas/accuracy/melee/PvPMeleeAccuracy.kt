@@ -5,6 +5,7 @@ import java.util.EnumSet
 import org.rsmod.api.combat.accuracy.player.PlayerMeleeAccuracy
 import org.rsmod.api.combat.commons.styles.MeleeAttackStyle
 import org.rsmod.api.combat.commons.types.MeleeAttackType
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.formulas.attributes.CombatMeleeAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
@@ -74,7 +75,12 @@ constructor(
         val effectiveAttack = MeleeAccuracyOperations.calculateEffectiveAttack(source, attackStyle)
         val attackBonus = source.getAttackBonus(attackType)
         val attackRoll = PlayerMeleeAccuracy.calculateBaseAttackRoll(effectiveAttack, attackBonus)
-        return MeleeAccuracyOperations.modifyAttackRoll(attackRoll, meleeAttributes, npcAttributes)
+        return MeleeAccuracyOperations.modifyAttackRoll(
+            attackRoll = attackRoll,
+            meleeAttributes = meleeAttributes,
+            npcAttributes = npcAttributes,
+            demonbanePercent = DemonbaneEffectiveness.STANDARD_PERCENT,
+        )
     }
 
     private fun Player.getAttackBonus(attackType: MeleeAttackType?): Int =

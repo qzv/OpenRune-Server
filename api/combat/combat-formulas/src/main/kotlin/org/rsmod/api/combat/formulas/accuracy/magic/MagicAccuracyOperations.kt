@@ -5,6 +5,7 @@ import java.util.EnumSet
 import org.rsmod.api.combat.accuracy.player.PlayerMagicAccuracy
 import org.rsmod.api.combat.commons.styles.AttackStyle
 import org.rsmod.api.combat.commons.styles.MagicAttackStyle
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatSpellAttributes
@@ -32,6 +33,7 @@ public object MagicAccuracyOperations {
         targetWeaknessPercent: Int,
         spellAttributes: EnumSet<CombatSpellAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         var modified = attackRoll
 
@@ -73,17 +75,13 @@ public object MagicAccuracyOperations {
         }
 
         if (SpellAttr.Demonbane in spellAttributes && NpcAttr.Demon in npcAttributes) {
-            var percent =
-                if (NpcAttr.DemonbaneResistance in npcAttributes) {
-                    if (SpellAttr.MarkOfDarkness in spellAttributes) 28 else 14
-                } else {
-                    if (SpellAttr.MarkOfDarkness in spellAttributes) 40 else 20
-                }
+            var percent = if (SpellAttr.MarkOfDarkness in spellAttributes) 40 else 20
 
             if (SpellAttr.PurgingStaff in spellAttributes) {
                 percent *= 2
             }
 
+            percent = DemonbaneEffectiveness.scaleBonus(percent, demonbanePercent)
             modified = scale(modified, 100 + percent, divisor = 100)
         }
 

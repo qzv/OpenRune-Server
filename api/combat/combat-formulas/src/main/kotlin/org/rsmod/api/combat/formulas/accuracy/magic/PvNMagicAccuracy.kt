@@ -8,6 +8,7 @@ import org.rsmod.api.combat.accuracy.npc.NpcMagicAccuracy
 import org.rsmod.api.combat.accuracy.player.PlayerMagicAccuracy
 import org.rsmod.api.combat.commons.magic.Spellbook
 import org.rsmod.api.combat.commons.styles.MagicAttackStyle
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatSpellAttributes
@@ -79,6 +80,7 @@ constructor(
                 targetWeaknessPercent = targetWeaknessPercent,
                 spellAttributes = spellAttributes,
                 npcAttributes = npcAttributes,
+                demonbanePercent = DemonbaneEffectiveness.percent(target),
             )
 
         val amascutInvocationLvl = source.vars["varbit.toa_client_raid_level"]
@@ -100,6 +102,7 @@ constructor(
         targetWeaknessPercent: Int,
         spellAttributes: EnumSet<CombatSpellAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         val effectiveMagic = MagicAccuracyOperations.calculateEffectiveMagic(source, null)
         val magicBonus = bonuses.offensiveMagicBonus(source)
@@ -109,6 +112,7 @@ constructor(
             targetWeaknessPercent = targetWeaknessPercent,
             spellAttributes = spellAttributes,
             npcAttributes = npcAttributes,
+            demonbanePercent = demonbanePercent,
         )
     }
 

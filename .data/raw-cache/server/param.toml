@@ -265,6 +265,13 @@ defaultInt = 0
 isMembers = true
 
 [[params]]
+id = "param.demonbane_effectiveness"
+isServerOnly = true
+type = "INT"
+defaultInt = 0
+isMembers = true
+
+[[params]]
 id = "param.slayer_helm"
 type = "INT"
 defaultInt = 0

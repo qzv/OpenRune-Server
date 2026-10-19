@@ -6,6 +6,7 @@ import java.util.EnumSet
 import kotlin.math.max
 import org.rsmod.api.combat.commons.styles.RangedAttackStyle
 import org.rsmod.api.combat.commons.types.RangedAttackType
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatRangedAttributes
 import org.rsmod.api.combat.formulas.attributes.collector.CombatNpcAttributeCollector
@@ -86,7 +87,14 @@ constructor(
         val npcAttributes = npcAttributes.collect(target, npc, targetCurrHp, targetMaxHp, slayerTask)
 
         val modifiedDamage =
-            computeModifiedDamage(source, targetMagic, attackStyle, rangeAttributes, npcAttributes)
+            computeModifiedDamage(
+                source = source,
+                targetMagic = targetMagic,
+                attackStyle = attackStyle,
+                rangeAttributes = rangeAttributes,
+                npcAttributes = npcAttributes,
+                demonbanePercent = DemonbaneEffectiveness.percent(target),
+            )
         val specMaxHit = (modifiedDamage * specialMultiplier).toInt()
         return modifyPostSpec(source, specMaxHit, boltSpecDamage, rangeAttributes, npcAttributes)
     }
@@ -97,6 +105,7 @@ constructor(
         attackStyle: RangedAttackStyle?,
         rangeAttributes: EnumSet<CombatRangedAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         val effectiveRanged = RangedMaxHitOperations.calculateEffectiveRanged(source, attackStyle)
         val rangedBonus = bonuses.rangedStrengthBonus(source)
@@ -106,6 +115,7 @@ constructor(
             targetMagic = targetMagic,
             rangeAttributes = rangeAttributes,
             npcAttributes = npcAttributes,
+            demonbanePercent = demonbanePercent,
         )
     }
 
