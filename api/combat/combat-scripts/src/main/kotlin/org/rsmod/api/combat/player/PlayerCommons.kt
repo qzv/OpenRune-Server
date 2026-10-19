@@ -5,6 +5,7 @@ import org.rsmod.api.combat.MAGIC_ATTACK_RANGE
 import org.rsmod.api.combat.MAX_ATTACK_RANGE
 import org.rsmod.api.combat.commons.CombatAttack
 import org.rsmod.api.combat.commons.magic.MagicSpell
+import org.rsmod.api.combat.commons.player.PlayerAttackRangeHook
 import org.rsmod.api.combat.commons.styles.AttackStyle
 import org.rsmod.api.combat.commons.styles.MagicAttackStyle
 import org.rsmod.api.combat.commons.styles.MeleeAttackStyle
@@ -26,12 +27,18 @@ import org.rsmod.game.entity.Player
 import org.rsmod.game.inv.InvObj
 import org.rsmod.game.type.getInvObj
 
-internal fun ProtectedAccess.attackRange(style: AttackStyle?): Int =
-    if (autocastEnabled && autocastSpell > 0) {
-        MAGIC_ATTACK_RANGE
-    } else {
-        weaponAttackRange(style)
-    }
+internal fun ProtectedAccess.attackRange(
+    style: AttackStyle?,
+    hooks: Set<PlayerAttackRangeHook>,
+): Int {
+    val range =
+        if (autocastEnabled && autocastSpell > 0) {
+            MAGIC_ATTACK_RANGE
+        } else {
+            weaponAttackRange(style)
+        }
+    return hooks.fold(range) { current, hook -> hook.modify(player, current) }
+}
 
 internal fun ProtectedAccess.weaponAttackRange(style: AttackStyle?): Int {
     var attackRange = 1
