@@ -109,6 +109,8 @@ public class Npc(
 
     public var apRequiresLineOfSight: Boolean = true
 
+    public val defenceBonusOverrides: MutableMap<TypedParamType<Int>, Int> = HashMap()
+
     public var aiTimerStart: Int = type.timer
     public var aiTimer: Int = type.timer
 
@@ -667,6 +669,9 @@ public class Npc(
      *   [param] does not have a non-null `default` value.
      */
     public fun <T : Any> param(param: TypedParamType<T>): T = type.param(param)
+
+    public fun defenceBonus(param: TypedParamType<Int>): Int =
+        defenceBonusOverrides[param] ?: visType.param(param)
 
     public fun isContentType(content: String): Boolean = type.contentGroup == content.asRSCM(RSCMType.CONTENT)
 

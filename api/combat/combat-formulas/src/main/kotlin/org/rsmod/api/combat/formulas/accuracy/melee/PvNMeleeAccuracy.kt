@@ -83,6 +83,7 @@ constructor(
                 amascutInvocationLvl = amascutInvocationLvl,
                 blockType = blockType,
                 npcAttributes = npcAttributes,
+                npc = npc,
             )
 
         val hitChance = AccuracyOperations.calculateHitChance(attackRoll, defenceRoll, npcAttributes)
@@ -128,9 +129,10 @@ constructor(
         amascutInvocationLvl: Int,
         blockType: MeleeAttackType?,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        npc: Npc? = null,
     ): Int {
         val effectiveDefence = NpcMeleeAccuracy.calculateEffectiveDefence(targetDefence)
-        val defenceBonus = target.getDefenceBonus(blockType)
+        val defenceBonus = target.getDefenceBonus(blockType, npc)
         val defenceRoll = NpcMeleeAccuracy.calculateBaseDefenceRoll(effectiveDefence, defenceBonus)
         return AccuracyOperations.modifyDefenceRoll(
             defenceRoll = defenceRoll,
@@ -139,11 +141,14 @@ constructor(
         )
     }
 
-    private fun NpcServerType.getDefenceBonus(attackType: MeleeAttackType?): Int =
-        when (attackType) {
-            MeleeAttackType.Stab -> param(BaseParams.defence_stab)
-            MeleeAttackType.Slash -> param(BaseParams.defence_slash)
-            MeleeAttackType.Crush -> param(BaseParams.defence_crush)
-            null -> 0
-        }
+    private fun NpcServerType.getDefenceBonus(attackType: MeleeAttackType?, npc: Npc?): Int {
+        val param =
+            when (attackType) {
+                MeleeAttackType.Stab -> BaseParams.defence_stab
+                MeleeAttackType.Slash -> BaseParams.defence_slash
+                MeleeAttackType.Crush -> BaseParams.defence_crush
+                null -> return 0
+            }
+        return npc?.defenceBonus(param) ?: param(param)
+    }
 }

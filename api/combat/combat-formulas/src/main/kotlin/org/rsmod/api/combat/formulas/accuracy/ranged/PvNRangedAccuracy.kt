@@ -94,6 +94,7 @@ constructor(
                 amascutInvocationLvl = amascutInvocationLvl,
                 blockType = blockType,
                 npcAttributes = npcAttributes,
+                npc = npc,
             )
 
         return AccuracyOperations.calculateHitChance(attackRoll, defenceRoll, npcAttributes)
@@ -127,9 +128,10 @@ constructor(
         amascutInvocationLvl: Int,
         blockType: RangedAttackType?,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        npc: Npc? = null,
     ): Int {
         val effectiveDefence = NpcRangedAccuracy.calculateEffectiveDefence(targetDefence)
-        val defenceBonus = target.getDefenceBonus(blockType)
+        val defenceBonus = target.getDefenceBonus(blockType, npc)
         val defenceRoll = NpcRangedAccuracy.calculateBaseDefenceRoll(effectiveDefence, defenceBonus)
         return AccuracyOperations.modifyDefenceRoll(
             defenceRoll = defenceRoll,
@@ -138,11 +140,14 @@ constructor(
         )
     }
 
-    private fun NpcServerType.getDefenceBonus(attackType: RangedAttackType?): Int =
-        when (attackType) {
-            RangedAttackType.Light -> param(BaseParams.defence_light)
-            RangedAttackType.Standard -> param(BaseParams.defence_standard)
-            RangedAttackType.Heavy -> param(BaseParams.defence_heavy)
-            null -> 0
-        }
+    private fun NpcServerType.getDefenceBonus(attackType: RangedAttackType?, npc: Npc?): Int {
+        val param =
+            when (attackType) {
+                RangedAttackType.Light -> BaseParams.defence_light
+                RangedAttackType.Standard -> BaseParams.defence_standard
+                RangedAttackType.Heavy -> BaseParams.defence_heavy
+                null -> return 0
+            }
+        return npc?.defenceBonus(param) ?: param(param)
+    }
 }

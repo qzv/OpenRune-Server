@@ -90,6 +90,7 @@ constructor(
                 targetMagic = targetMagic,
                 amascutInvocationLvl = amascutInvocationLvl,
                 npcAttributes = npcAttributes,
+                npc = npc,
             )
 
         return AccuracyOperations.calculateHitChance(attackRoll, defenceRoll)
@@ -153,6 +154,7 @@ constructor(
                 amascutInvocationLvl = amascutInvocationLvl,
                 blockType = blockType,
                 npcAttributes = npcAttributes,
+                npc = npc,
             )
 
         return AccuracyOperations.calculateHitChance(attackRoll, defenceRoll)
@@ -206,6 +208,7 @@ constructor(
                 amascutInvocationLvl = amascutInvocationLvl,
                 blockType = blockType,
                 npcAttributes = npcAttributes,
+                npc = npc,
             )
 
         return AccuracyOperations.calculateHitChance(attackRoll, defenceRoll)
@@ -274,6 +277,7 @@ constructor(
                 targetMagic = targetMagic,
                 amascutInvocationLvl = amascutInvocationLvl,
                 npcAttributes = npcAttributes,
+                npc = npc,
             )
 
         return AccuracyOperations.calculateHitChance(attackRoll, defenceRoll)
