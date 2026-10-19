@@ -55,6 +55,12 @@ public data class GameplayConfig(
     val levelUpPopups: Boolean = false,
     @JsonProperty("idle-logout")
     val idleLogout: Boolean = true,
+    val gravestones: GravestonesYaml = GravestonesYaml(),
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public data class GravestonesYaml(
+    val enabled: Boolean = true,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -52996,3 +52996,15 @@ contentGroup = "content.slayer_helmet"
 id = "obj.pvpa_slayer_helm_i_hooded"
 inherit = "obj.pvpa_slayer_helm_i_hooded"
 contentGroup = "content.slayer_helmet"
+
+[[item]]
+id = "obj.osrs_bond"
+inherit = "obj.osrs_bond"
+[item.params]
+"param.bond_item"=1
+
+[[item]]
+id = "obj.osrs_bond_untradeable"
+inherit = "obj.osrs_bond_untradeable"
+[item.params]
+"param.bond_item"=1
