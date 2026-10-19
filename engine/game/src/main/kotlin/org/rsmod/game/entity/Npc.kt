@@ -13,6 +13,7 @@ import dev.openrune.types.NpcServerType
 import dev.openrune.util.BlockWalk
 import org.rsmod.annotations.InternalApi
 import org.rsmod.game.damage.DamageContributions
+import org.rsmod.game.entity.npc.NpcChaseSlot
 import org.rsmod.game.entity.npc.NpcInfoProtocol
 import org.rsmod.game.entity.npc.NpcUid
 import org.rsmod.game.entity.npc.OpVisibility
@@ -97,6 +98,10 @@ public class Npc(
      * continually resetting the Npc's route.
      */
     public var movementLocked: Boolean = false
+
+    public var routefinds: Boolean = false
+
+    public var chaseSlot: NpcChaseSlot? = null
 
     /**
      * Used for temporarily overwriting a Npc's ap-range, i.e. the distance at which it can

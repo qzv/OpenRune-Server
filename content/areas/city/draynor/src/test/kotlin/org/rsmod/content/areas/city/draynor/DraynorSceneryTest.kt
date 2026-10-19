@@ -42,6 +42,7 @@ import org.rsmod.api.registry.zone.ZonePlayerActivityBitSet
 import org.rsmod.api.registry.zone.ZoneUpdateMap
 import org.rsmod.api.repo.loc.LocRepository
 import org.rsmod.api.route.RayCastValidator
+import org.rsmod.api.route.RouteFactory
 import org.rsmod.api.route.StepFactory
 import org.rsmod.content.generic.locs.doors.DoorScript
 import org.rsmod.coroutine.GameCoroutine
@@ -115,7 +116,13 @@ class DraynorSceneryTest {
         assertEquals("seq.deadtree_attack".asRSCM(), tree.type.param(params.attack_anim).id)
         assertEquals("synth.deadtree_attack".asRSCM(), tree.type.param(params.attack_sound).id)
         tree.walk(start.translate(3, 0))
-        val movement = NpcMovementProcessor(fixture.collision, StepFactory(fixture.collision), fixture.events)
+        val movement =
+            NpcMovementProcessor(
+                fixture.collision,
+                StepFactory(fixture.collision),
+                RouteFactory(fixture.collision),
+                fixture.events,
+            )
         repeat(8) { movement.process(tree) }
         assertEquals(start, tree.coords)
         assertTrue(tree.routeDestination.isEmpty())

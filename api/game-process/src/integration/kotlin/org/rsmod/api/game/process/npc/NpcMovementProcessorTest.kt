@@ -37,7 +37,13 @@ class NpcMovementProcessorTest {
                 it.allocateCollision(ZoneKey(0, 0, 0))
                 it.collision.add(CoordGrid(0, 0, 0, 0, 3), CollisionFlag.LOC)
                 withNpc(npc) {
-                    val movement = NpcMovementProcessor(it.collision, it.stepFactory, eventBus)
+                    val movement =
+                        NpcMovementProcessor(
+                            it.collision,
+                            it.stepFactory,
+                            it.routeFactory,
+                            eventBus,
+                        )
                     check(target.coords == targetCoords)
                     check(routeDestination.isEmpty())
 

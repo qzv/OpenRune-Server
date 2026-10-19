@@ -31,7 +31,8 @@ class NpcPatrolModeProcessorTest {
             it.allocateCollision(MapSquareKey(50, 50))
             it.collision.add(patrol[0].destination, CollisionFlag.LOC)
             withNpc(hans) {
-                val movement = NpcMovementProcessor(it.collision, it.stepFactory, eventBus)
+                val movement =
+                    NpcMovementProcessor(it.collision, it.stepFactory, it.routeFactory, eventBus)
                 val mode = NpcPatrolModeProcessor(it.collision)
                 fun process() {
                     previousCoords = coords
@@ -86,7 +87,8 @@ class NpcPatrolModeProcessorTest {
             it.allocateCollision(MapSquareKey(50, 50))
             it.collision.add(blocked, CollisionFlag.LOC)
             withNpc(hans) {
-                val movement = NpcMovementProcessor(it.collision, it.stepFactory, eventBus)
+                val movement =
+                    NpcMovementProcessor(it.collision, it.stepFactory, it.routeFactory, eventBus)
                 val mode = NpcPatrolModeProcessor(it.collision)
                 fun process() {
                     previousCoords = coords
@@ -156,7 +158,8 @@ class NpcPatrolModeProcessorTest {
             val hans = npcFactory.create(type, start) { patrolWaypointIndex = 2 }
             it.allocateCollision(MapSquareKey(50, 50))
             withNpc(hans) {
-                val movement = NpcMovementProcessor(it.collision, it.stepFactory, eventBus)
+                val movement =
+                    NpcMovementProcessor(it.collision, it.stepFactory, it.routeFactory, eventBus)
                 val mode = NpcPatrolModeProcessor(it.collision)
                 fun process() {
                     previousCoords = coords
@@ -219,7 +222,8 @@ class NpcPatrolModeProcessorTest {
             it.allocateCollision(MapSquareKey(50, 50))
             it.collision.add(start.translateZ(-3), CollisionFlag.LOC)
             withNpc(hans) {
-                val movement = NpcMovementProcessor(it.collision, it.stepFactory, eventBus)
+                val movement =
+                    NpcMovementProcessor(it.collision, it.stepFactory, it.routeFactory, eventBus)
                 val mode = NpcPatrolModeProcessor(it.collision)
                 fun process() {
                     previousCoords = coords
@@ -270,7 +274,8 @@ class NpcPatrolModeProcessorTest {
             val hans = npcFactory.create(type, start)
             it.allocateCollision(MapSquareKey(50, 50))
             withNpc(hans) {
-                val movement = NpcMovementProcessor(it.collision, it.stepFactory, eventBus)
+                val movement =
+                    NpcMovementProcessor(it.collision, it.stepFactory, it.routeFactory, eventBus)
                 val mode = NpcPatrolModeProcessor(it.collision)
                 fun process() {
                     previousCoords = coords
