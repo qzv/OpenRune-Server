@@ -296,6 +296,26 @@ object InstanceSettingsTable {
             )
         }
 
+        row("dbrow.instance_yama") {
+            column(KEY, "yama")
+            columnCoord(EXIT_COORD, CoordGrid(1437, 10074, 0))
+            columnCoord(ENTER_COORD, CoordGrid(1503, 10050, 0))
+            column(FEE, 0)
+            column(MAX_PLAYERS, 2)
+            column(TIME_LIMIT_MINUTES, 0)
+            column(GRACE_MINUTES, 10)
+            columnRSCM(BOSS_NPC, "npc.yama")
+            column(BOSS_NAME, "Yama")
+            column(RECOMMENDED_COMBAT, 100, 126)
+            column(TEAM_SIZE, 1)
+            column(LOOT_MULTIPLIER, "x1.0")
+            column(
+                DESCRIPTION,
+                "A demon of quite obviously fathomable power. The vicious grin rarely leaves " +
+                    "his face.",
+            )
+        }
+
         row("dbrow.instance_amoxliatl") {
             column(KEY, "amoxliatl")
             columnCoord(EXIT_COORD, CoordGrid(1602, 9631, 0))
