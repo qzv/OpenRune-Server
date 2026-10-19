@@ -5,6 +5,7 @@ import java.util.EnumSet
 import org.rsmod.api.combat.accuracy.player.PlayerMeleeAccuracy
 import org.rsmod.api.combat.commons.styles.AttackStyle
 import org.rsmod.api.combat.commons.styles.MeleeAttackStyle
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.HIT_CHANCE_SCALE
 import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.formulas.attributes.CombatMeleeAttributes
@@ -26,6 +27,7 @@ public object MeleeAccuracyOperations {
         attackRoll: Int,
         meleeAttributes: EnumSet<CombatMeleeAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         var modified = attackRoll
 
@@ -49,21 +51,21 @@ public object MeleeAccuracyOperations {
         }
 
         if (MeleeAttr.Arclight in meleeAttributes && NpcAttr.Demon in npcAttributes) {
-            modified =
-                if (NpcAttr.DemonbaneResistance in npcAttributes) {
-                    scale(modified, multiplier = 149, divisor = 100)
-                } else {
-                    scale(modified, multiplier = 170, divisor = 100)
-                }
+            val bonus =
+                DemonbaneEffectiveness.scaleBonus(
+                    DemonbaneEffectiveness.ARCLIGHT_BONUS,
+                    demonbanePercent,
+                )
+            modified = scale(modified, multiplier = 100 + bonus, divisor = 100)
         }
 
         if (MeleeAttr.BurningClaws in meleeAttributes && NpcAttr.Demon in npcAttributes) {
-            modified =
-                if (NpcAttr.DemonbaneResistance in npcAttributes) {
-                    scale(modified, multiplier = 207, divisor = 200)
-                } else {
-                    scale(modified, multiplier = 210, divisor = 200)
-                }
+            val bonus =
+                DemonbaneEffectiveness.scaleBonus(
+                    DemonbaneEffectiveness.BURNING_CLAWS_BONUS,
+                    demonbanePercent,
+                )
+            modified = scale(modified, multiplier = 200 + bonus, divisor = 200)
         }
 
         if (MeleeAttr.DragonHunterLance in meleeAttributes && NpcAttr.Draconic in npcAttributes) {

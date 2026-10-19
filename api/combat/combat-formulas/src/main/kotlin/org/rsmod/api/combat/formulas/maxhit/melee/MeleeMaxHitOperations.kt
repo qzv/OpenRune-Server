@@ -4,6 +4,7 @@ import dev.openrune.util.Wearpos
 import java.util.EnumSet
 import kotlin.math.max
 import org.rsmod.api.combat.commons.styles.MeleeAttackStyle
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.attributes.CombatMeleeAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.scale
@@ -24,6 +25,7 @@ public object MeleeMaxHitOperations {
         baseDamage: Int,
         meleeAttributes: EnumSet<CombatMeleeAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         var modified = baseDamage
 
@@ -39,21 +41,21 @@ public object MeleeMaxHitOperations {
         }
 
         if (MeleeAttr.Arclight in meleeAttributes && NpcAttr.Demon in npcAttributes) {
-            modified =
-                if (NpcAttr.DemonbaneResistance in npcAttributes) {
-                    scale(modified, multiplier = 149, divisor = 100)
-                } else {
-                    scale(modified, multiplier = 170, divisor = 100)
-                }
+            val bonus =
+                DemonbaneEffectiveness.scaleBonus(
+                    DemonbaneEffectiveness.ARCLIGHT_BONUS,
+                    demonbanePercent,
+                )
+            modified = scale(modified, multiplier = 100 + bonus, divisor = 100)
         }
 
         if (MeleeAttr.BurningClaws in meleeAttributes && NpcAttr.Demon in npcAttributes) {
-            modified =
-                if (NpcAttr.DemonbaneResistance in npcAttributes) {
-                    scale(modified, multiplier = 207, divisor = 200)
-                } else {
-                    scale(modified, multiplier = 210, divisor = 200)
-                }
+            val bonus =
+                DemonbaneEffectiveness.scaleBonus(
+                    DemonbaneEffectiveness.BURNING_CLAWS_BONUS,
+                    demonbanePercent,
+                )
+            modified = scale(modified, multiplier = 200 + bonus, divisor = 200)
         }
 
         if (MeleeAttr.Obsidian in meleeAttributes && MeleeAttr.TzHaarWeapon in meleeAttributes) {
@@ -89,12 +91,12 @@ public object MeleeMaxHitOperations {
         }
 
         if (MeleeAttr.Silverlight in meleeAttributes && NpcAttr.Demon in npcAttributes) {
-            modified =
-                if (NpcAttr.DemonbaneResistance in npcAttributes) {
-                    scale(modified, multiplier = 71, divisor = 50)
-                } else {
-                    scale(modified, multiplier = 80, divisor = 50)
-                }
+            val bonus =
+                DemonbaneEffectiveness.scaleBonus(
+                    DemonbaneEffectiveness.SILVERLIGHT_BONUS,
+                    demonbanePercent,
+                )
+            modified = scale(modified, multiplier = 50 + bonus, divisor = 50)
         }
 
         if (MeleeAttr.LeafBladed in meleeAttributes && NpcAttr.Leafy in npcAttributes) {

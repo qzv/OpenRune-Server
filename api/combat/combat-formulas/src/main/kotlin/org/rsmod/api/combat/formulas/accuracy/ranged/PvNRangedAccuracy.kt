@@ -8,6 +8,7 @@ import org.rsmod.api.combat.accuracy.npc.NpcRangedAccuracy
 import org.rsmod.api.combat.accuracy.player.PlayerRangedAccuracy
 import org.rsmod.api.combat.commons.styles.RangedAttackStyle
 import org.rsmod.api.combat.commons.types.RangedAttackType
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatRangedAttributes
@@ -81,6 +82,7 @@ constructor(
                 attackStyle = attackStyle,
                 rangeAttributes = rangeAttributes,
                 npcAttributes = npcAttributes,
+                demonbanePercent = DemonbaneEffectiveness.percent(target),
             )
         val attackRoll = (baseAttackRoll * specialMultiplier).toInt()
 
@@ -104,6 +106,7 @@ constructor(
         attackStyle: RangedAttackStyle?,
         rangeAttributes: EnumSet<CombatRangedAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         val effectiveRanged = RangedAccuracyOperations.calculateEffectiveRanged(source, attackStyle)
         val rangedBonus = bonuses.offensiveRangedBonus(source)
@@ -114,6 +117,7 @@ constructor(
             targetDistance = targetDistance,
             rangeAttributes = rangeAttributes,
             npcAttributes = npcAttributes,
+            demonbanePercent = demonbanePercent,
         )
     }
 

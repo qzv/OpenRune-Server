@@ -5,6 +5,7 @@ import dev.openrune.types.NpcServerType
 import jakarta.inject.Inject
 import java.util.EnumSet
 import org.rsmod.api.combat.commons.magic.Spellbook
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatSpellAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatStaffAttributes
@@ -104,6 +105,7 @@ constructor(
             targetWeaknessPercent = targetWeaknessPercent,
             spellAttributes = spellAttributes,
             npcAttributes = npcAttributes,
+            demonbanePercent = DemonbaneEffectiveness.percent(target),
         )
     }
 

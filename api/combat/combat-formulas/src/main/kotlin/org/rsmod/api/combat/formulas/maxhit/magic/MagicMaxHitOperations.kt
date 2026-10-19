@@ -2,6 +2,7 @@ package org.rsmod.api.combat.formulas.maxhit.magic
 
 import java.util.EnumSet
 import kotlin.math.max
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatSpellAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatStaffAttributes
@@ -156,6 +157,7 @@ public object MagicMaxHitOperations {
         targetWeaknessPercent: Int,
         spellAttributes: EnumSet<CombatSpellAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): IntRange {
         var modifiedMin = 0
         var modifiedMax = modifiedDamage
@@ -189,7 +191,8 @@ public object MagicMaxHitOperations {
                 SpellAttr.Demonbane in spellAttributes &&
                 NpcAttr.Demon in npcAttributes
         if (applyMarkOfDarknessMod) {
-            val multiplier = if (SpellAttr.PurgingStaff in spellAttributes) 50 else 25
+            val bonus = if (SpellAttr.PurgingStaff in spellAttributes) 50 else 25
+            val multiplier = DemonbaneEffectiveness.scaleBoostOnly(bonus, demonbanePercent)
             modifiedMax = scale(modifiedMax, multiplier = 100 + multiplier, divisor = 100)
         }
 

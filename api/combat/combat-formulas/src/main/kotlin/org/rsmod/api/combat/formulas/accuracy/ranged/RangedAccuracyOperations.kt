@@ -6,6 +6,7 @@ import kotlin.math.min
 import org.rsmod.api.combat.accuracy.player.PlayerRangedAccuracy
 import org.rsmod.api.combat.commons.styles.AttackStyle
 import org.rsmod.api.combat.commons.styles.RangedAttackStyle
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatRangedAttributes
@@ -34,6 +35,7 @@ public object RangedAccuracyOperations {
         targetDistance: Int,
         rangeAttributes: EnumSet<CombatRangedAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         var modified = attackRoll
 
@@ -109,12 +111,12 @@ public object RangedAccuracyOperations {
         }
 
         if (RangeAttr.ScorchingBow in rangeAttributes && NpcAttr.Demon in npcAttributes) {
-            modified =
-                if (NpcAttr.DemonbaneResistance in npcAttributes) {
-                    scale(modified, multiplier = 121, divisor = 100)
-                } else {
-                    scale(modified, multiplier = 130, divisor = 100)
-                }
+            val bonus =
+                DemonbaneEffectiveness.scaleBonus(
+                    DemonbaneEffectiveness.SCORCHING_BOW_BONUS,
+                    demonbanePercent,
+                )
+            modified = scale(modified, multiplier = 100 + bonus, divisor = 100)
         }
 
         return modified

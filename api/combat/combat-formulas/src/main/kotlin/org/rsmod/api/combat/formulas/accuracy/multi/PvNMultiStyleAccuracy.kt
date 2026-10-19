@@ -9,6 +9,7 @@ import org.rsmod.api.combat.commons.styles.MeleeAttackStyle
 import org.rsmod.api.combat.commons.styles.RangedAttackStyle
 import org.rsmod.api.combat.commons.types.MeleeAttackType
 import org.rsmod.api.combat.commons.types.RangedAttackType
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.formulas.accuracy.magic.PvNMagicAccuracy
 import org.rsmod.api.combat.formulas.accuracy.melee.PvNMeleeAccuracy
@@ -71,7 +72,14 @@ constructor(
         val npcAttributes = npcAttributes.collect(target, npc, targetCurrHp, targetMaxHp, slayerTask)
 
         val baseAttackRoll =
-            melee.computeAttackRoll(source, attackType, attackStyle, meleeAttributes, npcAttributes)
+            melee.computeAttackRoll(
+                source = source,
+                attackType = attackType,
+                attackStyle = attackStyle,
+                meleeAttributes = meleeAttributes,
+                npcAttributes = npcAttributes,
+                demonbanePercent = DemonbaneEffectiveness.percent(target),
+            )
         val attackRoll = (baseAttackRoll * specialMultiplier).toInt()
 
         val amascutInvocationLvl = source.vars["varbit.toa_client_raid_level"]
@@ -127,7 +135,14 @@ constructor(
         val npcAttributes = npcAttributes.collect(target, npc, targetCurrHp, targetMaxHp, slayerTask)
 
         val baseAttackRoll =
-            melee.computeAttackRoll(source, attackType, attackStyle, meleeAttributes, npcAttributes)
+            melee.computeAttackRoll(
+                source = source,
+                attackType = attackType,
+                attackStyle = attackStyle,
+                meleeAttributes = meleeAttributes,
+                npcAttributes = npcAttributes,
+                demonbanePercent = DemonbaneEffectiveness.percent(target),
+            )
         val attackRoll = (baseAttackRoll * specialMultiplier).toInt()
 
         val amascutInvocationLvl = source.vars["varbit.toa_client_raid_level"]
@@ -247,6 +262,7 @@ constructor(
                 attackStyle = attackStyle,
                 rangeAttributes = rangeAttributes,
                 npcAttributes = npcAttributes,
+                demonbanePercent = DemonbaneEffectiveness.percent(target),
             )
         val attackRoll = (baseAttackRoll * specialMultiplier).toInt()
 

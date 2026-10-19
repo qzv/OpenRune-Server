@@ -30,7 +30,9 @@ internal class ArceuusFormulaTest {
         private fun attackRoll(
             spell: EnumSet<CombatSpellAttributes>,
             npc: EnumSet<CombatNpcAttributes>,
-        ): Int = MagicAccuracyOperations.modifySpellAttackRoll(roll, 0, spell, npc)
+            demonbanePercent: Int = 100,
+        ): Int =
+            MagicAccuracyOperations.modifySpellAttackRoll(roll, 0, spell, npc, demonbanePercent)
 
         @Test
         fun `demonbane gives twenty percent against demons`() {
@@ -46,11 +48,11 @@ internal class ArceuusFormulaTest {
 
         @Test
         fun `demonbane resistant demons get the reduced bonus`() {
-            val demon = npc(CombatNpcAttributes.Demon, CombatNpcAttributes.DemonbaneResistance)
+            val demon = npc(CombatNpcAttributes.Demon)
             val plain = spell(CombatSpellAttributes.Demonbane)
             val marked = spell(CombatSpellAttributes.Demonbane, CombatSpellAttributes.MarkOfDarkness)
-            assertEquals(1140, attackRoll(plain, demon))
-            assertEquals(1280, attackRoll(marked, demon))
+            assertEquals(1140, attackRoll(plain, demon, demonbanePercent = 70))
+            assertEquals(1280, attackRoll(marked, demon, demonbanePercent = 70))
         }
 
         @Test
@@ -90,6 +92,7 @@ internal class ArceuusFormulaTest {
                 targetWeaknessPercent = 0,
                 spellAttributes = spell,
                 npcAttributes = npc,
+                demonbanePercent = 100,
             )
 
         private val demon = npc(CombatNpcAttributes.Demon)

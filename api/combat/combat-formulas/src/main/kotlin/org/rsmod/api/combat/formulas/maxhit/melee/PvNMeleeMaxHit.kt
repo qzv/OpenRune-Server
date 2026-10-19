@@ -6,6 +6,7 @@ import java.util.EnumSet
 import kotlin.math.ceil
 import org.rsmod.api.combat.commons.styles.MeleeAttackStyle
 import org.rsmod.api.combat.commons.types.MeleeAttackType
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.attributes.CombatMeleeAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
 import org.rsmod.api.combat.formulas.attributes.collector.CombatMeleeAttributeCollector
@@ -83,7 +84,13 @@ constructor(
         val npcAttributes = npcAttributes.collect(target, npc, targetCurrHp, targetMaxHp, slayerTask)
 
         val modifiedDamage =
-            computeModifiedDamage(source, attackStyle, meleeAttributes, npcAttributes)
+            computeModifiedDamage(
+                source = source,
+                attackStyle = attackStyle,
+                meleeAttributes = meleeAttributes,
+                npcAttributes = npcAttributes,
+                demonbanePercent = DemonbaneEffectiveness.percent(target),
+            )
         val scaled = modifiedDamage * specialMultiplier
         val specMaxHit = if (roundUp) ceil(scaled).toInt() else scaled.toInt()
         return modifyPostSpec(source, specMaxHit, meleeAttributes, npcAttributes)
@@ -102,12 +109,18 @@ constructor(
         attackStyle: MeleeAttackStyle?,
         meleeAttributes: EnumSet<CombatMeleeAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         val effectiveStrength =
             MeleeMaxHitOperations.calculateEffectiveStrength(source, attackStyle)
         val strengthBonus = bonuses.strengthBonus(source)
         val baseDamage = PlayerMeleeMaxHit.calculateBaseDamage(effectiveStrength, strengthBonus)
-        return MeleeMaxHitOperations.modifyBaseDamage(baseDamage, meleeAttributes, npcAttributes)
+        return MeleeMaxHitOperations.modifyBaseDamage(
+            baseDamage = baseDamage,
+            meleeAttributes = meleeAttributes,
+            npcAttributes = npcAttributes,
+            demonbanePercent = demonbanePercent,
+        )
     }
 
     public fun modifyPostSpec(

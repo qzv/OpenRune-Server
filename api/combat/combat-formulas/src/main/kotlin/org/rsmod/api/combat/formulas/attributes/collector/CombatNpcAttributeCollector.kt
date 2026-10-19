@@ -75,10 +75,6 @@ public class CombatNpcAttributeCollector {
             attributes += CombatNpcAttributes.Demon
         }
 
-        if (type.param(params.demonbane_resistant) != 0) {
-            attributes += CombatNpcAttributes.DemonbaneResistance
-        }
-
         if (type.param(params.draconic) != 0) {
             attributes += CombatNpcAttributes.Draconic
         }

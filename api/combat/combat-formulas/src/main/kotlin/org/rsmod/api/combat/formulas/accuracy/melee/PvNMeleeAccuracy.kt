@@ -7,6 +7,7 @@ import org.rsmod.api.combat.accuracy.npc.NpcMeleeAccuracy
 import org.rsmod.api.combat.accuracy.player.PlayerMeleeAccuracy
 import org.rsmod.api.combat.commons.styles.MeleeAttackStyle
 import org.rsmod.api.combat.commons.types.MeleeAttackType
+import org.rsmod.api.combat.formulas.DemonbaneEffectiveness
 import org.rsmod.api.combat.formulas.accuracy.AccuracyOperations
 import org.rsmod.api.combat.formulas.attributes.CombatMeleeAttributes
 import org.rsmod.api.combat.formulas.attributes.CombatNpcAttributes
@@ -64,7 +65,14 @@ constructor(
         val npcAttributes = npcAttributes.collect(target, npc, targetCurrHp, targetMaxHp, slayerTask)
 
         val baseAttackRoll =
-            computeAttackRoll(source, attackType, attackStyle, meleeAttributes, npcAttributes)
+            computeAttackRoll(
+                source = source,
+                attackType = attackType,
+                attackStyle = attackStyle,
+                meleeAttributes = meleeAttributes,
+                npcAttributes = npcAttributes,
+                demonbanePercent = DemonbaneEffectiveness.percent(target),
+            )
         val attackRoll = (baseAttackRoll * specialMultiplier).toInt()
 
         val amascutInvocationLvl = source.vars["varbit.toa_client_raid_level"]
@@ -93,11 +101,17 @@ constructor(
         attackStyle: MeleeAttackStyle?,
         meleeAttributes: EnumSet<CombatMeleeAttributes>,
         npcAttributes: EnumSet<CombatNpcAttributes>,
+        demonbanePercent: Int,
     ): Int {
         val effectiveAttack = MeleeAccuracyOperations.calculateEffectiveAttack(source, attackStyle)
         val attackBonus = source.getAttackBonus(attackType)
         val attackRoll = PlayerMeleeAccuracy.calculateBaseAttackRoll(effectiveAttack, attackBonus)
-        return MeleeAccuracyOperations.modifyAttackRoll(attackRoll, meleeAttributes, npcAttributes)
+        return MeleeAccuracyOperations.modifyAttackRoll(
+            attackRoll = attackRoll,
+            meleeAttributes = meleeAttributes,
+            npcAttributes = npcAttributes,
+            demonbanePercent = demonbanePercent,
+        )
     }
 
     private fun Player.getAttackBonus(attackType: MeleeAttackType?): Int =
