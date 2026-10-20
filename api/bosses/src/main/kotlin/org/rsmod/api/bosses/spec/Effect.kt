@@ -128,6 +128,7 @@ sealed interface Effect {
         /** Launch tile, without an entity anchor; the caster itself when null. */
         val from: TargetExpr.Single? = null,
         val impactRounding: ImpactRounding = ImpactRounding.Down,
+        val impactSlack: Int = 0,
     ) : Effect
 
     data class TileAoE(
