@@ -75,6 +75,7 @@ data class ProjectileConfig(
     val angle: Int = 10,
     val progress: Int = 15,
     val stepMultiplier: Int = 5,
+    val minFlight: Int = 0,
 ) {
     companion object {
         /** Timing that ignores distance: waits [delay] cycles, then flies for [travel]. */
