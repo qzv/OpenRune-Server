@@ -272,3 +272,25 @@ angle = 5
 lengthAdjustment = 0
 progress = 84
 stepMultiplier = 10
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_blood_attack"
+startHeight = 50
+endHeight = 40
+delay = 46
+angle = 5
+lengthAdjustment = 0
+progress = 84
+stepMultiplier = 10
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_reaver_blood_rush"
+startHeight = 0
+endHeight = 10
+delay = 42
+angle = 4
+lengthAdjustment = 0
+progress = 64
+stepMultiplier = 10

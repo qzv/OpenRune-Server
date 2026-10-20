@@ -9,10 +9,18 @@ internal object NexGeometry {
     private const val CYCLES_PER_TICK = 30
     private const val HALF_TICK = 15
     private const val DRAG_OFFSET = 2
+    private const val MAGIC_MIN_IMPACT = 2
+    private const val MAGIC_TILES_PER_TICK = 3
 
     fun footprintDistance(sw: CoordGrid, size: Int, tile: CoordGrid): Int {
         val dx = max(0, max(sw.x - tile.x, tile.x - (sw.x + size - 1)))
         val dz = max(0, max(sw.z - tile.z, tile.z - (sw.z + size - 1)))
+        return max(dx, dz)
+    }
+
+    fun footprintGap(swA: CoordGrid, sizeA: Int, swB: CoordGrid, sizeB: Int): Int {
+        val dx = max(0, max(swA.x - (swB.x + sizeB - 1), swB.x - (swA.x + sizeA - 1)))
+        val dz = max(0, max(swA.z - (swB.z + sizeB - 1), swB.z - (swA.z + sizeA - 1)))
         return max(dx, dz)
     }
 
@@ -22,6 +30,8 @@ internal object NexGeometry {
     fun centre(sw: CoordGrid, size: Int): CoordGrid = sw.translate(size / 2, size / 2)
 
     fun impactTick(endTime: Int): Int = (endTime + HALF_TICK) / CYCLES_PER_TICK
+
+    fun magicImpactTick(distance: Int): Int = MAGIC_MIN_IMPACT + distance / MAGIC_TILES_PER_TICK
 
     fun dragTile(centre: CoordGrid, tile: CoordGrid): CoordGrid {
         val dx = tile.x - centre.x

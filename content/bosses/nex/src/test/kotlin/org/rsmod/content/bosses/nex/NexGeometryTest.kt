@@ -61,4 +61,26 @@ class NexGeometryTest {
         assertEquals(CoordGrid(2914, 5207, 0), north)
         assertEquals(CoordGrid(2912, 5205, 0), west)
     }
+
+    @Test
+    fun `magic hits land two ticks out plus one per three tiles`() {
+        for (distance in 0..12) {
+            val endTime = maxOf(60, 46 + 10 * distance)
+            assertEquals(NexGeometry.impactTick(endTime), NexGeometry.magicImpactTick(distance))
+        }
+        assertEquals(4, NexGeometry.magicImpactTick(6))
+        assertEquals(3, NexGeometry.magicImpactTick(5))
+        assertEquals(2, NexGeometry.magicImpactTick(2))
+    }
+
+    @Test
+    fun `footprint gap measures between the nearest tiles of two npcs`() {
+        val nex = CoordGrid(2935, 5207, 0)
+        assertEquals(2, NexGeometry.footprintGap(nex, 3, CoordGrid(2935, 5204, 0), 2))
+        assertEquals(0, NexGeometry.footprintGap(nex, 3, CoordGrid(2936, 5207, 0), 2))
+        assertEquals(1, NexGeometry.footprintGap(nex, 3, CoordGrid(2938, 5209, 0), 2))
+        assertEquals(8, NexGeometry.footprintGap(nex, 3, CoordGrid(2945, 5208, 0), 2))
+        assertEquals(8, NexGeometry.footprintGap(nex, 3, CoordGrid(2926, 5207, 0), 2))
+        assertEquals(9, NexGeometry.footprintGap(nex, 3, CoordGrid(2925, 5207, 0), 2))
+    }
 }

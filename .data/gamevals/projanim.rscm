@@ -23,3 +23,5 @@ nex_mage_beam=21
 nex_smoke_attack=22
 nex_mage_smoke_barrage=23
 nex_shadow_attack=24
+nex_blood_attack=25
+nex_reaver_blood_rush=26

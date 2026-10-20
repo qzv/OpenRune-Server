@@ -16,6 +16,13 @@ nex_shadow_cast = 5200
 nex_shadow_impact = 5288
 nex_shadow_smash = 5220
 nex_embrace_darkness = 5240
+nex_blood_cast = 5302
+nex_blood_impact = 5194
+nex_blood_siphon = 4497
+nex_sacrifice_call = 5223
+nex_sacrifice_mark = 5192
+nex_sacrifice_cast = 5182
+nex_sacrifice_impact = 5239
 
 [gamevals.enum]
 nex_shadow_max_hits = 58010

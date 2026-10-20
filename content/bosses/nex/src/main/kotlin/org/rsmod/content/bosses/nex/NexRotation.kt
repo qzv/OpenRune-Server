@@ -5,6 +5,8 @@ internal enum class NexSpecial {
     Dash,
     Smash,
     Embrace,
+    Siphon,
+    Sacrifice,
 }
 
 internal class NexSpecialCounter {
@@ -13,9 +15,14 @@ internal class NexSpecialCounter {
 
     fun next(slots: List<NexSpecial>): NexSpecial = slots[used++ % slots.size]
 
+    fun restart(first: Int) {
+        used = first
+    }
+
     companion object {
         val SMOKE: List<NexSpecial> = listOf(NexSpecial.Virus, NexSpecial.Dash)
         val SHADOW: List<NexSpecial> = listOf(NexSpecial.Smash, NexSpecial.Embrace)
+        val BLOOD: List<NexSpecial> = listOf(NexSpecial.Siphon, NexSpecial.Sacrifice)
     }
 }
 

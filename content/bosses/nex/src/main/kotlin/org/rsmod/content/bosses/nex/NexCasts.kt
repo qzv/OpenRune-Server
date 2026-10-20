@@ -26,6 +26,7 @@ internal data class NexSpell(
     val maxHit: Int,
     val penetration: Int,
     val minEndTime: Int = 0,
+    val alwaysHits: Boolean = false,
 )
 
 internal class NexCastResult(val impactTick: Int, val damage: Int?)
@@ -34,10 +35,18 @@ internal class NexCastResult(val impactTick: Int, val damage: Int?)
 internal class NexCasts @Inject constructor(private val deps: BossDeps) {
     fun cast(caster: Npc, target: Player, spell: NexSpell): NexCastResult? {
         val endTime = launch(caster, target, spell) ?: return null
-        val impactTick = NexGeometry.impactTick(endTime)
+        val distance = NexGeometry.footprintDistance(caster.coords, caster.size, target.coords)
+        val impactTick =
+            if (spell.travel == null) {
+                NexGeometry.impactTick(endTime)
+            } else {
+                NexGeometry.magicImpactTick(distance)
+            }
         val delay = impactTick + 1
         target.queueCombatRetaliate(caster, delay)
-        if (!deps.accuracy.rollMagicAccuracy(caster, target, deps.random)) {
+        val landed =
+            spell.alwaysHits || deps.accuracy.rollMagicAccuracy(caster, target, deps.random)
+        if (!landed) {
             target.spotanim(SPLASH_SPOTANIM, delay = endTime, height = SPLASH_HEIGHT)
             target.soundSynth(SPLASH_SYNTH, delay = endTime)
             return NexCastResult(impactTick, null)

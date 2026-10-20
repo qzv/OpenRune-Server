@@ -16619,6 +16619,7 @@ inherit = "npc.nex_prison_blood_reaver"
 [[npc]]
 id = "npc.nex_prison_blood_reaver_boss"
 inherit = "npc.nex_prison_blood_reaver_boss"
+attackRange = 6
 [npc.params]
 "param.demon"=1
 

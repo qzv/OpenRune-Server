@@ -28,6 +28,10 @@ constructor(private val manager: InstanceManager, private val playerList: Player
         fights.remove(instanceId)
     }
 
+    fun attach(fight: NexFight, npc: Npc) {
+        manager.attachNpc(fight.instanceId, npc)
+    }
+
     fun fightFor(npc: Npc): NexFight? =
         fights.values.firstOrNull { fight -> fight.nex === npc || fight.mages.any { it === npc } }
 
@@ -56,6 +60,9 @@ internal class NexFight(val instanceId: InstanceId) {
     val specials: NexSpecialCounter = NexSpecialCounter()
     val melee: NexMeleeChain = NexMeleeChain()
     var darkness: NexDarknessState? = null
+    var reaver: Npc? = null
+    var siphonFrom: Int = Int.MAX_VALUE
+    var siphonUntil: Int = Int.MIN_VALUE
 
     val inProgress: Boolean
         get() = nex != null

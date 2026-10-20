@@ -30,6 +30,7 @@ constructor(
     private val spawn: NexSpawn,
     private val casts: NexCasts,
     private val shadow: NexShadow,
+    private val blood: NexBlood,
     private val music: NexMusic,
     private val interactions: AiPlayerInteractions,
 ) {
@@ -100,6 +101,7 @@ constructor(
         anim(MAGE_DEATH_SEQ)
         if (fight != null && fight.mageOf(fight.phase) === npc) {
             shadow.recede(fight)
+            blood.endPhase(fight)
             fight.mageDown = true
             deps.worldQueues.add(NEXT_PHASE_DELAY) { nextPhase(fight) }
         }
@@ -116,7 +118,10 @@ constructor(
         val row = fight.phaseRow ?: return
         fights.shout(fight, nex, row.phaseLine)
         fight.mageOf(fight.phase)?.let { spawn.castBeam(it, nex) }
-        if (fight.phase == LATER_MUSIC_PHASE) fights.players(fight).forEach(music::playLaterPhases)
+        if (fight.phase >= LATER_PHASES) {
+            fights.players(fight).forEach(music::playLaterPhases)
+            fight.specials.restart(deps.random.of(FIRST_SPECIAL_CHOICES))
+        }
         val phase = NexSpecs.PHASES.getOrNull(fight.phase) ?: return
         deps.encounter(nex).transitionTo(phase, deps.mapClock.cycle)
         deps.suppressAttacks(nex, PHASE_OPENING_TICKS)
@@ -132,7 +137,8 @@ constructor(
         private const val NEXT_PHASE_DELAY = 1
         private const val MAGE_DESPAWN_DELAY = 2
         private const val PHASE_OPENING_TICKS = 4
-        private const val LATER_MUSIC_PHASE = 2
+        private const val LATER_PHASES = 2
+        private const val FIRST_SPECIAL_CHOICES = 2
         private const val ATTACK = "stat.attack"
         private const val BLINDED = "You have been blinded!"
         private val MAGE_ATTACKS =

@@ -65,4 +65,18 @@ class NexRotationTest {
         assertEquals(NexDrains.MAGIC, NexDrains.drainedStat(melee = 20, ranged = 30, magic = 90))
         assertEquals(NexDrains.ATTACK, NexDrains.drainedStat(melee = 140, ranged = 0, magic = -20))
     }
+
+    @Test
+    fun `blood specials alternate from the randomly chosen first one`() {
+        val counter = NexSpecialCounter()
+        repeat(5) { counter.next(NexSpecialCounter.SHADOW) }
+        counter.restart(1)
+        val specials = List(3) { counter.next(NexSpecialCounter.BLOOD) }
+        assertEquals(
+            listOf(NexSpecial.Sacrifice, NexSpecial.Siphon, NexSpecial.Sacrifice),
+            specials,
+        )
+        counter.restart(0)
+        assertEquals(NexSpecial.Siphon, counter.next(NexSpecialCounter.BLOOD))
+    }
 }
