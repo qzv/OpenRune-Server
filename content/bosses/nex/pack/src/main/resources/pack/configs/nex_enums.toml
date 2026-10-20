@@ -1,0 +1,17 @@
+[[enum]]
+isServerOnly = true
+id = "enum.nex_shadow_max_hits"
+keyType = "INT"
+valueType = "INT"
+
+[enum.values]
+0 = 45
+1 = 45
+2 = 45
+3 = 44
+4 = 44
+5 = 34
+6 = 21
+7 = 16
+8 = 13
+9 = 6

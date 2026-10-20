@@ -55,6 +55,7 @@ internal class NexFight(val instanceId: InstanceId) {
     var mageDown: Boolean = false
     val specials: NexSpecialCounter = NexSpecialCounter()
     val melee: NexMeleeChain = NexMeleeChain()
+    var darkness: NexDarknessState? = null
 
     val inProgress: Boolean
         get() = nex != null

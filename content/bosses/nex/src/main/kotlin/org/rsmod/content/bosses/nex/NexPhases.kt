@@ -55,7 +55,7 @@ constructor(
 
     private fun engageMage(fight: NexFight, mage: Npc) {
         if (!mage.isSlotAssigned || mage.hitpoints <= 0) return
-        if (NexSpecs.mages.keys.none { it.asRSCM(RSCMType.NPC) == mage.type.id }) return
+        if (NexSpecs.MAGES.keys.none { it.asRSCM(RSCMType.NPC) == mage.type.id }) return
         val target =
             fights
                 .players(fight)

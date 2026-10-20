@@ -7,8 +7,6 @@ import org.rsmod.api.bosses.runtime.BossDeps
 import org.rsmod.api.bosses.runtime.encounter
 import org.rsmod.api.bosses.runtime.suppressAttacks
 import org.rsmod.api.combat.commons.CombatEffects
-import org.rsmod.api.combat.commons.player.finishNpcHit
-import org.rsmod.api.combat.commons.types.MeleeAttackType
 import org.rsmod.api.player.bonus.WornBonuses
 import org.rsmod.api.player.disableOverheadPrayers
 import org.rsmod.api.player.isValidTarget
@@ -19,7 +17,6 @@ import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 import org.rsmod.game.entity.util.EntityExactMove
 import org.rsmod.game.entity.util.PathingEntityCommon
-import org.rsmod.game.hit.HitType
 import org.rsmod.game.map.Direction
 import org.rsmod.game.map.collision.isWalkBlocked
 import org.rsmod.map.CoordGrid
@@ -31,16 +28,14 @@ constructor(
     private val deps: BossDeps,
     private val fights: NexFights,
     private val casts: NexCasts,
+    private val melee: NexMelee,
     private val bonuses: WornBonuses,
 ) {
     fun standard(nex: Npc, target: Player) {
         val fight = fights.fightFor(nex) ?: return
-        val inReach = NexGeometry.inMeleeReach(nex.coords, nex.size, target.coords)
-        val melee =
-            fight.melee.melee(inReach) {
-                deps.random.of(MELEE_START_OUT_OF) < MELEE_START_CHANCE
-            }
-        if (melee) melee(nex, target) else cast(fight, nex)
+        if (!melee.attempt(fight, nex, target, MELEE_START_CHANCE, MELEE_START_OUT_OF)) {
+            cast(fight, nex)
+        }
     }
 
     fun special(nex: Npc, target: Player) {
@@ -50,21 +45,6 @@ constructor(
             NexSpecial.Dash -> dash(fight, nex)
             else -> Unit
         }
-    }
-
-    private fun melee(nex: Npc, target: Player) {
-        nex.anim(MELEE_SEQ)
-        val landed =
-            deps.accuracy.rollMeleeAccuracy(nex, target, MeleeAttackType.Crush, deps.random)
-        val damage = if (landed) deps.random.of(0, MELEE_MAX_HIT) else 0
-        target.finishNpcHit(
-            nex,
-            MELEE_HIT_DELAY,
-            HitType.Melee,
-            damage,
-            deps.playerHitModifier,
-            penetration = MELEE_PENETRATION,
-        )
     }
 
     private fun cast(fight: NexFight, nex: Npc) {
@@ -142,7 +122,7 @@ constructor(
     private fun highestAttackStat(player: Player): String {
         val bonuses = bonuses.calculate(player)
         val melee = maxOf(bonuses.offStab, bonuses.offSlash, bonuses.offCrush)
-        return NexVirus.drainedStat(melee, bonuses.offRange, bonuses.offMagic)
+        return NexDrains.drainedStat(melee, bonuses.offRange, bonuses.offMagic)
     }
 
     private fun dash(fight: NexFight, nex: Npc) {
@@ -201,10 +181,6 @@ constructor(
         private const val POISON_CHANCE = 3
         private const val POISON_OUT_OF = 47
 
-        private const val MELEE_SEQ = "seq.nex_attack"
-        private const val MELEE_MAX_HIT = 27
-        private const val MELEE_PENETRATION = 20
-        private const val MELEE_HIT_DELAY = 1
         private const val MELEE_START_CHANCE = 18
         private const val MELEE_START_OUT_OF = 31
 

@@ -261,3 +261,14 @@ angle = 16
 lengthAdjustment = -5
 progress = 64
 stepMultiplier = 10
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_shadow_attack"
+startHeight = 140
+endHeight = 130
+delay = 46
+angle = 5
+lengthAdjustment = 0
+progress = 84
+stepMultiplier = 10

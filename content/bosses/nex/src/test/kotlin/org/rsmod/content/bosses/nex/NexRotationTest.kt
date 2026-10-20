@@ -61,8 +61,8 @@ class NexRotationTest {
 
     @Test
     fun `the virus drains the stat of the highest attack bonus`() {
-        assertEquals(NexVirus.RANGED, NexVirus.drainedStat(melee = 20, ranged = 120, magic = 10))
-        assertEquals(NexVirus.MAGIC, NexVirus.drainedStat(melee = 20, ranged = 30, magic = 90))
-        assertEquals(NexVirus.ATTACK, NexVirus.drainedStat(melee = 140, ranged = 0, magic = -20))
+        assertEquals(NexDrains.RANGED, NexDrains.drainedStat(melee = 20, ranged = 120, magic = 10))
+        assertEquals(NexDrains.MAGIC, NexDrains.drainedStat(melee = 20, ranged = 30, magic = 90))
+        assertEquals(NexDrains.ATTACK, NexDrains.drainedStat(melee = 140, ranged = 0, magic = -20))
     }
 }

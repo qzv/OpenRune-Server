@@ -1,6 +1,6 @@
 package org.rsmod.content.bosses.nex
 
-internal object NexVirus {
+internal object NexDrains {
     const val ATTACK = "stat.attack"
     const val RANGED = "stat.ranged"
     const val MAGIC = "stat.magic"

@@ -15,6 +15,7 @@ class NexBoss
 internal constructor(
     private val deps: BossDeps,
     private val smoke: NexSmoke,
+    private val shadow: NexShadow,
     private val phases: NexPhases,
 ) : PluginScript() {
     override fun ScriptContext.startup() {
@@ -25,16 +26,22 @@ internal constructor(
             onCombatTick = { phases.combatTick(npc) },
             onHit = { phases.onNexHit(this) },
         )
-        deps.extensionRegistry.register(NexSpecs.STANDARD) { _, npc, target, _ ->
+        deps.extensionRegistry.register(NexSpecs.SMOKE_STANDARD) { _, npc, target, _ ->
             smoke.standard(npc, target)
         }
-        deps.extensionRegistry.register(NexSpecs.SPECIAL) { _, npc, target, _ ->
+        deps.extensionRegistry.register(NexSpecs.SMOKE_SPECIAL) { _, npc, target, _ ->
             smoke.special(npc, target)
+        }
+        deps.extensionRegistry.register(NexSpecs.SHADOW_STANDARD) { _, npc, target, _ ->
+            shadow.standard(npc, target)
+        }
+        deps.extensionRegistry.register(NexSpecs.SHADOW_SPECIAL) { _, npc, target, _ ->
+            shadow.special(npc, target)
         }
         deps.extensionRegistry.register(NexSpecs.MAGE_ATTACK) { _, npc, target, _ ->
             phases.mageAttack(npc, target)
         }
-        for ((mage, spec) in NexSpecs.mages) {
+        for ((mage, spec) in NexSpecs.MAGES) {
             BossCombat.register(this, spec, deps)
             val type = ServerCacheManager.getNpc(mage.asRSCM(RSCMType.NPC)) ?: continue
             onNpcQueue(type, DEATH_QUEUE) { with(phases) { mageDeath() } }

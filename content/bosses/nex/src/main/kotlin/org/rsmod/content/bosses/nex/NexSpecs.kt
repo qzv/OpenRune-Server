@@ -1,14 +1,16 @@
 package org.rsmod.content.bosses.nex
 
+import org.rsmod.api.bosses.dsl.BossSpecBuilder
 import org.rsmod.api.bosses.dsl.boss
 import org.rsmod.api.bosses.dsl.external
 import org.rsmod.api.bosses.spec.BossSpec
 
 internal object NexSpecs {
-    const val STANDARD = "nex.standard"
-    const val SPECIAL = "nex.special"
+    const val SMOKE_STANDARD = "nex.smoke_standard"
+    const val SMOKE_SPECIAL = "nex.smoke_special"
+    const val SHADOW_STANDARD = "nex.shadow_standard"
+    const val SHADOW_SPECIAL = "nex.shadow_special"
     const val MAGE_ATTACK = "nex.mage_attack"
-    private const val FUMUS = "npc.nex_smokemage"
 
     private const val SMOKE = "smoke"
     private const val SHADOW = "shadow"
@@ -27,18 +29,23 @@ internal object NexSpecs {
             "npc.nex_dying",
         ) {
             stats(attackRate = ATTACK_RATE)
-            val special = ability("special") { include(external(SPECIAL)) }
-            val standard = ability("standard") { include(external(STANDARD)) }
-            phase(SMOKE) {
-                rotationSelector {
-                    +then(special)
-                    repeat(STANDARDS_PER_SPECIAL) { +then(standard) }
-                }
-            }
-            phase(SHADOW) {}
+            rotationPhase(SMOKE, SMOKE_SPECIAL, SMOKE_STANDARD)
+            rotationPhase(SHADOW, SHADOW_SPECIAL, SHADOW_STANDARD)
         }
 
-    val mages: Map<String, BossSpec> = mapOf(FUMUS to mage(FUMUS))
+    val MAGES: Map<String, BossSpec> =
+        listOf("npc.nex_smokemage").associateWith(::mage)
+
+    private fun BossSpecBuilder.rotationPhase(name: String, special: String, standard: String) {
+        val specialAbility = ability("${name}_special") { include(external(special)) }
+        val standardAbility = ability("${name}_standard") { include(external(standard)) }
+        phase(name) {
+            rotationSelector {
+                +then(specialAbility)
+                repeat(STANDARDS_PER_SPECIAL) { +then(standardAbility) }
+            }
+        }
+    }
 
     private fun mage(npc: String): BossSpec =
         boss(npc) {
