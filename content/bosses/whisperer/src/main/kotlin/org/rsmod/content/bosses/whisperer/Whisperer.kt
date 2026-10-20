@@ -581,7 +581,7 @@ constructor(
             SOUL_LANDED_DAMAGE,
             deps.playerHitModifier,
         )
-        boss.hitpoints = (boss.hitpoints + SOUL_LANDED_HEAL).coerceAtMost(boss.baseHitpointsLvl)
+        deps.hitpointsRestorer.heal(boss, SOUL_LANDED_HEAL)
     }
 
     private fun startScreech(boss: Npc, target: Player) {

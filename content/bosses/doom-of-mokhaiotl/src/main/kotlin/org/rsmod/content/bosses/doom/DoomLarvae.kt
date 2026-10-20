@@ -17,7 +17,6 @@ import org.rsmod.api.bosses.runtime.encounter
 import org.rsmod.api.bosses.runtime.repeatTick
 import org.rsmod.api.bosses.runtime.spawnOwnedNpc
 import org.rsmod.api.npc.access.StandardNpcAccess
-import org.rsmod.api.npc.heal
 import org.rsmod.api.npc.hit.isStyleImmuneTo
 import org.rsmod.api.npc.hit.modifier.StandardNpcHitModifier
 import org.rsmod.api.npc.hit.queueHit
@@ -220,7 +219,7 @@ constructor(
         if (!boss.isSlotAssigned || boss.hitpoints <= 0 || !player.isValidTarget()) return
         val stacks = player.missedOrbs
         val potency = state.kind.potency
-        boss.heal(REACH_HEAL * potency + stacks, showHitsplat = true)
+        deps.hitpointsRestorer.heal(boss, REACH_HEAL * potency + stacks, showHitsplat = true)
         player.spotanim(PLAYER_IMPACT_SPOTANIM)
         val damage = (REACH_DAMAGE * potency + stacks).coerceAtMost(reachDamageCap(state))
         player.queueHit(boss, 1, HitType.Typeless, damage, deps.playerHitModifier)
