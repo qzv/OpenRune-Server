@@ -7,6 +7,8 @@ internal enum class NexSpecial {
     Embrace,
     Siphon,
     Sacrifice,
+    Prison,
+    Contain,
 }
 
 internal class NexSpecialCounter {
@@ -23,6 +25,7 @@ internal class NexSpecialCounter {
         val SMOKE: List<NexSpecial> = listOf(NexSpecial.Virus, NexSpecial.Dash)
         val SHADOW: List<NexSpecial> = listOf(NexSpecial.Smash, NexSpecial.Embrace)
         val BLOOD: List<NexSpecial> = listOf(NexSpecial.Siphon, NexSpecial.Sacrifice)
+        val ICE: List<NexSpecial> = listOf(NexSpecial.Prison, NexSpecial.Contain)
     }
 }
 

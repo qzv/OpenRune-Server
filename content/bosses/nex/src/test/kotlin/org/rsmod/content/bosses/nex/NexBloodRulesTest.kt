@@ -26,11 +26,11 @@ class NexBloodRulesTest {
     }
 
     @Test
-    fun `blood attacks drain prayer by half the damage rounded up`() {
-        assertEquals(0, NexBloodRules.standardPrayerDrain(0))
-        assertEquals(6, NexBloodRules.standardPrayerDrain(11))
-        assertEquals(7, NexBloodRules.standardPrayerDrain(13))
-        assertEquals(5, NexBloodRules.standardPrayerDrain(9))
+    fun `blood and ice casts drain prayer by half the damage rounded up`() {
+        assertEquals(0, NexDrains.castPrayerDrain(0))
+        assertEquals(6, NexDrains.castPrayerDrain(11))
+        assertEquals(7, NexDrains.castPrayerDrain(13))
+        assertEquals(5, NexDrains.castPrayerDrain(9))
     }
 
     @ParameterizedTest

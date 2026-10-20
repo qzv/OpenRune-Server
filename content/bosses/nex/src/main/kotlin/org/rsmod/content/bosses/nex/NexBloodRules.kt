@@ -9,8 +9,6 @@ internal object NexBloodRules {
 
     fun standardHeal(damage: Int): Int = damage * STANDARD_HEAL_PERCENT / PERCENT
 
-    fun standardPrayerDrain(damage: Int): Int = (damage + 1) / 2
-
     fun sacrificeHeal(damage: Int): Int = damage * SACRIFICE_HEAL_PERCENT / PERCENT
 
     fun sacrificePrayerDrain(prayer: Int): Int = prayer / SACRIFICE_PRAYER_DIVISOR

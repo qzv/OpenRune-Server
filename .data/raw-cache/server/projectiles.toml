@@ -294,3 +294,25 @@ angle = 4
 lengthAdjustment = 0
 progress = 64
 stepMultiplier = 10
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_ice_attack"
+startHeight = 60
+endHeight = 50
+delay = 46
+angle = 5
+lengthAdjustment = 0
+progress = 84
+stepMultiplier = 10
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_ice_prison"
+startHeight = 30
+endHeight = 20
+delay = 46
+angle = 5
+lengthAdjustment = 0
+progress = 84
+stepMultiplier = 10

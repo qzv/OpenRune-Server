@@ -4,6 +4,7 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.rsmod.api.instances.InstanceId
 import org.rsmod.api.instances.InstanceManager
+import org.rsmod.api.npc.hit.NpcHitpointsRestorer
 import org.rsmod.api.player.isValidTarget
 import org.rsmod.api.player.output.ChatType
 import org.rsmod.api.player.output.mes
@@ -16,7 +17,11 @@ import org.rsmod.map.CoordGrid
 @Singleton
 internal class NexFights
 @Inject
-constructor(private val manager: InstanceManager, private val playerList: PlayerList) {
+constructor(
+    private val manager: InstanceManager,
+    private val playerList: PlayerList,
+    private val hitpointsRestorer: NpcHitpointsRestorer,
+) {
     private val fights = HashMap<InstanceId, NexFight>()
 
     fun of(instanceId: InstanceId): NexFight? = fights[instanceId]
@@ -38,6 +43,16 @@ constructor(private val manager: InstanceManager, private val playerList: Player
     fun players(fight: NexFight): List<Player> {
         val session = manager.sessionForId(fight.instanceId) ?: return emptyList()
         return playerList.filter { manager.sessionForPlayer(it) === session && it.isValidTarget() }
+    }
+
+    fun fightOf(player: Player): NexFight? {
+        val session = manager.sessionForPlayer(player) ?: return null
+        return fights[session.id]
+    }
+
+    fun heal(fight: NexFight, nex: Npc, amount: Int) {
+        if (amount <= 0 || fight.nex !== nex || !nex.isSlotAssigned || nex.hitpoints <= 0) return
+        hitpointsRestorer.heal(nex, amount, showHitsplat = true)
     }
 
     fun shout(fight: NexFight, npc: Npc, text: String) {
@@ -63,6 +78,7 @@ internal class NexFight(val instanceId: InstanceId) {
     var reaver: Npc? = null
     var siphonFrom: Int = Int.MAX_VALUE
     var siphonUntil: Int = Int.MIN_VALUE
+    val prisons: MutableList<NexPrison> = ArrayList()
 
     val inProgress: Boolean
         get() = nex != null

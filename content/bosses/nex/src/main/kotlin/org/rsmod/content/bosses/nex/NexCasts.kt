@@ -69,17 +69,26 @@ internal class NexCasts @Inject constructor(private val deps: BossDeps) {
         return NexCastResult(impactTick, hit.damage)
     }
 
-    private fun launch(caster: Npc, target: Player, spell: NexSpell): Int? {
-        val travelSymbol = spell.travel ?: return spell.minEndTime
-        val spotanimSymbol = spell.spotanim ?: return null
-        val type =
-            ServerCacheManager.getProjectile(travelSymbol.asRSCM(RSCMType.PROJANIM)) ?: return null
-        val spotanim = spotanimSymbol.asRSCM(RSCMType.SPOTANIM)
-        val travel = ProjAnim.fromNpcToPlayer(caster, target, spotanim, type)
-        val endTime = max(spell.minEndTime, travel.endTime)
+    fun launch(
+        caster: Npc,
+        target: Player,
+        spotanim: String,
+        travel: String,
+        minEndTime: Int,
+    ): Int? {
+        val type = ServerCacheManager.getProjectile(travel.asRSCM(RSCMType.PROJANIM)) ?: return null
+        val spotanimId = spotanim.asRSCM(RSCMType.SPOTANIM)
+        val proj = ProjAnim.fromNpcToPlayer(caster, target, spotanimId, type)
+        val endTime = max(minEndTime, proj.endTime)
         val source = NexGeometry.centre(caster.coords, caster.size)
-        deps.worldRepo.projAnim(travel.copy(endTime = endTime, startCoord = source))
+        deps.worldRepo.projAnim(proj.copy(endTime = endTime, startCoord = source))
         return endTime
+    }
+
+    private fun launch(caster: Npc, target: Player, spell: NexSpell): Int? {
+        val travel = spell.travel ?: return spell.minEndTime
+        val spotanim = spell.spotanim ?: return null
+        return launch(caster, target, spotanim, travel, spell.minEndTime)
     }
 
     private companion object {

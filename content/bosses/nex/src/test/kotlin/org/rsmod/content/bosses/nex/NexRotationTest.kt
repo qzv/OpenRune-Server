@@ -79,4 +79,12 @@ class NexRotationTest {
         counter.restart(0)
         assertEquals(NexSpecial.Siphon, counter.next(NexSpecialCounter.BLOOD))
     }
+
+    @Test
+    fun `ice specials alternate from the randomly chosen first one`() {
+        val counter = NexSpecialCounter()
+        counter.restart(0)
+        val specials = List(3) { counter.next(NexSpecialCounter.ICE) }
+        assertEquals(listOf(NexSpecial.Prison, NexSpecial.Contain, NexSpecial.Prison), specials)
+    }
 }

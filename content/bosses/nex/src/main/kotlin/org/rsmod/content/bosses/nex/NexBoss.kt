@@ -7,6 +7,7 @@ import jakarta.inject.Inject
 import org.rsmod.api.bosses.runtime.BossCombat
 import org.rsmod.api.bosses.runtime.BossDeps
 import org.rsmod.api.script.onNpcQueue
+import org.rsmod.api.script.onOpLoc1
 import org.rsmod.plugin.scripts.PluginScript
 import org.rsmod.plugin.scripts.ScriptContext
 
@@ -17,6 +18,7 @@ internal constructor(
     private val smoke: NexSmoke,
     private val shadow: NexShadow,
     private val blood: NexBlood,
+    private val ice: NexIce,
     private val phases: NexPhases,
 ) : PluginScript() {
     override fun ScriptContext.startup() {
@@ -45,6 +47,13 @@ internal constructor(
         deps.extensionRegistry.register(NexSpecs.BLOOD_SPECIAL) { _, npc, target, _ ->
             blood.special(npc, target)
         }
+        deps.extensionRegistry.register(NexSpecs.ICE_STANDARD) { _, npc, target, _ ->
+            ice.standard(npc, target)
+        }
+        deps.extensionRegistry.register(NexSpecs.ICE_SPECIAL) { _, npc, target, _ ->
+            ice.special(npc, target)
+        }
+        onOpLoc1(PRISON_ICICLE) { ice.breakIcicle(player, it.loc) }
         deps.extensionRegistry.register(NexSpecs.MAGE_ATTACK) { _, npc, target, _ ->
             phases.mageAttack(npc, target)
         }
@@ -65,5 +74,6 @@ internal constructor(
 
     private companion object {
         private const val DEATH_QUEUE = "queue.death"
+        private const val PRISON_ICICLE = "loc.nex_icicle_2"
     }
 }

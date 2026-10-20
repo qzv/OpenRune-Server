@@ -12,6 +12,8 @@ internal object NexSpecs {
     const val SHADOW_SPECIAL = "nex.shadow_special"
     const val BLOOD_STANDARD = "nex.blood_standard"
     const val BLOOD_SPECIAL = "nex.blood_special"
+    const val ICE_STANDARD = "nex.ice_standard"
+    const val ICE_SPECIAL = "nex.ice_special"
     const val MAGE_ATTACK = "nex.mage_attack"
     const val REAVER_ATTACK = "nex.reaver_attack"
 
@@ -38,7 +40,7 @@ internal object NexSpecs {
             rotationPhase(SMOKE, SMOKE_SPECIAL, SMOKE_STANDARD)
             rotationPhase(SHADOW, SHADOW_SPECIAL, SHADOW_STANDARD)
             rotationPhase(BLOOD, BLOOD_SPECIAL, BLOOD_STANDARD)
-            phase(ICE) {}
+            rotationPhase(ICE, ICE_SPECIAL, ICE_STANDARD)
         }
 
     val MAGES: Map<String, BossSpec> =

@@ -5,11 +5,9 @@ import dev.openrune.rscm.RSCM.asRSCM
 import dev.openrune.rscm.RSCMType
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
-import org.rsmod.api.bossbar.plugin.BossHpBarScript
 import org.rsmod.api.bosses.runtime.BossDeps
 import org.rsmod.api.bosses.runtime.encounter
 import org.rsmod.api.npc.apPlayer2
-import org.rsmod.api.npc.heal
 import org.rsmod.api.npc.hit.NpcHitHealHook
 import org.rsmod.api.npc.interact.AiPlayerInteractions
 import org.rsmod.api.player.isValidTarget
@@ -32,7 +30,6 @@ constructor(
     private val fights: NexFights,
     private val casts: NexCasts,
     private val melee: NexMelee,
-    private val bossHpBar: BossHpBarScript,
     private val interactions: AiPlayerInteractions,
 ) {
     fun standard(nex: Npc, target: Player) {
@@ -95,11 +92,12 @@ constructor(
             if (damage <= 0) continue
             dealt.merge(result.impactTick, damage, Int::plus)
             deps.worldQueues.add(result.impactTick) {
-                drainPrayer(victim, NexBloodRules.standardPrayerDrain(damage))
+                drainPrayer(victim, NexDrains.castPrayerDrain(damage))
             }
         }
         for ((tick, damage) in dealt) {
-            deps.worldQueues.add(tick) { heal(fight, nex, NexBloodRules.standardHeal(damage)) }
+            val heal = NexBloodRules.standardHeal(damage)
+            deps.worldQueues.add(tick) { fights.heal(fight, nex, heal) }
         }
     }
 
@@ -126,7 +124,7 @@ constructor(
             if (!old.isAlive) return@add
             val remaining = old.hitpoints
             kill(old)
-            deps.worldQueues.add(OLD_REAVER_HEAL_DELAY) { heal(fight, nex, remaining) }
+            deps.worldQueues.add(OLD_REAVER_HEAL_DELAY) { fights.heal(fight, nex, remaining) }
         }
     }
 
@@ -209,7 +207,8 @@ constructor(
             sacrificeHit(nex, player, BYSTANDER_SPELL, dealt)
         }
         for ((tick, damage) in dealt) {
-            deps.worldQueues.add(tick) { heal(fight, nex, NexBloodRules.sacrificeHeal(damage)) }
+            val heal = NexBloodRules.sacrificeHeal(damage)
+            deps.worldQueues.add(tick) { fights.heal(fight, nex, heal) }
         }
     }
 
@@ -232,12 +231,6 @@ constructor(
 
     private fun drainPrayer(player: Player, amount: Int) {
         if (amount > 0 && player.isValidTarget()) player.statSub(PRAYER, amount, 0)
-    }
-
-    private fun heal(fight: NexFight, nex: Npc, amount: Int) {
-        if (amount <= 0 || fight.nex !== nex || !nex.isAlive) return
-        if (nex.heal(amount, showHitsplat = true) <= 0) return
-        fights.players(fight).forEach { bossHpBar.onUpdate(it, nex) }
     }
 
     private val Npc.isAlive: Boolean

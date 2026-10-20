@@ -83,4 +83,27 @@ class NexGeometryTest {
         assertEquals(8, NexGeometry.footprintGap(nex, 3, CoordGrid(2926, 5207, 0), 2))
         assertEquals(9, NexGeometry.footprintGap(nex, 3, CoordGrid(2925, 5207, 0), 2))
     }
+
+    @Test
+    fun `contain covers the nine Nex tiles and the sixteen tiles around them`() {
+        val nex = CoordGrid(2918, 5191, 0)
+        val footprint = NexGeometry.footprint(nex, 3)
+        val ring = NexGeometry.ring(nex, 3)
+        assertEquals(9, footprint.size)
+        assertEquals(16, ring.size)
+        assertTrue(ring.none { it in footprint })
+        assertTrue(CoordGrid(2917, 5190, 0) in ring)
+        assertTrue(CoordGrid(2921, 5194, 0) in ring)
+        assertFalse(CoordGrid(2922, 5194, 0) in ring)
+    }
+
+    @Test
+    fun `an ice prison rings the eight tiles around the player`() {
+        val centre = CoordGrid(2930, 5192, 0)
+        val ring = NexGeometry.ring(centre, 1)
+        assertEquals(8, ring.size)
+        assertFalse(centre in ring)
+        assertTrue(CoordGrid(2929, 5191, 0) in ring)
+        assertTrue(CoordGrid(2931, 5193, 0) in ring)
+    }
 }

@@ -15,4 +15,6 @@ internal object NexDrains {
         }
 
     fun blindDrain(attack: Int): Int = (attack * BLIND_PERCENT + PERCENT - 1) / PERCENT
+
+    fun castPrayerDrain(damage: Int): Int = (damage + 1) / 2
 }

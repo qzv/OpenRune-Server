@@ -23,6 +23,10 @@ nex_sacrifice_call = 5223
 nex_sacrifice_mark = 5192
 nex_sacrifice_cast = 5182
 nex_sacrifice_impact = 5239
+nex_ice_prison_cast = 5244
+nex_ice_trap = 5199
+nex_ice_prison_shatter = 5287
+nex_contain_spike = 5297
 
 [gamevals.enum]
 nex_shadow_max_hits = 58010

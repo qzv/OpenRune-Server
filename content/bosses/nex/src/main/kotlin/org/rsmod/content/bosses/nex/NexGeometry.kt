@@ -24,6 +24,12 @@ internal object NexGeometry {
         return max(dx, dz)
     }
 
+    fun footprint(sw: CoordGrid, size: Int): List<CoordGrid> =
+        (0 until size).flatMap { x -> (0 until size).map { z -> sw.translate(x, z) } }
+
+    fun ring(sw: CoordGrid, size: Int): List<CoordGrid> =
+        footprint(sw.translate(-1, -1), size + 2).filter { footprintDistance(sw, size, it) == 1 }
+
     fun inMeleeReach(sw: CoordGrid, size: Int, tile: CoordGrid): Boolean =
         footprintDistance(sw, size, tile) == 1
 
