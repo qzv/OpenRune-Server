@@ -17100,3 +17100,46 @@ inherit = "npc.crystal_hunllef_crystals_hm"
 id = "npc.poh_sawmill_opp"
 inherit = "npc.poh_sawmill_opp"
 wanderRange = 0
+
+[[npc]]
+id = "npc.nex_spawning"
+inherit = "npc.nex_spawning"
+attackRange = 10
+[npc.params]
+"param.boss_hp_bar_mode"=2
+
+[[npc]]
+id = "npc.nex"
+inherit = "npc.nex"
+attackRange = 10
+[npc.params]
+"param.boss_hp_bar_mode"=2
+"param.defence_light"=190
+"param.defence_standard"=190
+"param.defence_heavy"=150
+
+[[npc]]
+id = "npc.nex_soulsplit"
+inherit = "npc.nex_soulsplit"
+attackRange = 10
+[npc.params]
+"param.boss_hp_bar_mode"=2
+"param.defence_light"=190
+"param.defence_standard"=190
+"param.defence_heavy"=150
+
+[[npc]]
+id = "npc.nex_deflect"
+inherit = "npc.nex_deflect"
+attackRange = 10
+[npc.params]
+"param.boss_hp_bar_mode"=2
+"param.defence_light"=190
+"param.defence_standard"=190
+"param.defence_heavy"=150
+
+[[npc]]
+id = "npc.nex_dying"
+inherit = "npc.nex_dying"
+[npc.params]
+"param.boss_hp_bar_mode"=2

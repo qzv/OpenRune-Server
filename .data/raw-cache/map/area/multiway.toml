@@ -4356,6 +4356,19 @@ vertices = [
 ]
 
 [[area]]
+name = "Ancient Prison"
+area_id = "area.multiway"
+levels = [0]
+
+[[area.polygons]]
+vertices = [
+    [2816, 5184],
+    [2943, 5184],
+    [2943, 5247],
+    [2816, 5247],
+]
+
+[[area]]
 name = "Normal kalphite area including kalphite queen"
 area_id = "area.multiway"
 levels = [0, 1, 2, 3]

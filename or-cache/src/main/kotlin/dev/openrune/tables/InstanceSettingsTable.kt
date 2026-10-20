@@ -296,6 +296,22 @@ object InstanceSettingsTable {
             )
         }
 
+        row("dbrow.instance_nex") {
+            column(KEY, "nex")
+            columnCoord(EXIT_COORD, CoordGrid(2908, 5203, 0))
+            columnCoord(ENTER_COORD, CoordGrid(2910, 5203, 0))
+            column(FEE, 0)
+            column(MAX_PLAYERS, 20)
+            column(TIME_LIMIT_MINUTES, 0)
+            column(GRACE_MINUTES, 10)
+            columnRSCM(BOSS_NPC, "npc.nex")
+            column(BOSS_NAME, "Nex")
+            column(RECOMMENDED_COMBAT, 0, 0)
+            column(TEAM_SIZE, 1)
+            column(LOOT_MULTIPLIER, "x1.0")
+            column(DESCRIPTION, "Even the gods fear her.")
+        }
+
         row("dbrow.instance_amoxliatl") {
             column(KEY, "amoxliatl")
             columnCoord(EXIT_COORD, CoordGrid(1602, 9631, 0))

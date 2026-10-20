@@ -228,3 +228,14 @@ angle = 8
 lengthAdjustment = 20
 progress = 128
 stepMultiplier = 3
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_mage_beam"
+startHeight = 140
+endHeight = 190
+delay = 30
+angle = 3
+lengthAdjustment = 90
+progress = 0
+stepMultiplier = 0

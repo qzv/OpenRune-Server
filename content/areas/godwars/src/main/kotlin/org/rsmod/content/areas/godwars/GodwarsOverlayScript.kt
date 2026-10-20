@@ -64,6 +64,7 @@ constructor(private val eventBus: EventBus, private val instances: InstanceManag
                 "dbrow.instance_kreearra",
                 "dbrow.instance_zilyana",
                 "dbrow.instance_kril",
+                "dbrow.instance_nex",
             )
     }
 }
