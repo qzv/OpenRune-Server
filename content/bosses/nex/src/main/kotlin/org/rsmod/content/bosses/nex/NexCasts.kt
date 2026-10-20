@@ -18,8 +18,8 @@ import org.rsmod.game.hit.HitType
 import org.rsmod.game.proj.ProjAnim
 
 internal data class NexSpell(
-    val spotanim: String,
-    val travel: String,
+    val spotanim: String?,
+    val travel: String?,
     val impact: String,
     val impactHeight: Int,
     val impactSynth: String,
@@ -33,13 +33,7 @@ internal class NexCastResult(val impactTick: Int, val damage: Int?)
 @Singleton
 internal class NexCasts @Inject constructor(private val deps: BossDeps) {
     fun cast(caster: Npc, target: Player, spell: NexSpell): NexCastResult? {
-        val type =
-            ServerCacheManager.getProjectile(spell.travel.asRSCM(RSCMType.PROJANIM)) ?: return null
-        val spotanim = spell.spotanim.asRSCM(RSCMType.SPOTANIM)
-        val travel = ProjAnim.fromNpcToPlayer(caster, target, spotanim, type)
-        val endTime = max(spell.minEndTime, travel.endTime)
-        val source = NexGeometry.centre(caster.coords, caster.size)
-        deps.worldRepo.projAnim(travel.copy(endTime = endTime, startCoord = source))
+        val endTime = launch(caster, target, spell) ?: return null
         val impactTick = NexGeometry.impactTick(endTime)
         val delay = impactTick + 1
         target.queueCombatRetaliate(caster, delay)
@@ -64,6 +58,19 @@ internal class NexCasts @Inject constructor(private val deps: BossDeps) {
             if (target.isValidTarget()) target.combatPlayDefendAnim()
         }
         return NexCastResult(impactTick, hit.damage)
+    }
+
+    private fun launch(caster: Npc, target: Player, spell: NexSpell): Int? {
+        val travelSymbol = spell.travel ?: return spell.minEndTime
+        val spotanimSymbol = spell.spotanim ?: return null
+        val type =
+            ServerCacheManager.getProjectile(travelSymbol.asRSCM(RSCMType.PROJANIM)) ?: return null
+        val spotanim = spotanimSymbol.asRSCM(RSCMType.SPOTANIM)
+        val travel = ProjAnim.fromNpcToPlayer(caster, target, spotanim, type)
+        val endTime = max(spell.minEndTime, travel.endTime)
+        val source = NexGeometry.centre(caster.coords, caster.size)
+        deps.worldRepo.projAnim(travel.copy(endTime = endTime, startCoord = source))
+        return endTime
     }
 
     private companion object {

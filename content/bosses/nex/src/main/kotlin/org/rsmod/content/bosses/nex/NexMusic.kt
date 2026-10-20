@@ -21,6 +21,10 @@ constructor(private val music: MusicPlayer, private val repo: MusicRepository) {
         laterPhases?.let { row -> if (isLocked(player, row)) music.unlock(player, row) }
     }
 
+    fun playLaterPhases(player: Player) {
+        laterPhases?.let { music.play(player, it) }
+    }
+
     private fun isLocked(player: Player, row: MusicRow): Boolean =
         repo.forRow(row)?.canUnlock == true && !music.hasUnlocked(player, row)
 

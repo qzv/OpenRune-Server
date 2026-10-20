@@ -17148,3 +17148,8 @@ inherit = "npc.nex_dying"
 id = "npc.nex_smokemage"
 inherit = "npc.nex_smokemage"
 attackRange = 10
+
+[[npc]]
+id = "npc.nex_shadowmage"
+inherit = "npc.nex_shadowmage"
+attackRange = 10

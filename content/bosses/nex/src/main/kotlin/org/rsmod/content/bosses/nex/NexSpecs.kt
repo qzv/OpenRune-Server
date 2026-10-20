@@ -14,11 +14,12 @@ internal object NexSpecs {
 
     private const val SMOKE = "smoke"
     private const val SHADOW = "shadow"
+    private const val BLOOD = "blood"
     private const val ATTACK_RATE = 4
     private const val MAGE_ATTACK_RATE = 5
     private const val STANDARDS_PER_SPECIAL = 5
 
-    val PHASES: List<String> = listOf(SMOKE, SHADOW)
+    val PHASES: List<String> = listOf(SMOKE, SHADOW, BLOOD)
 
     val spec: BossSpec =
         boss(
@@ -31,10 +32,11 @@ internal object NexSpecs {
             stats(attackRate = ATTACK_RATE)
             rotationPhase(SMOKE, SMOKE_SPECIAL, SMOKE_STANDARD)
             rotationPhase(SHADOW, SHADOW_SPECIAL, SHADOW_STANDARD)
+            phase(BLOOD) {}
         }
 
     val MAGES: Map<String, BossSpec> =
-        listOf("npc.nex_smokemage").associateWith(::mage)
+        listOf("npc.nex_smokemage", "npc.nex_shadowmage").associateWith(::mage)
 
     private fun BossSpecBuilder.rotationPhase(name: String, special: String, standard: String) {
         val specialAbility = ability("${name}_special") { include(external(special)) }

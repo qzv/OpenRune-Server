@@ -55,4 +55,10 @@ class NexDarknessTest {
         val result = run(ticks(9 to 1, 1 to 3, 3 to 1))
         assertEquals(".......MH" + "." + ".HH", result)
     }
+
+    @ParameterizedTest
+    @CsvSource("99,15", "114,18", "116,18", "117,18")
+    fun `blindness drains 15 percent of current attack rounded up`(attack: Int, drain: Int) {
+        assertEquals(drain, NexDrains.blindDrain(attack))
+    }
 }
