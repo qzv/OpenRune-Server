@@ -11,7 +11,9 @@ import org.rsmod.api.npc.access.StandardNpcAccess
 import org.rsmod.api.npc.events.NpcHitEvents
 import org.rsmod.api.npc.headbar.InternalNpcHeadbars
 import org.rsmod.api.npc.hit.NpcDamageContributor
+import org.rsmod.api.npc.hit.NpcHitHealHook
 import org.rsmod.api.npc.hit.NpcHitpointsFloorHook
+import org.rsmod.api.npc.hit.NpcHitpointsRestorer
 import org.rsmod.api.player.ironman.shouldBlockNpcCombatXp
 import org.rsmod.api.player.output.soundSynth
 import org.rsmod.events.EventBus
@@ -27,8 +29,15 @@ constructor(
     private val eventBus: EventBus,
     private val damageContributors: Set<NpcDamageContributor>,
     private val hitpointsFloors: Set<NpcHitpointsFloorHook>,
+    private val hitHeals: Set<NpcHitHealHook>,
+    private val hitpointsRestorer: NpcHitpointsRestorer,
 ) : NpcHitProcessor {
     override fun StandardNpcAccess.process(hit: Hit) {
+        if (hit.damage > 0 && hitHeals.any { it.heals(npc, hit) }) {
+            hitpointsRestorer.heal(npc, hit.damage, showHitsplat = true)
+            return
+        }
+
         var changedDamage: Int? = null
         val floor = hitpointsFloors.maxOfOrNull { it.floor(npc, hit) } ?: 0
         val survivable = max(npc.hitpoints - floor, 0)
