@@ -20,6 +20,7 @@ internal constructor(
     private val blood: NexBlood,
     private val ice: NexIce,
     private val zaros: NexZaros,
+    private val kill: NexKill,
     private val phases: NexPhases,
 ) : PluginScript() {
     override fun ScriptContext.startup() {
@@ -57,6 +58,10 @@ internal constructor(
         onOpLoc1(PRISON_ICICLE) { ice.breakIcicle(player, it.loc) }
         deps.extensionRegistry.register(NexSpecs.ZAROS_STANDARD) { _, npc, target, _ ->
             zaros.standard(npc, target)
+        }
+        for (form in NexSpecs.spec.npcTypes) {
+            val type = ServerCacheManager.getNpc(form.asRSCM(RSCMType.NPC)) ?: continue
+            onNpcQueue(type, DEATH_QUEUE) { with(kill) { nexDeath() } }
         }
         deps.extensionRegistry.register(NexSpecs.MAGE_ATTACK) { _, npc, target, _ ->
             phases.mageAttack(npc, target)

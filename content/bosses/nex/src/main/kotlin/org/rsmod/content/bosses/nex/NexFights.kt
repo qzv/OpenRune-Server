@@ -79,6 +79,7 @@ internal class NexFight(val instanceId: InstanceId) {
     var siphonFrom: Int = Int.MAX_VALUE
     var siphonUntil: Int = Int.MIN_VALUE
     val prisons: MutableList<NexPrison> = ArrayList()
+    var spawnTick: Int = 0
     var zarosAttacks: Int = 0
     var form: NexForm = NexForm.Plain
 

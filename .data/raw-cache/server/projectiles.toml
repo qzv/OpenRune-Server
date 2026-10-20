@@ -360,3 +360,14 @@ angle = 5
 lengthAdjustment = 60
 progress = 0
 stepMultiplier = 0
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_mushroom_cloud"
+startHeight = 0
+endHeight = 0
+delay = 0
+angle = 32
+lengthAdjustment = 0
+progress = 0
+stepMultiplier = 0

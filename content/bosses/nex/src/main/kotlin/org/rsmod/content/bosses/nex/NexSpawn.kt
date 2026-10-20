@@ -55,6 +55,7 @@ constructor(
         manager.attachNpc(session.id, nex)
         fight.nex = nex
         fight.home = coords
+        fight.spawnTick = deps.mapClock.cycle
         fight.mages.clear()
         fights.shout(fight, nex, SPAWN_LINE)
         nex.anim(SPAWN_SEQ)

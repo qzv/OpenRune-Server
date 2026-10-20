@@ -33,6 +33,8 @@ nex_finale_impact = 5185
 nex_soul_split = 5237
 nex_turmoil_leech = 5193
 nex_turmoil_drain = 5280
+nex_wrath_cloud = 5236
+nex_wrath_blast = 5241
 
 [gamevals.enum]
 nex_shadow_max_hits = 58010
