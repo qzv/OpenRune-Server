@@ -429,6 +429,11 @@ class EffectInterpreter internal constructor(
         )
     }
 
+    private fun shapeFlight(anim: ProjAnim, cfg: ProjectileConfig?): ProjAnim {
+        if (cfg == null || anim.endTime >= cfg.minFlight) return anim
+        return anim.copy(endTime = cfg.minFlight)
+    }
+
     private fun fireProjectile(access: StandardNpcAccess?, proj: Effect.Projectile) {
         val targetExpr = proj.target as? TargetExpr.Single ?: TargetExpr.CurrentTarget
         val player = resolveSingle(targetExpr)
@@ -438,7 +443,8 @@ class EffectInterpreter internal constructor(
         proj.launch?.let { npc.spotanim(it) }
 
         val spotanimId = proj.spotanim.asRSCM(RSCMType.SPOTANIM)
-        val projAnim = buildProjAnim(proj, type, spotanimId, player, destCoord)
+        val projAnim =
+            shapeFlight(buildProjAnim(proj, type, spotanimId, player, destCoord), proj.config)
         deps.worldRepo.projAnim(projAnim)
         val ticks = impactTicks(projAnim, proj.impactRounding, proj.impactSlack)
 
