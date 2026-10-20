@@ -842,6 +842,12 @@ transmit = "Never"
 
 [[varp]]
 isServerOnly = true
+id = "varp.overhead_lock_single_prayer"
+scope = "Temp"
+transmit = "Never"
+
+[[varp]]
+isServerOnly = true
 id = "varp.drop_rate_multiplier"
 scope = "Perm"
 transmit = "Never"

@@ -40,6 +40,7 @@ public fun Player.combatClearQueue() {
 public fun Player.hasProtectItemPrayer(): Boolean = vars["varbit.prayer_protectitem"] == 1
 
 private var Player.overheadLockExpiration by intVarp("varp.overhead_lock_expiration")
+private var Player.overheadLockSinglePrayer by intVarp("varp.overhead_lock_single_prayer")
 
 private var Player.protectFromMelee by intVarBit("varbit.prayer_protectfrommelee")
 private var Player.protectFromMissiles by intVarBit("varbit.prayer_protectfrommissiles")
@@ -53,11 +54,20 @@ public val overheadProtectionPrayerVarbits: List<String> =
         "varbit.prayer_protectfrommagic",
     )
 
-public fun Player.lockOverheads(cycles: Int) {
+public fun Player.lockOverheads(cycles: Int, singlePrayerRefusal: Boolean = false) {
     require(cycles > 0) { "`cycles` must be greater than 0. (cycles=$cycles)" }
     disableOverheadPrayers()
+    overheadLockSinglePrayer = if (singlePrayerRefusal) 1 else 0
     overheadLockExpiration = currentMapClock + cycles
 }
+
+public val Player.overheadLockRefusal: String
+    get() =
+        if (overheadLockSinglePrayer == 1) {
+            "You've been injured and can't use that prayer!"
+        } else {
+            "You've been injured and can't use protection prayers!"
+        }
 
 /** Turns off the protection overheads, leaving every other prayer on. */
 public fun Player.disableOverheadPrayers() {

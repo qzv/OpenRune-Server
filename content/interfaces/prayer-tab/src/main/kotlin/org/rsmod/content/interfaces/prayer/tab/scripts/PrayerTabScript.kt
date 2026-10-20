@@ -6,6 +6,7 @@ import jakarta.inject.Inject
 import org.rsmod.api.player.output.ClientScripts
 import org.rsmod.api.player.output.mes
 import org.rsmod.api.player.output.soundSynth
+import org.rsmod.api.player.overheadLockRefusal
 import org.rsmod.api.player.overheadProtectionPrayerVarbits
 import org.rsmod.api.player.overheadsLocked
 import org.rsmod.api.player.protect.ProtectedAccess
@@ -66,7 +67,7 @@ private constructor(
     private suspend fun ProtectedAccess.enablePrayer(prayer: Prayer) {
         if (prayer.enabled in overheadProtectionPrayerVarbits && player.overheadsLocked) {
             player.resyncVar(prayer.enabled)
-            mes("You've been injured and can't use protection prayers!")
+            mes(player.overheadLockRefusal)
             soundSynth("synth.prayer_disable")
             return
         }
