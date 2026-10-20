@@ -5286,3 +5286,16 @@ vertices = [
     [3328, 10240],
     [3264, 10240],
 ]
+
+[[area]]
+name = "Yama's Domain Multiway"
+area_id = "area.multiway"
+levels = [0]
+
+[[area.polygons]]
+vertices = [
+    [1472, 10048],
+    [1536, 10048],
+    [1536, 10112],
+    [1472, 10112],
+]

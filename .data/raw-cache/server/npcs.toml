@@ -15400,16 +15400,43 @@ inherit = "npc.rt_summon_elemental_fire"
 "param.elemental_weakness_percent"=100
 
 [[npc]]
+id = "npc.voice_of_yama"
+inherit = "npc.voice_of_yama"
+moveRestrict = "NoMove"
+wanderRange = 0
+
+[[npc]]
+id = "npc.yama_meteor_npc"
+inherit = "npc.yama_meteor_npc"
+moveRestrict = "NoMove"
+wanderRange = 0
+
+[[npc]]
+id = "npc.yama_throne"
+inherit = "npc.yama_throne"
+moveRestrict = "NoMove"
+wanderRange = 0
+
+[[npc]]
 id = "npc.yama"
 inherit = "npc.yama"
+maxRange = 40
+attackRange = 25
 [npc.params]
 "param.demon"=1
+"param.demonbane_effectiveness"=120
+"param.boss_hp_bar_mode"=2
 "param.elemental_weakness_type"=1
 "param.elemental_weakness_percent"=50
+"param.defence_light"=333
+"param.defence_standard"=220
+"param.defence_heavy"=333
 
 [[npc]]
 id = "npc.yama_judge_of_yama"
 inherit = "npc.yama_judge_of_yama"
+moveRestrict = "NoMove"
+wanderRange = 0
 [npc.params]
 "param.demon"=1
 "param.elemental_weakness_type"=1
@@ -16810,8 +16837,11 @@ inherit = "npc.nzone_skeleton_hellhound_hard"
 [[npc]]
 id = "npc.yama_voidflare"
 inherit = "npc.yama_voidflare"
+moveRestrict = "NoMove"
+wanderRange = 0
 [npc.params]
 "param.demon"=1
+"param.demonbane_effectiveness"=200
 
 [[npc]]
 id = "npc.kittens_mew"
