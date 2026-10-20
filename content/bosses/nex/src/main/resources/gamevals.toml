@@ -1,0 +1,9 @@
+[gamevals.dbtable]
+nex_phases = 58010
+
+[gamevals.dbrow]
+nex_phase_smoke = 58010
+nex_phase_shadow = 58011
+nex_phase_blood = 58012
+nex_phase_ice = 58013
+

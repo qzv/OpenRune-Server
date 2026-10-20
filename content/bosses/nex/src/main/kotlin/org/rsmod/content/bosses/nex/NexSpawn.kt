@@ -1,6 +1,7 @@
 package org.rsmod.content.bosses.nex
 
 import dev.openrune.ServerCacheManager
+import dev.openrune.rscm.RSCM
 import dev.openrune.rscm.RSCM.asRSCM
 import dev.openrune.rscm.RSCMType
 import jakarta.inject.Inject
@@ -12,6 +13,7 @@ import org.rsmod.api.bosses.runtime.suppressAttacks
 import org.rsmod.api.instances.InstanceManager
 import org.rsmod.api.instances.InstanceSession
 import org.rsmod.api.player.vars.intVarBit
+import org.rsmod.api.table.NexPhasesRow
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 import org.rsmod.game.map.Direction
@@ -37,14 +39,11 @@ constructor(
         deps.worldQueues.add(delay) { spawn(session) }
     }
 
-    fun playersIn(session: InstanceSession): List<Player> =
-        deps.playerList.filter { manager.sessionForPlayer(it) == session }
-
     private fun spawn(session: InstanceSession) {
         val fight = fights.of(session.id) ?: return
         fight.spawnScheduled = false
         if (manager.sessionForId(session.id) !== session) return
-        val players = playersIn(session)
+        val players = fights.players(fight)
         if (players.isEmpty()) return
         val coords = manager.resolveCoord(session, NEX_TILE) ?: return
         val nex = Npc(npcType(NEX_SPAWNING), coords)
@@ -52,29 +51,31 @@ constructor(
         deps.npcRepo.add(nex, Int.MAX_VALUE)
         manager.attachNpc(session.id, nex)
         fight.nex = nex
+        fight.home = coords
         fight.mages.clear()
-        nex.say(SPAWN_LINE)
+        fights.shout(fight, nex, SPAWN_LINE)
         nex.anim(SPAWN_SEQ)
         for (player in players) {
             player.nexBarrier = BARRIER_NEX_ALIVE
             bossHpBar.onOpen(player, nex)
             music.fightStart(player)
         }
-        NexMage.entries.forEachIndexed { index, mage ->
+        NexFight.PHASES.forEachIndexed { index, row ->
             deps.worldQueues.add(FIRST_SUMMON_DELAY + index * SUMMON_INTERVAL) {
-                summon(session, fight, nex, mage)
+                summon(session, fight, nex, row)
             }
         }
-        deps.worldQueues.add(SMOKE_PHASE_DELAY) { awaken(session, fight, nex) }
+        deps.worldQueues.add(SMOKE_PHASE_DELAY) { awaken(fight, nex) }
     }
 
-    private fun summon(session: InstanceSession, fight: NexFight, nex: Npc, mage: NexMage) {
+    private fun summon(session: InstanceSession, fight: NexFight, nex: Npc, row: NexPhasesRow) {
         if (fight.nex !== nex || !nex.isSlotAssigned) return
-        val coords = manager.resolveCoord(session, mage.tile) ?: return
-        nex.say(mage.summonLine)
-        nex.anim(mage.summonSeq)
-        val npc = Npc(npcType(mage.npc), coords)
-        npc.respawnDir = mage.facing
+        val coords = manager.resolveCoord(session, row.mageTile) ?: return
+        fights.shout(fight, nex, row.summonLine)
+        nex.anim(RSCM.getReverseMapping(RSCMType.SEQ, row.summonSeq.id))
+        val npc = Npc(row.mage, coords)
+        npc.respawnDir = Direction.entries.first { it.id == row.mageFacing }
+        npc.movementLocked = true
         deps.npcRepo.add(npc, Int.MAX_VALUE)
         manager.attachNpc(session.id, npc)
         fight.mages += npc
@@ -83,21 +84,23 @@ constructor(
         beam(npc, nex)
     }
 
-    private fun awaken(session: InstanceSession, fight: NexFight, nex: Npc) {
+    private fun awaken(fight: NexFight, nex: Npc) {
         if (fight.nex !== nex || !nex.isSlotAssigned) return
         nex.transmog(npcType(NEX), Int.MAX_VALUE)
         nex.showAllOps()
-        nex.say(SMOKE_PHASE_LINE)
-        fight.mages.firstOrNull()?.let { smokeMage ->
-            smokeMage.anim(MAGE_CAST_SEQ)
-            beam(smokeMage, nex)
-        }
+        fight.phaseRow?.let { fights.shout(fight, nex, it.phaseLine) }
+        fight.mageOf(fight.phase)?.let { mage -> castBeam(mage, nex) }
         fight.attackableTick = deps.mapClock.cycle + IMMUNE_TICKS
         deps.startEncounter(nex, NexSpecs.spec)
         deps.suppressAttacks(nex, IMMUNE_TICKS)
-        val players = playersIn(session)
+        val players = fights.players(fight)
         players.firstOrNull()?.let(nex::facePlayer)
         players.forEach { bossHpBar.onUpdate(it, nex) }
+    }
+
+    fun castBeam(mage: Npc, nex: Npc) {
+        mage.anim(MAGE_CAST_SEQ)
+        beam(mage, nex)
     }
 
     private fun beam(source: Npc, nex: Npc) {
@@ -109,43 +112,6 @@ constructor(
     private fun npcType(symbol: String) =
         ServerCacheManager.getNpc(symbol.asRSCM(RSCMType.NPC)) ?: error("Missing npc type: $symbol")
 
-    private enum class NexMage(
-        val npc: String,
-        val summonLine: String,
-        val summonSeq: String,
-        val tile: CoordGrid,
-        val facing: Direction,
-    ) {
-        Fumus(
-            "npc.nex_smokemage",
-            "Fumus!",
-            CAST_SEQ,
-            CoordGrid(2913, 5215, 0),
-            Direction.SouthEast,
-        ),
-        Umbra(
-            "npc.nex_shadowmage",
-            "Umbra!",
-            ALT_CAST_SEQ,
-            CoordGrid(2937, 5215, 0),
-            Direction.SouthWest,
-        ),
-        Cruor(
-            "npc.nex_bloodmage",
-            "Cruor!",
-            CAST_SEQ,
-            CoordGrid(2937, 5191, 0),
-            Direction.NorthWest,
-        ),
-        Glacies(
-            "npc.nex_icemage",
-            "Glacies!",
-            ALT_CAST_SEQ,
-            CoordGrid(2913, 5191, 0),
-            Direction.NorthEast,
-        ),
-    }
-
     internal companion object {
         const val BARRIER_IN_INSTANCE = 2
         const val BARRIER_NEX_ALIVE = 3
@@ -155,10 +121,7 @@ constructor(
         private val NEX_TILE = CoordGrid(2924, 5202, 0)
 
         private const val SPAWN_LINE = "AT LAST!"
-        private const val SMOKE_PHASE_LINE = "Fill my soul with smoke!"
         private const val SPAWN_SEQ = "seq.nex_blast_away"
-        private const val CAST_SEQ = "seq.nex_cast_attack"
-        private const val ALT_CAST_SEQ = "seq.nex_alternate_cast_attack"
         private const val MAGE_CAST_SEQ = "seq.zaros_vertical_casting"
         private const val MAGE_ARRIVE_SPOTANIM = "spotanim.abyssal_demon_teleport"
         private const val MAGE_BEAM = "projanim.nex_mage_beam"
