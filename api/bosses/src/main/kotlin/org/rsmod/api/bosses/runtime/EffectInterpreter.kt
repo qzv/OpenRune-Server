@@ -376,10 +376,10 @@ class EffectInterpreter internal constructor(
         return if (cap <= 0) 0 else deps.random.of(cap + 1)
     }
 
-    private fun impactTicks(anim: ProjAnim, rounding: ImpactRounding): Int =
+    private fun impactTicks(anim: ProjAnim, rounding: ImpactRounding, slack: Int): Int =
         when (rounding) {
             ImpactRounding.Down -> anim.serverCycles
-            ImpactRounding.Up -> ceilingImpactTicks(anim.endTime)
+            ImpactRounding.Up -> ceilingImpactTicks(anim.endTime - slack)
         }
 
     private fun projAnimType(proj: Effect.Projectile): ProjAnimType {
@@ -440,7 +440,7 @@ class EffectInterpreter internal constructor(
         val spotanimId = proj.spotanim.asRSCM(RSCMType.SPOTANIM)
         val projAnim = buildProjAnim(proj, type, spotanimId, player, destCoord)
         deps.worldRepo.projAnim(projAnim)
-        val ticks = impactTicks(projAnim, proj.impactRounding)
+        val ticks = impactTicks(projAnim, proj.impactRounding, proj.impactSlack)
 
         proj.impact?.let { impactSpot ->
             val spot = SpotanimType(impactSpot.asRSCM(RSCMType.SPOTANIM))

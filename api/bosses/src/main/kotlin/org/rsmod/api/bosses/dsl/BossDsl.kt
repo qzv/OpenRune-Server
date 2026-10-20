@@ -490,6 +490,7 @@ class AbilityBuilder {
         var onImpact: Effect? = null
         var from: TargetExpr.Single? = null
         var impactRounding: ImpactRounding = ImpactRounding.Down
+        var impactSlack: Int = 0
         private var hitPayload: Effect.Hit? = null
 
         fun hit(
@@ -518,6 +519,7 @@ class AbilityBuilder {
                 onImpact = onImpact,
                 from = from,
                 impactRounding = impactRounding,
+                impactSlack = impactSlack,
             )
     }
 
