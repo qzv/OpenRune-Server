@@ -1,7 +1,5 @@
 package org.rsmod.content.bosses.nex
 
-import dev.openrune.rscm.RSCM.asRSCM
-import dev.openrune.rscm.RSCMType
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.rsmod.api.bosses.runtime.BossDeps
@@ -66,7 +64,7 @@ constructor(
 
     private fun engageMage(fight: NexFight, mage: Npc) {
         if (!mage.isSlotAssigned || mage.hitpoints <= 0) return
-        if (NexSpecs.MAGES.keys.none { it.asRSCM(RSCMType.NPC) == mage.type.id }) return
+        if (fight.mages.none { it === mage }) return
         val target =
             fights
                 .players(fight)
@@ -78,17 +76,18 @@ constructor(
     fun mageAttack(mage: Npc, target: Player) {
         val fight = fights.fightFor(mage) ?: return
         if (!fight.mageReleased(mage)) return
-        val attack = MAGE_ATTACKS.entries.firstOrNull { (symbol, _) ->
-            symbol.asRSCM(RSCMType.NPC) == mage.type.id
-        }?.value ?: return
+        val index = fight.mages.indexOfFirst { it === mage }
+        val row = NexFight.PHASES.getOrNull(index) ?: return
+        val attack = MAGE_SPELLS.getOrNull(index) ?: return
         mage.anim(MAGE_CAST_SEQ)
         deps.worldRepo.soundArea(mage.coords, attack.castSynth, radius = MAGE_CAST_SOUND_RADIUS)
         val result = casts.cast(mage, target, attack.spell) ?: return
         val damage = result.damage ?: return
-        if (attack.blinds) deps.worldQueues.add(result.impactTick) { blind(target) }
-        val healed = attack.healDivisor?.let { damage / it } ?: 0
+        if (row.mageBlinds) deps.worldQueues.add(result.impactTick) { blind(target) }
+        val healed = if (row.mageHealDivisor > 0) damage / row.mageHealDivisor else 0
         if (healed > 0) deps.worldQueues.add(result.impactTick) { selfHeal(mage, healed) }
-        val freezeTicks = attack.freezeTicks ?: return
+        val freezeTicks = row.mageFreezeTicks
+        if (freezeTicks <= 0) return
         deps.worldQueues.add(result.impactTick) { freeze(target, freezeTicks) }
     }
 
@@ -162,12 +161,9 @@ constructor(
         private const val TURMOIL_SEQ = "seq.nex_turmoil"
         private const val TURMOIL_SPOTANIM = "spotanim.nex_turmoil"
         private const val ZAROS_HEAL = 500
-        private const val FREEZE_TIMER = "timer.combat_freeze"
         private const val FROZEN = "<col=ff3045>You have been frozen!</col>"
-        private const val NEX_IMMUNE = "Nex is immune to your attacks!"
         private const val MAGE_ENGAGE_DELAY = 1
         private const val MAGE_AGGRESSION_RANGE = 10
-        private const val MAGE_CAST_SEQ = "seq.zaros_vertical_casting"
         private const val MAGE_CAST_SOUND_RADIUS = 12
         private const val MAGE_DEATH_SEQ = "seq.human_death"
         private const val NEXT_PHASE_DELAY = 1
@@ -177,81 +173,68 @@ constructor(
         private const val FIRST_SPECIAL_CHOICES = 2
         private const val ATTACK = "stat.attack"
         private const val BLINDED = "You have been blinded!"
-        private val MAGE_ATTACKS =
-            mapOf(
-                "npc.nex_smokemage" to
-                    NexMageAttack(
-                        castSynth = "synth.smoke_cast",
-                        spell =
-                            NexSpell(
-                                spotanim = "spotanim.smoke_barrage_travel",
-                                travel = "projanim.nex_mage_smoke_barrage",
-                                impact = "spotanim.smoke_barrage_impact",
-                                impactHeight = 124,
-                                impactSynth = "synth.smoke_barrage_impact",
-                                maxHit = 29,
-                                penetration = 0,
-                            ),
-                    ),
-                "npc.nex_shadowmage" to
-                    NexMageAttack(
-                        castSynth = "synth.shadow_cast",
-                        spell =
-                            NexSpell(
-                                spotanim = null,
-                                travel = null,
-                                impact = "spotanim.shadow_barrage_impact",
-                                impactHeight = 0,
-                                impactSynth = "synth.shadow_barrage_impact",
-                                maxHit = 29,
-                                penetration = 0,
-                                minEndTime = 60,
-                            ),
-                        blinds = true,
-                    ),
-                "npc.nex_bloodmage" to
-                    NexMageAttack(
-                        castSynth = "synth.blood_cast",
-                        spell =
-                            NexSpell(
-                                spotanim = null,
-                                travel = null,
-                                impact = "spotanim.spell_blood_barrage_impact",
-                                impactHeight = 0,
-                                impactSynth = "synth.blood_barrage_impact",
-                                maxHit = 29,
-                                penetration = 0,
-                                minEndTime = 60,
-                            ),
-                        healDivisor = 4,
-                    ),
-                "npc.nex_icemage" to
-                    NexMageAttack(
-                        castSynth = "synth.ice_cast",
-                        spell =
-                            NexSpell(
-                                spotanim = "spotanim.ice_barrage_travel",
-                                travel = "projanim.nex_mage_ice_barrage",
-                                impact = "spotanim.ice_barrage_impact",
-                                impactHeight = 0,
-                                impactSynth = "synth.ice_barrage_impact",
-                                maxHit = 29,
-                                penetration = 0,
-                                minEndTime = 60,
-                            ),
-                        freezeTicks = 6,
-                    ),
+        private val MAGE_SPELLS =
+            listOf(
+                NexMageSpell(
+                    castSynth = "synth.smoke_cast",
+                    spell =
+                        NexSpell(
+                            spotanim = "spotanim.smoke_barrage_travel",
+                            travel = "projanim.nex_mage_smoke_barrage",
+                            impact = "spotanim.smoke_barrage_impact",
+                            impactHeight = 124,
+                            impactSynth = "synth.smoke_barrage_impact",
+                            maxHit = 29,
+                            penetration = 0,
+                        ),
+                ),
+                NexMageSpell(
+                    castSynth = "synth.shadow_cast",
+                    spell =
+                        NexSpell(
+                            spotanim = null,
+                            travel = null,
+                            impact = "spotanim.shadow_barrage_impact",
+                            impactHeight = 0,
+                            impactSynth = "synth.shadow_barrage_impact",
+                            maxHit = 29,
+                            penetration = 0,
+                            minEndTime = 60,
+                        ),
+                ),
+                NexMageSpell(
+                    castSynth = "synth.blood_cast",
+                    spell =
+                        NexSpell(
+                            spotanim = null,
+                            travel = null,
+                            impact = "spotanim.spell_blood_barrage_impact",
+                            impactHeight = 0,
+                            impactSynth = "synth.blood_barrage_impact",
+                            maxHit = 29,
+                            penetration = 0,
+                            minEndTime = 60,
+                        ),
+                ),
+                NexMageSpell(
+                    castSynth = "synth.ice_cast",
+                    spell =
+                        NexSpell(
+                            spotanim = "spotanim.ice_barrage_travel",
+                            travel = "projanim.nex_mage_ice_barrage",
+                            impact = "spotanim.ice_barrage_impact",
+                            impactHeight = 0,
+                            impactSynth = "synth.ice_barrage_impact",
+                            maxHit = 29,
+                            penetration = 0,
+                            minEndTime = 60,
+                        ),
+                ),
             )
     }
 }
 
-internal class NexMageAttack(
-    val castSynth: String,
-    val spell: NexSpell,
-    val blinds: Boolean = false,
-    val healDivisor: Int? = null,
-    val freezeTicks: Int? = null,
-)
+internal class NexMageSpell(val castSynth: String, val spell: NexSpell)
 
 internal class NexFloorHook @Inject constructor(private val phases: NexPhases) :
     NpcHitpointsFloorHook {

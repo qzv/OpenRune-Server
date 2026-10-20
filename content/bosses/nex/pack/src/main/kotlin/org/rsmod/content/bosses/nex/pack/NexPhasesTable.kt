@@ -14,6 +14,9 @@ object NexPhasesTable {
     const val THRESHOLD = 5
     const val FAIL_LINE = 6
     const val PHASE_LINE = 7
+    const val MAGE_BLINDS = 8
+    const val MAGE_HEAL_DIVISOR = 9
+    const val MAGE_FREEZE_TICKS = 10
 
     private const val NORTH_EAST = 2
     private const val SOUTH_WEST = 5
@@ -30,6 +33,9 @@ object NexPhasesTable {
             column("threshold", THRESHOLD, VarType.INT)
             column("fail_line", FAIL_LINE, VarType.STRING)
             column("phase_line", PHASE_LINE, VarType.STRING)
+            column("mage_blinds", MAGE_BLINDS, VarType.BOOLEAN)
+            column("mage_heal_divisor", MAGE_HEAL_DIVISOR, VarType.INT)
+            column("mage_freeze_ticks", MAGE_FREEZE_TICKS, VarType.INT)
 
             row("dbrow.nex_phase_smoke") {
                 columnRSCM(MAGE, "npc.nex_smokemage")
@@ -40,6 +46,9 @@ object NexPhasesTable {
                 column(THRESHOLD, 80)
                 column(FAIL_LINE, "Fumus, don't fail me!")
                 column(PHASE_LINE, "Fill my soul with smoke!")
+                column(MAGE_BLINDS, false)
+                column(MAGE_HEAL_DIVISOR, 0)
+                column(MAGE_FREEZE_TICKS, 0)
             }
             row("dbrow.nex_phase_shadow") {
                 columnRSCM(MAGE, "npc.nex_shadowmage")
@@ -50,6 +59,9 @@ object NexPhasesTable {
                 column(THRESHOLD, 60)
                 column(FAIL_LINE, "Umbra, don't fail me!")
                 column(PHASE_LINE, "Darken my shadow!")
+                column(MAGE_BLINDS, true)
+                column(MAGE_HEAL_DIVISOR, 0)
+                column(MAGE_FREEZE_TICKS, 0)
             }
             row("dbrow.nex_phase_blood") {
                 columnRSCM(MAGE, "npc.nex_bloodmage")
@@ -60,6 +72,9 @@ object NexPhasesTable {
                 column(THRESHOLD, 40)
                 column(FAIL_LINE, "Cruor, don't fail me!")
                 column(PHASE_LINE, "Flood my lungs with blood!")
+                column(MAGE_BLINDS, false)
+                column(MAGE_HEAL_DIVISOR, 4)
+                column(MAGE_FREEZE_TICKS, 0)
             }
             row("dbrow.nex_phase_ice") {
                 columnRSCM(MAGE, "npc.nex_icemage")
@@ -70,6 +85,9 @@ object NexPhasesTable {
                 column(THRESHOLD, 20)
                 column(FAIL_LINE, "Glacies, don't fail me!")
                 column(PHASE_LINE, "Infuse me with the power of ice!")
+                column(MAGE_BLINDS, false)
+                column(MAGE_HEAL_DIVISOR, 0)
+                column(MAGE_FREEZE_TICKS, 6)
             }
         }
 }
