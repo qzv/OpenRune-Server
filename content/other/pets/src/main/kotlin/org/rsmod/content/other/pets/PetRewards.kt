@@ -33,6 +33,11 @@ constructor(
         return true
     }
 
+    fun owns(player: Player, obj: String): Boolean {
+        val (pet, _) = Pets.forObj(obj) ?: return false
+        return player.ownsPet(pet)
+    }
+
     fun rollSkillingPet(
         player: Player,
         obj: String,

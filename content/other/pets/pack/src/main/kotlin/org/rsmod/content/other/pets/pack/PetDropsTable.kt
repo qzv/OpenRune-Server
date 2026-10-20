@@ -53,5 +53,6 @@ object PetDropsTable {
         drop("npc.venenatis_singles", "obj.venenatis_pet", 2800)
         drop("npc.vetion_2", "obj.vetion_pet", 1500)
         drop("npc.vetion_2_single", "obj.vetion_pet", 2800)
+        drop("npc.colosseum_sol_p1", "obj.solhereditpet", 200)
     }
 }
