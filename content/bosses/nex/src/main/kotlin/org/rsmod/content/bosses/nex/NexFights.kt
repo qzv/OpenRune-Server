@@ -51,6 +51,8 @@ internal class NexFight(val instanceId: InstanceId) {
     var attackableTick: Int = Int.MAX_VALUE
 
     var phase: Int = 0
+    val specials: NexSpecialCounter = NexSpecialCounter()
+    val melee: NexMeleeChain = NexMeleeChain()
 
     val inProgress: Boolean
         get() = nex != null

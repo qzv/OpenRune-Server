@@ -12,6 +12,8 @@ import org.rsmod.api.bosses.runtime.startEncounter
 import org.rsmod.api.bosses.runtime.suppressAttacks
 import org.rsmod.api.instances.InstanceManager
 import org.rsmod.api.instances.InstanceSession
+import org.rsmod.api.npc.apPlayer2
+import org.rsmod.api.npc.interact.AiPlayerInteractions
 import org.rsmod.api.player.vars.intVarBit
 import org.rsmod.api.table.NexPhasesRow
 import org.rsmod.game.entity.Npc
@@ -29,6 +31,7 @@ constructor(
     private val fights: NexFights,
     private val bossHpBar: BossHpBarScript,
     private val music: NexMusic,
+    private val interactions: AiPlayerInteractions,
 ) {
     private var Player.nexBarrier by intVarBit("varbit.nex_barrier")
 
@@ -94,7 +97,10 @@ constructor(
         deps.startEncounter(nex, NexSpecs.spec)
         deps.suppressAttacks(nex, IMMUNE_TICKS)
         val players = fights.players(fight)
-        players.firstOrNull()?.let(nex::facePlayer)
+        players.firstOrNull()?.let { target ->
+            nex.facePlayer(target)
+            nex.apPlayer2(target, interactions)
+        }
         players.forEach { bossHpBar.onUpdate(it, nex) }
     }
 

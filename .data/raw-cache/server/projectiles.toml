@@ -239,3 +239,14 @@ angle = 3
 lengthAdjustment = 90
 progress = 0
 stepMultiplier = 0
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_smoke_attack"
+startHeight = 100
+endHeight = 96
+delay = 46
+angle = 5
+lengthAdjustment = 0
+progress = 84
+stepMultiplier = 10
