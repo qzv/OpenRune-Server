@@ -327,3 +327,36 @@ angle = 16
 lengthAdjustment = -5
 progress = 64
 stepMultiplier = 10
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_finale_attack"
+startHeight = 100
+endHeight = 96
+delay = 46
+angle = 5
+lengthAdjustment = 0
+progress = 84
+stepMultiplier = 10
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_turmoil_leech"
+startHeight = 190
+endHeight = 120
+delay = 0
+angle = 3
+lengthAdjustment = 30
+progress = 0
+stepMultiplier = 0
+
+[[projectile]]
+isServerOnly = true
+id = "projanim.nex_soul_split"
+startHeight = 120
+endHeight = 190
+delay = 0
+angle = 5
+lengthAdjustment = 60
+progress = 0
+stepMultiplier = 0

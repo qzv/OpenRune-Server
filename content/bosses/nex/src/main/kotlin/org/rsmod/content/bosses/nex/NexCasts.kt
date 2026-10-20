@@ -27,9 +27,10 @@ internal data class NexSpell(
     val penetration: Int,
     val minEndTime: Int = 0,
     val alwaysHits: Boolean = false,
+    val extraHitDelay: Int = 0,
 )
 
-internal class NexCastResult(val impactTick: Int, val damage: Int?)
+internal class NexCastResult(val impactTick: Int, val damage: Int?, val rolled: Int = 0)
 
 @Singleton
 internal class NexCasts @Inject constructor(private val deps: BossDeps) {
@@ -40,7 +41,7 @@ internal class NexCasts @Inject constructor(private val deps: BossDeps) {
             if (spell.travel == null) {
                 NexGeometry.impactTick(endTime)
             } else {
-                NexGeometry.magicImpactTick(distance)
+                NexGeometry.magicImpactTick(distance) + spell.extraHitDelay
             }
         val delay = impactTick + 1
         target.queueCombatRetaliate(caster, delay)
@@ -66,7 +67,7 @@ internal class NexCasts @Inject constructor(private val deps: BossDeps) {
         deps.worldQueues.add(impactTick) {
             if (target.isValidTarget()) target.combatPlayDefendAnim()
         }
-        return NexCastResult(impactTick, hit.damage)
+        return NexCastResult(impactTick, hit.damage, rolled)
     }
 
     fun launch(

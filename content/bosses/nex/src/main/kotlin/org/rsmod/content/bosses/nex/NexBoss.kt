@@ -19,6 +19,7 @@ internal constructor(
     private val shadow: NexShadow,
     private val blood: NexBlood,
     private val ice: NexIce,
+    private val zaros: NexZaros,
     private val phases: NexPhases,
 ) : PluginScript() {
     override fun ScriptContext.startup() {
@@ -54,6 +55,9 @@ internal constructor(
             ice.special(npc, target)
         }
         onOpLoc1(PRISON_ICICLE) { ice.breakIcicle(player, it.loc) }
+        deps.extensionRegistry.register(NexSpecs.ZAROS_STANDARD) { _, npc, target, _ ->
+            zaros.standard(npc, target)
+        }
         deps.extensionRegistry.register(NexSpecs.MAGE_ATTACK) { _, npc, target, _ ->
             phases.mageAttack(npc, target)
         }

@@ -27,6 +27,12 @@ nex_ice_prison_cast = 5244
 nex_ice_trap = 5199
 nex_ice_prison_shatter = 5287
 nex_contain_spike = 5297
+nex_transform = 5214
+nex_finale_cast = 5285
+nex_finale_impact = 5185
+nex_soul_split = 5237
+nex_turmoil_leech = 5193
+nex_turmoil_drain = 5280
 
 [gamevals.enum]
 nex_shadow_max_hits = 58010
