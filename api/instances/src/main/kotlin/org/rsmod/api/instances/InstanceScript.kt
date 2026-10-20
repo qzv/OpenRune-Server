@@ -231,7 +231,7 @@ public abstract class InstanceScript(
         }
     }
 
-    private suspend fun ProtectedAccess.joinByName() {
+    protected suspend fun ProtectedAccess.joinByName() {
         val name = stringDialog("Enter the player's name:")
         if (name.isBlank()) return mes("No player name entered.")
         val session = manager.sessionForKeyAndMemberName(key, name.trim())
