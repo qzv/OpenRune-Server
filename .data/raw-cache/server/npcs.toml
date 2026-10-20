@@ -17159,3 +17159,8 @@ attackRange = 10
 id = "npc.nex_bloodmage"
 inherit = "npc.nex_bloodmage"
 attackRange = 10
+
+[[npc]]
+id = "npc.nex_icemage"
+inherit = "npc.nex_icemage"
+attackRange = 10

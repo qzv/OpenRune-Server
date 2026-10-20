@@ -14,6 +14,7 @@ import org.rsmod.api.npc.heal
 import org.rsmod.api.npc.hit.NpcHitpointsFloorHook
 import org.rsmod.api.npc.interact.AiPlayerInteractions
 import org.rsmod.api.player.isValidTarget
+import org.rsmod.api.player.output.ChatType
 import org.rsmod.api.player.output.mes
 import org.rsmod.api.player.stat.stat
 import org.rsmod.api.player.stat.statBase
@@ -86,6 +87,16 @@ constructor(
         if (attack.blinds) deps.worldQueues.add(result.impactTick) { blind(target) }
         val healed = attack.healDivisor?.let { damage / it } ?: 0
         if (healed > 0) deps.worldQueues.add(result.impactTick) { selfHeal(mage, healed) }
+        val freezeTicks = attack.freezeTicks ?: return
+        deps.worldQueues.add(result.impactTick) { freeze(target, freezeTicks) }
+    }
+
+    private fun freeze(target: Player, ticks: Int) {
+        if (!target.isValidTarget() || target.isFrozen || target.freezeImmune) return
+        target.frozen = true
+        target.routeDestination.clear()
+        target.timer(FREEZE_TIMER, ticks)
+        target.mes(FROZEN, ChatType.Spam)
     }
 
     private fun selfHeal(mage: Npc, amount: Int) {
@@ -121,9 +132,13 @@ constructor(
         fight.phase++
         fight.lineSaid = false
         fight.mageDown = false
-        val row = fight.phaseRow ?: return
-        fights.shout(fight, nex, row.phaseLine)
-        fight.mageOf(fight.phase)?.let { spawn.castBeam(it, nex) }
+        val row = fight.phaseRow
+        if (row != null) {
+            fights.shout(fight, nex, row.phaseLine)
+            fight.mageOf(fight.phase)?.let { spawn.castBeam(it, nex) }
+        } else {
+            finalStand(fight, nex)
+        }
         if (fight.phase >= LATER_PHASES) {
             fights.players(fight).forEach(music::playLaterPhases)
             fight.specials.restart(deps.random.of(FIRST_SPECIAL_CHOICES))
@@ -133,7 +148,20 @@ constructor(
         deps.suppressAttacks(nex, PHASE_OPENING_TICKS)
     }
 
+    private fun finalStand(fight: NexFight, nex: Npc) {
+        fights.shout(fight, nex, ZAROS_LINE)
+        nex.anim(TURMOIL_SEQ)
+        nex.spotanim(TURMOIL_SPOTANIM)
+        fights.heal(fight, nex, ZAROS_HEAL)
+    }
+
     private companion object {
+        private const val ZAROS_LINE = "NOW, THE POWER OF ZAROS!"
+        private const val TURMOIL_SEQ = "seq.nex_turmoil"
+        private const val TURMOIL_SPOTANIM = "spotanim.nex_turmoil"
+        private const val ZAROS_HEAL = 500
+        private const val FREEZE_TIMER = "timer.combat_freeze"
+        private const val FROZEN = "<col=ff3045>You have been frozen!</col>"
         private const val NEX_IMMUNE = "Nex is immune to your attacks!"
         private const val MAGE_ENGAGE_DELAY = 1
         private const val MAGE_AGGRESSION_RANGE = 10
@@ -195,6 +223,22 @@ constructor(
                             ),
                         healDivisor = 4,
                     ),
+                "npc.nex_icemage" to
+                    NexMageAttack(
+                        castSynth = "synth.ice_cast",
+                        spell =
+                            NexSpell(
+                                spotanim = "spotanim.ice_barrage_travel",
+                                travel = "projanim.nex_mage_ice_barrage",
+                                impact = "spotanim.ice_barrage_impact",
+                                impactHeight = 0,
+                                impactSynth = "synth.ice_barrage_impact",
+                                maxHit = 29,
+                                penetration = 0,
+                                minEndTime = 60,
+                            ),
+                        freezeTicks = 6,
+                    ),
             )
     }
 }
@@ -204,6 +248,7 @@ internal class NexMageAttack(
     val spell: NexSpell,
     val blinds: Boolean = false,
     val healDivisor: Int? = null,
+    val freezeTicks: Int? = null,
 )
 
 internal class NexFloorHook @Inject constructor(private val phases: NexPhases) :
