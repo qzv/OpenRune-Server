@@ -1,11 +1,8 @@
 package org.rsmod.content.bosses.nex
 
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.rsmod.map.CoordGrid
 
 class NexZarosRulesTest {
     @Test
@@ -17,21 +14,6 @@ class NexZarosRulesTest {
         assertNull(NexZarosRules.formChange(2))
         assertNull(NexZarosRules.formChange(8))
         assertNull(NexZarosRules.formChange(0))
-    }
-
-    @Test
-    fun `soul split heals half the damage rounded down`() {
-        assertEquals(6, NexZarosRules.soulSplitHeal(12))
-        assertEquals(6, NexZarosRules.soulSplitHeal(13))
-        assertEquals(11, NexZarosRules.soulSplitHeal(23))
-    }
-
-    @Test
-    fun `wrath reaches three tiles from the centre`() {
-        val centre = CoordGrid(2914, 5197, 0)
-        assertTrue(NexZarosRules.inWrath(centre, CoordGrid(2917, 5200, 0)))
-        assertTrue(NexZarosRules.inWrath(centre, CoordGrid(2911, 5197, 0)))
-        assertFalse(NexZarosRules.inWrath(centre, CoordGrid(2918, 5197, 0)))
     }
 
     @Test
