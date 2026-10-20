@@ -6,7 +6,7 @@ How to add a boss HP bar to an NPC, what the different modes mean, and how to ca
 
 ## Quick mental model
 
-Setting `param.boss_hp_bar_mode` on an NPC's server params is all you need for the common cases. The bar is shown to the player, updates automatically as the NPC takes damage, and closes when the fight ends. You only need to call the Kotlin API directly if you want to open, close, or update the bar outside of those normal triggers.
+Setting `param.boss_hp_bar_mode` on an NPC's server params is all you need for the common cases. The bar is shown to the player, updates automatically as the NPC takes damage or restores hitpoints (regeneration or `NpcHitpointsRestorer.heal`), and closes when the fight ends. You only need to call the Kotlin API directly if you want to open, close, or update the bar outside of those normal triggers.
 
 ---
 

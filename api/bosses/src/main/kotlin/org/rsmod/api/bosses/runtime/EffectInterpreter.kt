@@ -16,7 +16,6 @@ import org.rsmod.api.combat.commons.player.finishNpcHit
 import org.rsmod.api.combat.commons.player.queueCombatRetaliate
 import org.rsmod.api.combat.commons.types.MeleeAttackType
 import org.rsmod.api.npc.access.StandardNpcAccess
-import org.rsmod.api.npc.heal
 import org.rsmod.api.npc.isValidTarget
 import org.rsmod.api.player.disableOverheadPrayers
 import org.rsmod.api.player.disablePrayers
@@ -147,7 +146,8 @@ class EffectInterpreter internal constructor(
             is Effect.ClearHeadIcon -> npc.clearHeadIcon(effect.slot)
             is Effect.LockMovement ->
                 npc.movementLocked = effect.locked || encounter.currentPhase?.lockMovement == true
-            is Effect.HealSelf -> npc.heal(effect.amount, showHitsplat = true)
+            is Effect.HealSelf ->
+                deps.hitpointsRestorer.heal(npc, effect.amount, showHitsplat = true)
 
             is Effect.Teleport -> {
                 if (npc.isValidTarget()) {
@@ -508,7 +508,7 @@ class EffectInterpreter internal constructor(
             }
             if (!npc.isValidTarget()) return@PlayerHitModifier
             val heal = damage * hit.lifesteal / 100
-            if (heal > 0) npc.heal(heal)
+            if (heal > 0) deps.hitpointsRestorer.heal(npc, heal)
             onHit?.let { child(target = t).run(access, it) }
         }
     }
@@ -532,7 +532,7 @@ class EffectInterpreter internal constructor(
         if (onHit == null && heal <= 0) return
         deps.worldQueues.add(serverDelay) {
             if (!npc.isValidTarget()) return@add
-            if (heal > 0) npc.heal(heal)
+            if (heal > 0) deps.hitpointsRestorer.heal(npc, heal)
             onHit?.let { run(access, it) }
         }
     }

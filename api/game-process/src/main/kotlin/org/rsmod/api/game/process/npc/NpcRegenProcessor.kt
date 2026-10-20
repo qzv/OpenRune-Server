@@ -1,9 +1,13 @@
 package org.rsmod.api.game.process.npc
 
+import jakarta.inject.Inject
 import kotlin.math.sign
+import org.rsmod.api.npc.hit.NpcHitpointsRestorer
 import org.rsmod.game.entity.Npc
 
-public class NpcRegenProcessor {
+public class NpcRegenProcessor
+@Inject
+constructor(private val hitpointsRestorer: NpcHitpointsRestorer) {
     public fun process(npc: Npc) {
         npc.processStatsRegen()
     }
@@ -26,9 +30,13 @@ public class NpcRegenProcessor {
         attackLvl = attackLvl.stepToward(baseAttackLvl)
         strengthLvl = strengthLvl.stepToward(baseStrengthLvl)
         defenceLvl = defenceLvl.stepToward(baseDefenceLvl)
-        hitpoints = hitpoints.stepToward(baseHitpointsLvl)
         rangedLvl = rangedLvl.stepToward(baseRangedLvl)
         magicLvl = magicLvl.stepToward(baseMagicLvl)
+        val previousHitpoints = hitpoints
+        hitpoints = hitpoints.stepToward(baseHitpointsLvl)
+        if (hitpoints > previousHitpoints) {
+            hitpointsRestorer.restored(this)
+        }
     }
 
     private fun Int.stepToward(target: Int) = this + (target - this).sign
