@@ -13,13 +13,13 @@ public class NpcRegenProcessor {
             return
         }
 
-        if (regenClock == 0) {
-            regenClock = regenRate
-            regenStats()
+        regenClock--
+        if (regenClock > 0) {
             return
         }
 
-        regenClock--
+        regenClock = regenRate
+        regenStats()
     }
 
     private fun Npc.regenStats() {
