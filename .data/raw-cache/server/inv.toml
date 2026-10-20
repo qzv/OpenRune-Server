@@ -81,3 +81,27 @@ inherit = "inv.dom_lootpile_during"
 scope = "Temp"
 stack = "Always"
 protect = false
+
+[[inventory]]
+isServerOnly = true
+id = "inv.colosseum_rewards"
+inherit = "inv.colosseum_rewards"
+scope = "Temp"
+stack = "Always"
+protect = false
+
+[[inventory]]
+isServerOnly = true
+id = "inv.colosseum_rewards_future"
+inherit = "inv.colosseum_rewards_future"
+scope = "Temp"
+stack = "Always"
+protect = false
+
+[[inventory]]
+isServerOnly = true
+id = "inv.colosseum_rewards_previous"
+inherit = "inv.colosseum_rewards_previous"
+scope = "Temp"
+stack = "Always"
+protect = false

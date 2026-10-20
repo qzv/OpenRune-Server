@@ -18,3 +18,6 @@ coords = "0_28_148_36_11"
 npc = "npc.mag_lelia"
 coords = "0_28_148_28_13"
 
+[[spawn]]
+npc = "npc.colosseum_master_outside"
+coords = "0_28_148_13_36"

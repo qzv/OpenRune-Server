@@ -219,3 +219,36 @@ id = "varn.slayer_engaged_clock"
 
 [[varn]]
 id = "varn.slayer_finishing_until"
+
+[[varn]]
+id = "varn.colosseum_spawn_tick"
+
+[[varn]]
+id = "varn.colosseum_attacks"
+
+[[varn]]
+id = "varn.colosseum_orb_1"
+
+[[varn]]
+id = "varn.colosseum_orb_2"
+
+[[varn]]
+id = "varn.colosseum_orb_3"
+
+[[varn]]
+id = "varn.colosseum_orbs_shown"
+
+[[varn]]
+id = "varn.colosseum_gib_direction"
+
+[[varn]]
+id = "varn.colosseum_last_throw"
+
+[[varn]]
+id = "varn.colosseum_totem_spawn_tick"
+
+[[varn]]
+id = "varn.colosseum_totem_timer"
+
+[[varn]]
+id = "varn.colosseum_flare_step_tick"

@@ -929,3 +929,39 @@ isServerOnly = true
 id = "varp.brutus_best_time"
 scope = "Perm"
 transmit = "Never"
+
+[[varp]]
+isServerOnly = true
+id = "varp.colosseum_run_wave"
+scope = "Temp"
+transmit = "Never"
+
+[[varp]]
+isServerOnly = true
+id = "varp.colosseum_run_state"
+scope = "Temp"
+transmit = "Never"
+
+[[varp]]
+isServerOnly = true
+id = "varp.colosseum_owned_modifiers"
+scope = "Temp"
+transmit = "Never"
+
+[[varp]]
+isServerOnly = true
+id = "varp.colosseum_offer_wave"
+scope = "Temp"
+transmit = "Never"
+
+[[varp]]
+isServerOnly = true
+id = "varp.colosseum_sol_parry_tick"
+scope = "Temp"
+transmit = "Never"
+
+[[varp]]
+isServerOnly = true
+id = "varp.colosseum_sol_parry_used_tick"
+scope = "Temp"
+transmit = "Never"

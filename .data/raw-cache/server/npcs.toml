@@ -17106,3 +17106,172 @@ wanderRange = 0
 id = "npc.poh_sawmill_opp"
 inherit = "npc.poh_sawmill_opp"
 wanderRange = 0
+
+[[npc]]
+id = "npc.colosseum_warbander_melee_male"
+inherit = "npc.colosseum_warbander_melee_male"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 1
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_fremennik_warbander_melee_human_sword_stab"
+"param.defend_anim"="seq.npc_fremennik_warband_melee_human_unarmed_def"
+"param.death_anim"="seq.npc_fremennik_warband_melee_human_death"
+"param.defence_light"=75
+"param.defence_standard"=75
+"param.defence_heavy"=75
+
+[[npc]]
+id = "npc.colosseum_warbander_mage_male"
+inherit = "npc.colosseum_warbander_mage_male"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 1
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_fremennik_warbander_mage_zaros_vertical_casting_walkmerge"
+"param.defend_anim"="seq.npc_fremennik_warband_mage_human_unarmed_def"
+"param.death_anim"="seq.npc_fremennik_warband_mage_human_death"
+"param.defence_light"=0
+"param.defence_standard"=0
+"param.defence_heavy"=0
+
+[[npc]]
+id = "npc.colosseum_warbander_ranged_female"
+inherit = "npc.colosseum_warbander_ranged_female"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 1
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_fremennik_warbander_archer_att_colosseum"
+"param.defend_anim"="seq.npc_fremennik_warband_archer_human_unarmed_def"
+"param.death_anim"="seq.npc_fremennik_warband_archer_human_death"
+"param.defence_light"=50
+"param.defence_standard"=50
+"param.defence_heavy"=50
+
+[[npc]]
+id = "npc.colosseum_standard_mager"
+inherit = "npc.colosseum_standard_mager"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 10
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_serpent_mager_casting"
+"param.death_anim"="seq.npc_serpent_mager_death"
+"param.defence_light"=50
+"param.defence_standard"=50
+"param.defence_heavy"=50
+
+[[npc]]
+id = "npc.colosseum_javelin_colossus"
+inherit = "npc.colosseum_javelin_colossus"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 15
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_colossi_javelin_01_range_attack"
+"param.death_anim"="seq.npc_colossi_javelin_01_death"
+"param.defence_light"=30
+"param.defence_standard"=30
+"param.defence_heavy"=30
+
+[[npc]]
+id = "npc.colosseum_shockwave_colossus"
+inherit = "npc.colosseum_shockwave_colossus"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 15
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_colossi_shockwave_01_clapattack"
+"param.death_anim"="seq.npc_colossi_shockwave_01_death"
+"param.defence_light"=35
+"param.defence_standard"=35
+"param.defence_heavy"=35
+
+[[npc]]
+id = "npc.colosseum_manticore"
+inherit = "npc.colosseum_manticore"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 15
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_manticore_01_triple_throw"
+"param.death_anim"="seq.npc_manticore_01_death"
+"param.defence_light"=25
+"param.defence_standard"=25
+"param.defence_heavy"=25
+
+[[npc]]
+id = "npc.colosseum_jaguar_warrior"
+inherit = "npc.colosseum_jaguar_warrior"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 2
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_jaguar_ranger_claws_attack"
+"param.defend_anim"="seq.npc_jaguar_human_unarmed_def"
+"param.death_anim"="seq.npc_jaguar_human_death"
+"param.defence_light"=45
+"param.defence_standard"=45
+"param.defence_heavy"=45
+
+[[npc]]
+id = "npc.colosseum_minotaur"
+inherit = "npc.colosseum_minotaur"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 1
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_minotaur_boss_attack_melee"
+"param.defend_anim"="seq.npc_minotaur_boss_defend"
+"param.death_anim"="seq.npc_minotaur_boss_death"
+"param.defence_light"=12
+"param.defence_standard"=12
+"param.defence_heavy"=12
+
+[[npc]]
+id = "npc.colosseum_minotaur_routefind"
+inherit = "npc.colosseum_minotaur_routefind"
+contentGroup = "content.colosseum_enemy"
+defaultMode = "None"
+attackRange = 1
+maxRange = 40
+[npc.params]
+"param.attack_anim"="seq.npc_minotaur_boss_attack_melee"
+"param.defend_anim"="seq.npc_minotaur_boss_defend"
+"param.death_anim"="seq.npc_minotaur_boss_death"
+"param.defence_light"=12
+"param.defence_standard"=12
+"param.defence_heavy"=12
+
+[[npc]]
+id = "npc.colosseum_sol_p1"
+inherit = "npc.colosseum_sol_p1"
+defaultMode = "None"
+attackRange = 1
+maxRange = 40
+[npc.params]
+"param.boss_hp_bar_mode"=2
+"param.death_anim"="seq.npc_colossi_finalboss_01_death"
+"param.defence_light"=825
+"param.defence_standard"=825
+"param.defence_heavy"=825
+
+[[npc]]
+id = "npc.colosseum_beam_crystal"
+inherit = "npc.colosseum_beam_crystal"
+defaultMode = "None"
+
+[[npc]]
+id = "npc.colosseum_boss_seated"
+inherit = "npc.colosseum_boss_seated"
+defaultMode = "None"
