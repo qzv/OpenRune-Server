@@ -98,6 +98,8 @@ public class Npc(
      */
     public var movementLocked: Boolean = false
 
+    public var pendingFaceEntity: Boolean = false
+
     /**
      * Used for temporarily overwriting a Npc's ap-range, i.e. the distance at which it can
      * perform a ranged attack.
@@ -481,7 +483,7 @@ public class Npc(
         }
         if (faceEntity.playerSlot != target.slotId) {
             PathingEntityCommon.facePlayer(this, target)
-            infoProtocol.setFacePathingEntity(faceEntity.entitySlot)
+            pendingFaceEntity = true
         }
     }
 
@@ -491,7 +493,7 @@ public class Npc(
         }
         if (faceEntity.npcSlot != target.slotId) {
             PathingEntityCommon.faceNpc(this, target)
-            infoProtocol.setFacePathingEntity(faceEntity.entitySlot)
+            pendingFaceEntity = true
         }
     }
 
@@ -500,7 +502,7 @@ public class Npc(
         // currently facing a pathing entity.
         if (faceEntity != EntityFaceTarget.NULL) {
             PathingEntityCommon.resetFaceEntity(this)
-            infoProtocol.setFacePathingEntity(faceEntity.entitySlot)
+            pendingFaceEntity = true
         }
     }
 

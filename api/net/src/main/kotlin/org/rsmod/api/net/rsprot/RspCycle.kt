@@ -23,7 +23,9 @@ import org.rsmod.api.net.rsprot.ext.setFaceTarget
 import org.rsmod.api.player.righthand
 import org.rsmod.api.registry.region.RegionRegistry
 import org.rsmod.game.client.ClientCycle
+import org.rsmod.game.entity.NpcList
 import org.rsmod.game.entity.Player
+import org.rsmod.game.entity.PlayerList
 import org.rsmod.game.entity.util.EntityFaceAngle
 import org.rsmod.game.headbar.Headbar
 import org.rsmod.game.hit.Hitmark
@@ -40,6 +42,8 @@ class RspCycle(
     private val session: Session<Player>,
     private val infos: Infos,
     private val regions: RegionRegistry,
+    private val npcList: NpcList,
+    private val playerList: PlayerList,
 ) : ClientCycle {
     private var knownCoords: CoordGrid = CoordGrid.ZERO
 
@@ -296,9 +300,19 @@ class RspCycle(
 
     private fun Player.applyFacePathingEntity() {
         if (knownFaceEntity != faceEntity.entitySlot) {
-            playerExtendedInfo.setFaceTarget(faceEntity)
+            playerExtendedInfo.setFaceTarget(faceEntity, faceEntityAngle())
             knownFaceEntity = faceEntity.entitySlot
         }
+    }
+
+    private fun Player.faceEntityAngle(): Int {
+        val target =
+            when {
+                faceEntity.isPlayer -> playerList[faceEntity.playerSlot]
+                faceEntity.isNpc -> npcList[faceEntity.npcSlot]
+                else -> null
+            } ?: return 0
+        return EntityFaceAngle.towards(coords, size, target.coords, target.size)
     }
 
     private fun Player.applyFaceAngle() {

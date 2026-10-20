@@ -10,7 +10,7 @@ public interface NpcInfoProtocol {
 
     public fun setSay(text: String)
 
-    public fun setFacePathingEntity(slot: Int)
+    public fun setFacePathingEntity(slot: Int, fallbackAngle: Int)
 
     public fun setFaceAngle(angle: Int, instant: Boolean)
 
@@ -70,7 +70,7 @@ public data object NoopNpcInfo : NpcInfoProtocol {
 
     override fun setSay(text: String) {}
 
-    override fun setFacePathingEntity(slot: Int) {}
+    override fun setFacePathingEntity(slot: Int, fallbackAngle: Int) {}
 
     override fun setFaceAngle(angle: Int, instant: Boolean) {}
 
