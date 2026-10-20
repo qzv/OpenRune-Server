@@ -100,6 +100,14 @@ constructor(
         }
     }
 
+    internal fun barPlayersOf(npc: Npc): List<Player> =
+        when (npcBarMode(npc)) {
+            BossHpBarMode.ON_ATTACK -> tracked.values.filter { it.npc === npc }.map { it.player }
+            BossHpBarMode.ON_ENTER ->
+                instances.instanceForNpc(npc)?.let(::playersInInstance) ?: emptyList()
+            BossHpBarMode.NEVER -> emptyList()
+        }
+
     private fun barPlayers(npc: Npc): List<Player> =
         when (npcBarMode(npc)) {
             BossHpBarMode.ON_ATTACK ->

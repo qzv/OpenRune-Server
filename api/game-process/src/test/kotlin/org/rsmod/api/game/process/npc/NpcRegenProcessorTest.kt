@@ -8,13 +8,17 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.api.parallel.ResourceLock
+import org.rsmod.api.npc.hit.NpcHitpointsRestoreHook
+import org.rsmod.api.npc.hit.NpcHitpointsRestorer
 import org.rsmod.game.entity.Npc
 import org.rsmod.map.CoordGrid
 
 @Execution(ExecutionMode.SAME_THREAD)
 @ResourceLock("ServerCacheManager")
 class NpcRegenProcessorTest {
-    private val processor = NpcRegenProcessor()
+    private val restored = mutableListOf<Npc>()
+    private val processor =
+        NpcRegenProcessor(NpcHitpointsRestorer(setOf(NpcHitpointsRestoreHook { restored += it })))
 
     @Test
     fun `a damaged npc restores a hitpoint every regen rate ticks`() {
@@ -44,6 +48,32 @@ class NpcRegenProcessorTest {
 
         assertEquals(npc.baseAttackLvl - DAMAGE + 2, npc.attackLvl)
         assertEquals(npc.baseHitpointsLvl - DAMAGE + 2, npc.hitpoints)
+    }
+
+    @Test
+    fun `a regen that restores hitpoints runs the restore hooks`() {
+        val npc = Npc(NPC, CoordGrid(3200, 3200))
+        npc.hitpoints -= DAMAGE
+
+        val hookTicks = mutableListOf<Int>()
+        for (tick in 1..npc.regenRate * 2) {
+            processor.process(npc)
+            if (restored.isNotEmpty()) hookTicks += tick
+            restored.clear()
+        }
+
+        assertEquals(listOf(1, 1 + npc.regenRate), hookTicks)
+    }
+
+    @Test
+    fun `a regen at full hitpoints does not run the restore hooks`() {
+        val npc = Npc(NPC, CoordGrid(3200, 3200))
+        npc.attackLvl -= DAMAGE
+
+        repeat(npc.regenRate + 1) { processor.process(npc) }
+
+        assertEquals(npc.baseAttackLvl - DAMAGE + 2, npc.attackLvl)
+        assertEquals(emptyList<Npc>(), restored)
     }
 
     companion object {

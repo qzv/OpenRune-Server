@@ -14,7 +14,6 @@ import org.rsmod.api.bosses.runtime.repeatTick
 import org.rsmod.api.bosses.spec.Effect
 import org.rsmod.api.bosses.spec.ProjectileConfig
 import org.rsmod.api.combat.commons.player.finishNpcHit
-import org.rsmod.api.npc.heal
 import org.rsmod.api.player.stat.hitpoints
 import org.rsmod.api.repo.loc.LocRepository
 import org.rsmod.api.script.onEvent
@@ -105,7 +104,11 @@ class Amoxliatl @Inject constructor(deps: BossDeps, private val locRepo: LocRepo
         val npc = iceBlockOwner.remove(block) ?: return
         block.anim(ICE_DESTROY_SEQ)
         if (heal) {
-            npc.heal(SHATTER_HEAL_MIN + deps.random.of(SHATTER_HEAL_MAX - SHATTER_HEAL_MIN + 1), showHitsplat = true)
+            deps.hitpointsRestorer.heal(
+                npc,
+                SHATTER_HEAL_MIN + deps.random.of(SHATTER_HEAL_MAX - SHATTER_HEAL_MIN + 1),
+                showHitsplat = true,
+            )
         }
         deps.worldQueues.add(ICE_DESTROY_ANIM_TICKS) {
             deps.npcRepo.del(block, Int.MAX_VALUE)
