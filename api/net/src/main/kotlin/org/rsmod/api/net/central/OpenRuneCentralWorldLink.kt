@@ -207,7 +207,8 @@ constructor(
         return result
     }
 
-    public fun isInFriendChat(characterId: Int): Boolean = friendChatChannels.containsKey(characterId)
+    public fun isInFriendChat(characterId: Int): Boolean =
+        friendChatChannels.containsKey(characterId)
 
     public fun friendRank(
         characterId: Int,
@@ -219,10 +220,8 @@ constructor(
         friendRanks.remove(characterId)
     }
 
-    public fun joinFriendChat(
-        characterId: Int,
-        ownerName: String,
-    ): CentralSocialResult = runSocialAction(WorldLinkPackets.friendChatJoin(characterId, ownerName))
+    public fun joinFriendChat(characterId: Int, ownerName: String): CentralSocialResult =
+        runSocialAction(WorldLinkPackets.friendChatJoin(characterId, ownerName))
 
     public fun leaveFriendChat(characterId: Int): CentralSocialResult =
         runSocialAction(WorldLinkPackets.friendChatLeave(characterId))
@@ -231,12 +230,11 @@ constructor(
         characterId: Int,
         senderCrown: Int,
         message: String,
-    ): CentralSocialResult = runSocialAction(WorldLinkPackets.friendChatMessage(characterId, senderCrown, message))
+    ): CentralSocialResult =
+        runSocialAction(WorldLinkPackets.friendChatMessage(characterId, senderCrown, message))
 
-    public fun kickFromFriendChat(
-        characterId: Int,
-        targetName: String,
-    ): CentralSocialResult = runSocialAction(WorldLinkPackets.friendChatKick(characterId, targetName))
+    public fun kickFromFriendChat(characterId: Int, targetName: String): CentralSocialResult =
+        runSocialAction(WorldLinkPackets.friendChatKick(characterId, targetName))
 
     public fun setFriendRank(
         characterId: Int,
@@ -259,7 +257,9 @@ constructor(
         rank: Int,
         channelName: String,
     ): CentralSocialResult =
-        runSocialAction(WorldLinkPackets.friendChatSettings(characterId, setting, rank, channelName))
+        runSocialAction(
+            WorldLinkPackets.friendChatSettings(characterId, setting, rank, channelName),
+        )
 
     public fun friendChatSync(characterId: Int): CentralFriendChatSync? {
         val cfg = settings ?: return null
@@ -285,7 +285,8 @@ constructor(
     }
 
     private fun parseFriendChatSyncResponse(response: ByteArray): CentralFriendChatSync? {
-        if (response.isEmpty() || response[0].toInt() and 0xFF != WorldLinkFrameSpecs.OP_WORLD_FRIENDCHAT_SYNC_OK) {
+        val op = response.firstOrNull()?.toInt()?.and(0xFF)
+        if (op != WorldLinkFrameSpecs.OP_WORLD_FRIENDCHAT_SYNC_OK) {
             return null
         }
         return WorldLinkFrameSpecs.decodeFriendChatSyncOk(response)
@@ -356,7 +357,9 @@ constructor(
         }
         return when (val result = requestSocialSync(characterId)) {
             is SocialSyncResult.Ok ->
-                CentralSocialSnapshotResult.Ok(result.snapshot.toClientSnapshot(friendChatSync(characterId)))
+                CentralSocialSnapshotResult.Ok(
+                    result.snapshot.toClientSnapshot(friendChatSync(characterId)),
+                )
             is SocialSyncResult.Fail ->
                 CentralSocialSnapshotResult.Failed(socialFailMessage(result.reason))
             SocialSyncResult.Unavailable ->
@@ -429,25 +432,30 @@ constructor(
     ) {
         when (push) {
             is ServerFriendChatChannelPayload -> {
-                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                val player =
+                    playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
                 friendChatChannels[push.recipientCharacterId] = push.channelName
                 player.writeCentralFriendChatChannel(push, serverConfig)
             }
             is ServerFriendChatMemberPayload -> {
-                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                val player =
+                    playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
                 player.writeCentralFriendChatMember(push, serverConfig)
             }
             is ServerFriendChatLeftPayload -> {
                 friendChatChannels.remove(push.recipientCharacterId)
-                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                val player =
+                    playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
                 player.writeCentralFriendChatLeft(push)
             }
             is ServerFriendChatMessagePayload -> {
-                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                val player =
+                    playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
                 player.writeCentralFriendChatMessage(push)
             }
             is ServerFriendChatNoticePayload -> {
-                val player = playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
+                val player =
+                    playerRegistry.findOnlineByCharacterId(push.recipientCharacterId) ?: return
                 player.writeCentralFriendChatNotice(push)
             }
         }

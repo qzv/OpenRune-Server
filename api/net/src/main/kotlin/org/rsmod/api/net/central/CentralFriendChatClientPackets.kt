@@ -16,16 +16,19 @@ public object FriendChatMessages {
     public const val TO_TALK: String = "To talk, start each line of chat with the / symbol."
     public const val LEFT: String = "You have left the channel."
     public const val DOES_NOT_EXIST: String = "The channel you tried to join does not exist."
-    public const val PLEASE_WAIT: String = "Please wait until you are logged out of your previous chat-channel."
+    public const val PLEASE_WAIT: String =
+        "Please wait until you are logged out of your previous chat-channel."
     public const val BANNED: String = "You are temporarily banned from this chat-channel."
-    public const val RANK_TOO_LOW: String = "You do not have a high enough rank to join this chat-channel."
+    public const val RANK_TOO_LOW: String =
+        "You do not have a high enough rank to join this chat-channel."
     public const val NOT_ALLOWED: String = "You are not allowed to join this user's chat-channel."
     public const val KICK_SUCCESSFUL: String = "Your request to kick/ban this user was successful."
     public const val KICKED: String = "You have been kicked from the channel."
     public const val REMOVED: String = "You have been removed from this channel."
     public const val DISABLED: String = "Your chat-channel has now been disabled!"
     public const val ENABLED: String = "Your chat-channel has now been enabled!"
-    public const val JOIN_YOUR_CHANNEL: String = "Join your channel by clicking 'Join Chat' and typing: "
+    public const val JOIN_YOUR_CHANNEL: String =
+        "Join your channel by clicking 'Join Chat' and typing: "
     public const val INVALID_NAME: String = "Invalid chat-channel name entered!"
     public const val CHANGES_PENDING: String =
         "Changes will take effect on your friends channel in the next 60 seconds."
@@ -82,7 +85,10 @@ internal fun Player.writeCentralFriendChatMember(
                 formatWorldName(member.worldId, serverConfig),
             )
         } else {
-            UpdateFriendChatChannelSingleUser.RemovedFriendChatUser(member.displayName, member.worldId)
+            UpdateFriendChatChannelSingleUser.RemovedFriendChatUser(
+                member.displayName,
+                member.worldId,
+            )
         }
     client.write(UpdateFriendChatChannelSingleUser(user))
 }
@@ -113,7 +119,8 @@ internal fun Player.writeCentralFriendChatMessage(push: ServerFriendChatMessageP
 
 internal fun Player.writeCentralFriendChatNotice(push: ServerFriendChatNoticePayload) {
     when (push.notice) {
-        FriendChatPackets.NOTICE_CHANGES_PENDING -> mes(FriendChatMessages.CHANGES_PENDING, ChatType.FriendNotification)
+        FriendChatPackets.NOTICE_CHANGES_PENDING ->
+            mes(FriendChatMessages.CHANGES_PENDING, ChatType.FriendNotification)
         FriendChatPackets.NOTICE_ENABLED -> {
             friendChatMes(FriendChatMessages.ENABLED)
             friendChatMes(FriendChatMessages.JOIN_YOUR_CHANNEL + displayName)

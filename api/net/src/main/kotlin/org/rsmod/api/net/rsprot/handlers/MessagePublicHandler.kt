@@ -44,7 +44,8 @@ constructor(
 
     private fun Player.sendFriendChatMessage(raw: String) {
         val characterId = characterId
-        val text = raw.removePrefix(FRIEND_CHAT_PREFIX).trim().replaceFirstChar { it.uppercaseChar() }
+        val text =
+            raw.removePrefix(FRIEND_CHAT_PREFIX).trim().replaceFirstChar { it.uppercaseChar() }
         if (characterId <= 0 || text.isEmpty() || !friendChat.isInChannel(characterId)) {
             return
         }
