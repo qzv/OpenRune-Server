@@ -17,6 +17,7 @@ import org.rsmod.api.combat.commons.npc.combatPlayDefendAnim
 import org.rsmod.api.combat.commons.npc.combatPlayDefendSpot
 import org.rsmod.api.combat.commons.npc.queueCombatRetaliate
 import org.rsmod.api.combat.commons.npc.resolveCombatXpMultiplier
+import org.rsmod.api.combat.commons.player.PlayerMaxHitHook
 import org.rsmod.api.combat.commons.player.combatPlayDefendAnim
 import org.rsmod.api.combat.commons.player.combatPlayDefendSpot
 import org.rsmod.api.combat.commons.player.queueCombatRetaliate
@@ -74,7 +75,17 @@ constructor(
     private val playerInteractions: PlayerInteractions,
     private val playerTInteractions: PlayerTInteractions,
     private val pvpPlayerHitHooks: Set<PvPPlayerHitHook>,
+    private val maxHitHooks: Set<PlayerMaxHitHook>,
 ) {
+    private fun forcesMaxHit(source: Player, target: PathingEntity): Boolean =
+        source.adminMaxHit || hookForcesMaxHit(source, target)
+
+    private fun hookForcesMaxHit(source: Player, target: PathingEntity): Boolean {
+        val hook = maxHitHooks.firstOrNull { it.forceMaxHit(source, target) } ?: return false
+        hook.onForcedMaxHit(source, target)
+        return true
+    }
+
     /**
      * Determines if the player is still under an active attack delay.
      *
@@ -552,7 +563,7 @@ constructor(
         blockType: MeleeAttackType?,
         multiplier: Double,
     ): Boolean {
-        if (source.adminMaxHit) {
+        if (forcesMaxHit(source, target)) {
             return true
         }
         return when (target) {
@@ -625,7 +636,7 @@ constructor(
     ): Int {
         val maxHit =
             calculateMeleeMaxHit(source, target, attackType, attackStyle, multiplier, roundUp)
-        if (source.adminMaxHit) {
+        if (forcesMaxHit(source, target)) {
             return maxHit
         }
         return random.of(1..maxHit)
@@ -817,7 +828,7 @@ constructor(
         blockType: RangedAttackType?,
         multiplier: Double,
     ): Boolean {
-        if (source.adminMaxHit) {
+        if (forcesMaxHit(source, target)) {
             return true
         }
         return when (target) {
@@ -895,7 +906,7 @@ constructor(
                 multiplier = multiplier,
                 boltSpecDamage = boltSpecDamage,
             )
-        if (source.adminMaxHit) {
+        if (forcesMaxHit(source, target)) {
             return maxHit
         }
         return random.of(1..maxHit)
@@ -1169,7 +1180,7 @@ constructor(
         spellbook: Spellbook?,
         sunfireRune: Boolean,
     ): Boolean {
-        if (source.adminMaxHit) {
+        if (forcesMaxHit(source, target)) {
             return true
         }
         return when (target) {
@@ -1248,7 +1259,7 @@ constructor(
                 attackRate = attackRate,
                 sunfireRune = sunfireRune,
             )
-        if (source.adminMaxHit) {
+        if (forcesMaxHit(source, target)) {
             return hitRange.last
         }
         return random.of(hitRange)
@@ -1360,6 +1371,9 @@ constructor(
         attackStyle: MagicAttackStyle?,
         multiplier: Double,
     ): Boolean {
+        if (hookForcesMaxHit(source, target)) {
+            return true
+        }
         return when (target) {
             is Npc -> rollStaffAccuracy(source, target, attackStyle, multiplier)
             is Player -> rollStaffAccuracy(source, target, attackStyle, multiplier)
@@ -1414,7 +1428,7 @@ constructor(
         multiplier: Double,
     ): Int {
         val maxHit = calculateStaffMaxHit(source, target, baseMaxHit, multiplier)
-        if (source.adminMaxHit) {
+        if (forcesMaxHit(source, target)) {
             return maxHit
         }
         return random.of(1..maxHit)
