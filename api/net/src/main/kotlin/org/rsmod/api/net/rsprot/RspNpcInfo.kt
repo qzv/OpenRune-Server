@@ -21,8 +21,8 @@ class RspNpcInfo(val rspAvatar: NpcAvatar) : NpcInfoProtocol {
         rspAvatar.extendedInfo.setSay(text)
     }
 
-    override fun setFacePathingEntity(slot: Int) {
-        rspAvatar.extendedInfo.setFaceTarget(EntityFaceTarget(slot))
+    override fun setFacePathingEntity(slot: Int, fallbackAngle: Int) {
+        rspAvatar.extendedInfo.setFaceTarget(EntityFaceTarget(slot), fallbackAngle)
     }
 
     override fun setFaceAngle(angle: Int, instant: Boolean) {

@@ -5,6 +5,7 @@ import org.rsmod.api.registry.npc.NpcRegistry
 import org.rsmod.api.utils.logging.GameExceptionHandler
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.NpcList
+import org.rsmod.game.entity.PlayerList
 import org.rsmod.game.entity.util.EntityFaceAngle
 import org.rsmod.game.entity.util.PathingEntityCommon
 import org.rsmod.game.movement.MoveSpeed
@@ -15,6 +16,7 @@ public class NpcPostTickProcess
 @Inject
 constructor(
     private val npcList: NpcList,
+    private val playerList: PlayerList,
     private val registry: NpcRegistry,
     private val facing: NpcFaceSquareProcessor,
     private val exceptionHandler: GameExceptionHandler,
@@ -46,6 +48,7 @@ constructor(
     private fun Npc.updateProtocolInfo() {
         updateMovement()
         updateExactMove()
+        updateFaceEntity()
         updateFaceAngle()
         updateIdleSequence()
     }
@@ -152,6 +155,22 @@ constructor(
         )
     }
 
+    private fun Npc.updateFaceEntity() {
+        if (!pendingFaceEntity) {
+            return
+        }
+        infoProtocol.setFacePathingEntity(faceEntity.entitySlot, faceEntityAngle())
+    }
+
+    private fun Npc.faceEntityAngle(): Int {
+        val player = facingTarget(playerList)
+        if (player != null) {
+            return EntityFaceAngle.towards(coords, size, player.previousCoords, player.size)
+        }
+        val npc = facingTarget(npcList) ?: return 0
+        return EntityFaceAngle.towards(coords, size, npc.coords, npc.size)
+    }
+
     private fun Npc.updateFaceAngle() {
         facing.process(this)
         if (pendingFaceAngle != EntityFaceAngle.NULL) {
@@ -161,6 +180,7 @@ constructor(
     }
 
     private fun Npc.cleanUpPendingUpdates() {
+        pendingFaceEntity = false
         pendingStepCount = 0
         pendingTeleport = false
         pendingTelejump = false

@@ -20,7 +20,9 @@ import org.rsmod.game.GameUpdate
 import org.rsmod.game.MapClock
 import org.rsmod.game.client.Client
 import org.rsmod.game.entity.Npc
+import org.rsmod.game.entity.NpcList
 import org.rsmod.game.entity.Player
+import org.rsmod.game.entity.PlayerList
 import org.rsmod.game.entity.npc.NpcStateEvents
 import org.rsmod.game.entity.player.SessionStateEvent
 import org.rsmod.game.world.WorldType
@@ -41,6 +43,8 @@ constructor(
     private val characterRepository: CharacterAccountRepository,
     private val playerRegistry: PlayerRegistry,
     private val centralActivityLogWriter: CentralActivityLogWriter,
+    private val npcList: NpcList,
+    private val playerList: PlayerList,
 ) : PluginScript() {
     private val logger = InlineLogger()
 
@@ -143,7 +147,7 @@ constructor(
         val infos = service.infoProtocols.alloc(slot, OldSchoolClientType.DESKTOP)
 
         val client = RspClient(session, infos) as Client<Any, Any>
-        val cycle = RspCycle(session, infos, regionReg)
+        val cycle = RspCycle(session, infos, regionReg, npcList, playerList)
 
         player.client = client
         player.clientCycle = cycle
