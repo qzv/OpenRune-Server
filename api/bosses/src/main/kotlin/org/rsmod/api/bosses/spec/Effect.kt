@@ -95,6 +95,7 @@ sealed interface Effect {
          * projectile with [Projectile.resolveOnImpact].
          */
         val spotanimUnlessPraying: Boolean = false,
+        val spotanimOnLanded: Boolean = false,
         /**
          * When set, [penetration] only applies if this holds for the target on impact. Needs a
          * projectile with [Projectile.resolveOnImpact].
