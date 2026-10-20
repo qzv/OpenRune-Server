@@ -20,7 +20,6 @@ import org.rsmod.api.bosses.spec.ProjectileConfig
 import org.rsmod.api.combat.commons.player.finishNpcHit
 import org.rsmod.api.config.refs.done.hitmark_groups
 import org.rsmod.api.config.refs.params
-import org.rsmod.api.npc.heal
 import org.rsmod.api.npc.isValidTarget
 import org.rsmod.api.player.events.PlayerHitEvents
 import org.rsmod.api.player.isValidTarget
@@ -784,7 +783,11 @@ constructor(
     private fun triggerSpikeHit(npc: Npc, player: Player, coord: CoordGrid) {
         val damage = SPIKE_DAMAGE_MIN + deps.random.of(SPIKE_DAMAGE_MAX - SPIKE_DAMAGE_MIN + 1)
         player.finishNpcHit(npc, 1, HitType.Typeless, damage, deps.playerHitModifier)
-        npc.heal((damage * SPIKE_HEAL_FRACTION).toInt(), showHitsplat = true)
+        deps.hitpointsRestorer.heal(
+            npc,
+            (damage * SPIKE_HEAL_FRACTION).toInt(),
+            showHitsplat = true,
+        )
         knockbackPlayer(player, coord)
     }
 
@@ -884,7 +887,11 @@ constructor(
         val occupant = deps.playerList.firstOrNull { it.coords == coord && it.hitpoints > 0 } ?: return
         val damage = HOMING_SPIKE_DAMAGE_MIN + deps.random.of(HOMING_SPIKE_DAMAGE_MAX - HOMING_SPIKE_DAMAGE_MIN + 1)
         occupant.finishNpcHit(npc, 1, HitType.Typeless, damage, deps.playerHitModifier)
-        npc.heal((damage * SPIKE_HEAL_FRACTION).toInt(), showHitsplat = true)
+        deps.hitpointsRestorer.heal(
+            npc,
+            (damage * SPIKE_HEAL_FRACTION).toInt(),
+            showHitsplat = true,
+        )
         knockbackPlayer(occupant, coord)
     }
 

@@ -16,7 +16,6 @@ import org.rsmod.api.bosses.runtime.suppressAttacks
 import org.rsmod.api.bosses.spec.Effect
 import org.rsmod.api.combat.commons.CombatEffects
 import org.rsmod.api.config.refs.done.hitmark_groups
-import org.rsmod.api.npc.heal
 import org.rsmod.api.npc.interact.AiPlayerInteractions
 import org.rsmod.api.npc.opPlayer2
 import org.rsmod.api.player.events.PlayerHitEvents
@@ -188,7 +187,7 @@ constructor(
         if (!hit.isFromNpc || hit.damage <= 0) return
         val source = hit.resolveNpcSource(npcList) ?: return
         if (source.type.id !in bossIds) return
-        source.heal(hit.damage / 2, showHitsplat = true)
+        deps.hitpointsRestorer.heal(source, hit.damage / 2, showHitsplat = true)
     }
 
     private fun registerHeadGaze() {
