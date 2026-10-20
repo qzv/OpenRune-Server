@@ -99,6 +99,9 @@ enum class ImpactRounding {
     /** The tick the projectile finishes in, as `ProjAnim.serverCycles` has always done. */
     Down,
 
-    /** The first whole tick after it finishes. */
+    /**
+     * The first whole tick after it finishes, less [Effect.Projectile.impactSlack] cycles: a flight
+     * that overruns a tick by no more than the slack resolves on that tick.
+     */
     Up,
 }
