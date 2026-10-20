@@ -1,0 +1,33 @@
+plugins {
+    id("base-conventions")
+    id("game-cache-test-conventions")
+    id("integration-test-suite")
+}
+
+dependencies {
+    implementation(projects.api.bossHpBarPlugin)
+    implementation(projects.api.bosses)
+    implementation(projects.api.combat.combatCommons)
+    implementation(projects.api.config)
+    implementation(projects.api.death)
+    implementation(projects.api.dropTable)
+    implementation(projects.api.dropTablePlugin)
+    implementation(projects.api.instances)
+    implementation(projects.api.invtx)
+    implementation(projects.api.market)
+    implementation(projects.api.mechanics.toxins)
+    implementation(projects.api.npc)
+    implementation(projects.api.player)
+    implementation(projects.api.playerOutput)
+    implementation(projects.api.pluginCommons)
+    implementation(projects.api.random)
+    implementation(projects.api.realm)
+    implementation(projects.api.repo)
+    implementation(projects.api.route)
+    implementation(projects.api.spells)
+    implementation(projects.api.combat.combatFormulas)
+    implementation(projects.content.interfaces.collectionLog)
+    implementation(projects.content.other.pets)
+    implementation(libs.fastutil)
+    testImplementation(libs.fastutil)
+}

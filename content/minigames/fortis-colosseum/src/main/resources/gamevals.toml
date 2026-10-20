@@ -1,0 +1,155 @@
+[gamevals.dbtable]
+colosseum_waves = 62400
+colosseum_spawns = 62401
+colosseum_loot_tiers = 62402
+colosseum_unique_tables = 62403
+colosseum_modifier_offers = 62404
+colosseum_enemies = 62650
+colosseum_warband_slots = 62730
+
+[gamevals.dbrow]
+instance_fortis_colosseum = 62400
+colosseum_wave_1 = 62401
+colosseum_wave_2 = 62402
+colosseum_wave_3 = 62403
+colosseum_wave_4 = 62404
+colosseum_wave_5 = 62405
+colosseum_wave_6 = 62406
+colosseum_wave_7 = 62407
+colosseum_wave_8 = 62408
+colosseum_wave_9 = 62409
+colosseum_wave_10 = 62410
+colosseum_wave_11 = 62411
+colosseum_wave_12 = 62412
+colosseum_spawn_points = 62413
+colosseum_solar_flares = 62414
+colosseum_reinforcement_gates = 62415
+colosseum_reinforcement_shaman_fallback = 62720
+colosseum_lobby_exits = 62721
+colosseum_logout_exits = 62722
+colosseum_sol_quartet = 62723
+colosseum_sol_crystal_edges = 62724
+colosseum_loot_tier_0 = 62416
+colosseum_loot_tier_1 = 62417
+colosseum_loot_tier_2 = 62418
+colosseum_loot_tier_3 = 62419
+colosseum_loot_tier_4 = 62420
+colosseum_loot_tier_5 = 62421
+colosseum_loot_tier_6 = 62422
+colosseum_loot_tier_7 = 62423
+colosseum_loot_tier_8 = 62424
+colosseum_uniques_early = 62425
+colosseum_uniques_late = 62426
+colosseum_offer_0 = 62430
+colosseum_offer_1 = 62431
+colosseum_offer_2 = 62432
+colosseum_offer_3 = 62433
+colosseum_offer_4 = 62434
+colosseum_offer_5 = 62435
+colosseum_offer_6 = 62436
+colosseum_offer_7 = 62437
+colosseum_offer_8 = 62438
+colosseum_offer_9 = 62439
+colosseum_offer_10 = 62440
+colosseum_offer_11 = 62441
+colosseum_offer_12 = 62442
+colosseum_offer_13 = 62443
+colosseum_enemy_melee = 62652
+colosseum_enemy_ranged = 62653
+colosseum_enemy_mage = 62654
+colosseum_enemy_shaman = 62655
+colosseum_enemy_jaguar = 62656
+colosseum_enemy_javelin = 62657
+colosseum_enemy_shockwave = 62658
+colosseum_enemy_manticore = 62659
+colosseum_enemy_minotaur = 62660
+colosseum_warband_slot_melee = 62731
+colosseum_warband_slot_ranged = 62732
+colosseum_warband_slot_mage = 62733
+colosseum_enemy_minotaur_routefind = 62661
+colosseum_enemy_sol = 62662
+colosseum_sol_flare_tiles = 62663
+colosseum_walk_in_end = 62740
+colosseum_minimus_start = 62741
+colosseum_chest = 62742
+colosseum_chest_minimus = 62743
+colosseum_seat = 62744
+colosseum_sol_spawn = 62745
+colosseum_sol_player_start = 62746
+colosseum_grave = 62747
+colosseum_bees_sound_centre = 62748
+colosseum_warband_box = 62749
+colosseum_grave_fee_zone = 62750
+colosseum_sol_cutscene = 62751
+
+[gamevals.varp]
+colosseum_run_wave = 62400
+colosseum_run_state = 62401
+colosseum_owned_modifiers = 62402
+colosseum_offer_wave = 62403
+colosseum_sol_parry_tick = 62404
+colosseum_sol_parry_used_tick = 62405
+
+[gamevals.enum]
+colosseum_modifiers = 5312
+colosseum_glory_titles = 5316
+
+[gamevals.param]
+colosseum_modifier_name = 1896
+colosseum_modifier_levelled = 1901
+colosseum_modifier_glory = 1903
+
+[gamevals.queue]
+colosseum_intermission = 62400
+colosseum_wave_start = 62401
+colosseum_arena_intro = 62402
+colosseum_rewards_ready = 62403
+colosseum_sol_eager = 62405
+colosseum_sol_triple_hit = 62406
+colosseum_sol_grapple = 62407
+colosseum_flare_prayer = 62409
+colosseum_sol_finish = 62408
+
+[gamevals.varn]
+colosseum_spawn_tick = 120
+colosseum_attacks = 121
+colosseum_orb_1 = 122
+colosseum_orb_2 = 123
+colosseum_orb_3 = 124
+colosseum_gib_direction = 125
+colosseum_orbs_shown = 126
+colosseum_last_throw = 127
+colosseum_totem_spawn_tick = 128
+colosseum_totem_timer = 129
+colosseum_flare_step_tick = 130
+
+[gamevals.synth]
+colosseum_modifier_confirm = 8010
+colosseum_seer_cast = 7961
+colosseum_shaman_impact = 8339
+colosseum_javelin_impact = 8348
+colosseum_artillery_land = 8352
+colosseum_colossus_hit = 8353
+colosseum_artillery_whistle = 8356
+colosseum_shockwave_impact = 5774
+colosseum_manticore_throw = 8382
+colosseum_manticore_orb = 8370
+colosseum_manticore_death = 599
+colosseum_manticore_sound = 600
+colosseum_reentry_pool = 7973
+colosseum_sol_sand_strike = 8053
+colosseum_sol_sand_rumble = 10046
+colosseum_sol_grapple_hit = 8095
+colosseum_sol_beam_impact = 8230
+colosseum_sol_crystal_lock = 8253
+colosseum_sol_crystal_cue = 8213
+colosseum_reentry_pool_2 = 7991
+colosseum_volatility_explosion = 7970
+colosseum_volatility_explosion_2 = 7992
+colosseum_bees_jar_throw = 8016
+colosseum_bees_jar_shatter = 7974
+colosseum_bees_swarm = 7983
+colosseum_doom_stack = 8025
+
+[gamevals.content]
+colosseum_enemy = 62400
