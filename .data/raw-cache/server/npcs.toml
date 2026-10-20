@@ -17143,3 +17143,8 @@ id = "npc.nex_dying"
 inherit = "npc.nex_dying"
 [npc.params]
 "param.boss_hp_bar_mode"=2
+
+[[npc]]
+id = "npc.nex_smokemage"
+inherit = "npc.nex_smokemage"
+attackRange = 10

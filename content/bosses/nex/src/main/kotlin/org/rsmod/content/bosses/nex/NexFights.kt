@@ -51,6 +51,8 @@ internal class NexFight(val instanceId: InstanceId) {
     var attackableTick: Int = Int.MAX_VALUE
 
     var phase: Int = 0
+    var lineSaid: Boolean = false
+    var mageDown: Boolean = false
     val specials: NexSpecialCounter = NexSpecialCounter()
     val melee: NexMeleeChain = NexMeleeChain()
 
@@ -59,6 +61,11 @@ internal class NexFight(val instanceId: InstanceId) {
 
     val phaseRow: NexPhasesRow?
         get() = PHASES.getOrNull(phase)
+
+    fun mageReleased(mage: Npc): Boolean {
+        val index = mages.indexOfFirst { it === mage }
+        return index in 0 until phase || (index == phase && lineSaid)
+    }
 
     fun mageOf(phaseIndex: Int): Npc? = mages.getOrNull(phaseIndex)
 

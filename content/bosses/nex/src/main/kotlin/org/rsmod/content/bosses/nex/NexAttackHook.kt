@@ -14,6 +14,7 @@ constructor(private val fights: NexFights, private val mapClock: MapClock) :
     override fun validate(player: Player, npc: Npc): NpcAttackValidateResult {
         val fight = fights.fightFor(npc) ?: return NpcAttackValidateResult.Pass
         if (npc !== fight.nex) {
+            if (fight.mageReleased(npc)) return NpcAttackValidateResult.Pass
             val name = npc.visType.name
             return NpcAttackValidateResult.Deny("$name is currently immune to your attacks.")
         }
