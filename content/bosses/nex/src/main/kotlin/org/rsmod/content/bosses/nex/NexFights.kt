@@ -9,6 +9,7 @@ import org.rsmod.api.player.isValidTarget
 import org.rsmod.api.player.output.ChatType
 import org.rsmod.api.player.output.mes
 import org.rsmod.api.table.NexPhasesRow
+import org.rsmod.game.damage.DamageContributions
 import org.rsmod.game.entity.Npc
 import org.rsmod.game.entity.Player
 import org.rsmod.game.entity.PlayerList
@@ -45,6 +46,9 @@ constructor(
         return playerList.filter { manager.sessionForPlayer(it) === session && it.isValidTarget() }
     }
 
+    fun fightForTarget(npc: Npc): NexFight? =
+        fightFor(npc) ?: fights.values.firstOrNull { it.reaver === npc }
+
     fun fightOf(player: Player): NexFight? {
         val session = manager.sessionForPlayer(player) ?: return null
         return fights[session.id]
@@ -80,6 +84,8 @@ internal class NexFight(val instanceId: InstanceId) {
     var siphonUntil: Int = Int.MIN_VALUE
     val prisons: MutableList<NexPrison> = ArrayList()
     var spawnTick: Int = 0
+    var awakenTick: Int = 0
+    val contributions: DamageContributions = DamageContributions()
     var zarosAttacks: Int = 0
     var form: NexForm = NexForm.Plain
 

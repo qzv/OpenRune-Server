@@ -1,0 +1,5 @@
+[[varp]]
+isServerOnly = true
+id = "varp.nex_best_time"
+scope = "Perm"
+transmit = "Never"

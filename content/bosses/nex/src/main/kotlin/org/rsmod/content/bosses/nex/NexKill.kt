@@ -28,12 +28,15 @@ constructor(
     private val fights: NexFights,
     private val manager: InstanceManager,
     private val spawn: NexSpawn,
+    private val loot: NexLoot,
 ) {
     private var Player.nexBarrier by intVarBit("varbit.nex_barrier")
     private var Player.nexKills by intVarp("varp.total_nex_kills")
+    private var Player.nexBestTime by intVarp("varp.nex_best_time")
 
     suspend fun StandardNpcAccess.nexDeath() {
         val fight = fights.fightFor(npc)
+        val wrathTick = deps.mapClock.cycle
         noneMode()
         hideAllOps()
         npc.resetFaceEntity()
@@ -52,15 +55,36 @@ constructor(
             val damage = deps.random.of(WRATH_MIN_HIT, WRATH_MAX_HIT)
             player.queueHit(WRATH_HIT_DELAY, HitType.Typeless, damage, deps.playerHitModifier)
         }
+        val awards = fight?.let { loot.awards(it, npc, players) }.orEmpty()
+        val rolls = awards.mapValues { (player, award) -> loot.roll(player, award) }
+        val event = loot.nextEvent()
         for (player in players) {
             val kills = player.nexKills + 1
             player.mes("Your Nex kill count is: <col=ff0000>$kills</col>.")
             player.nexKills = kills
+            fight?.let { reportDuration(player, wrathTick - it.awakenTick) }
+            val roll = rolls[player]
+            roll?.let { loot.payCommons(player, it, centre, event) }
+            if (roll?.mvp == true) player.mes(MVP_MESSAGE)
             player.nexBarrier = NexSpawn.BARRIER_IN_INSTANCE
+            loot.nexEssence(player)
+            roll?.let { loot.payRares(player, it, centre, event) }
         }
         deps.npcRepo.del(npc, Int.MAX_VALUE)
         players.forEach { it.midiSong(STOP_MUSIC, fadeOutSpeed = MUSIC_FADE_OUT) }
         if (fight != null) respawn(fight)
+    }
+
+    private fun reportDuration(player: Player, ticks: Int) {
+        val time = NexLootRules.clock(ticks)
+        val best = player.nexBestTime
+        if (best == 0 || ticks < best) {
+            player.nexBestTime = ticks
+            player.mes("Fight duration: <col=ff0000>$time</col> (new personal best)")
+            return
+        }
+        val previous = NexLootRules.clock(best)
+        player.mes("Fight duration: <col=ff0000>$time</col>. Personal best: $previous")
     }
 
     private fun cloud(centre: CoordGrid) {
@@ -97,6 +121,7 @@ constructor(
     private companion object {
         private const val DYING = "npc.nex_dying"
         private const val WRATH_LINE = "Taste my wrath!"
+        private const val MVP_MESSAGE = "You were the MVP for this fight!"
         private const val DEATH_SEQ = "seq.nex_death"
         private const val DEATH_SEQ_DELAY = 1
         private const val CLOUD_DELAY = 3

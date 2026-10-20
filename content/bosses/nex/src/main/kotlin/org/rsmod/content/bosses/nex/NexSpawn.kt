@@ -94,6 +94,7 @@ constructor(
         nex.showAllOps()
         fight.phaseRow?.let { fights.shout(fight, nex, it.phaseLine) }
         fight.mageOf(fight.phase)?.let { mage -> castBeam(mage, nex) }
+        fight.awakenTick = deps.mapClock.cycle
         fight.attackableTick = deps.mapClock.cycle + IMMUNE_TICKS
         deps.startEncounter(nex, NexSpecs.spec)
         deps.suppressAttacks(nex, IMMUNE_TICKS)

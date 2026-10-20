@@ -35,6 +35,7 @@ constructor(
     private val blood: NexBlood,
     private val music: NexMusic,
     private val interactions: AiPlayerInteractions,
+    private val loot: NexLoot,
 ) {
     fun combatTick(nex: Npc) {
         val fight = fights.fightFor(nex) ?: return
@@ -123,6 +124,7 @@ constructor(
             deps.worldQueues.add(NEXT_PHASE_DELAY) { nextPhase(fight) }
         }
         delay(MAGE_DESPAWN_DELAY)
+        if (fight != null) loot.mageEssence(npc)
         deps.npcRepo.del(npc, Int.MAX_VALUE)
     }
 
