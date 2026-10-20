@@ -136,6 +136,7 @@ class HitBuilder internal constructor() {
     private var spotanimHeight: Int = 0
     private var spotanimDelay: Int? = null
     private var spotanimUnlessPraying: Boolean = false
+    private var spotanimOnLanded: Boolean = false
     private var penetrationPercent: Int = 0
     private var penetrationWhen: Condition? = null
     private var hazardHit: Boolean = false
@@ -158,13 +159,21 @@ class HitBuilder internal constructor() {
     /**
      * Plays [spot] on the resolved target(s) when the hit lands, e.g. a magic impact graphic. By
      * default only on a non-zero hit; with [unlessPraying], whenever the target isn't praying
-     * against this hit's type.
+     * against this hit's type; with [onLanded], only when the hit is still non-zero after
+     * protection prayers.
      */
-    fun spotanim(spot: String, height: Int = 0, delay: Int? = null, unlessPraying: Boolean = false) {
+    fun spotanim(
+        spot: String,
+        height: Int = 0,
+        delay: Int? = null,
+        unlessPraying: Boolean = false,
+        onLanded: Boolean = false,
+    ) {
         spotanimSpot = spot
         spotanimHeight = height
         spotanimDelay = delay
         spotanimUnlessPraying = unlessPraying
+        spotanimOnLanded = onLanded
     }
 
     /** Percentage (0-100) of a protection prayer's block this hit ignores, optionally only [whenever]. */
@@ -213,6 +222,7 @@ class HitBuilder internal constructor() {
             onHitEvenOnMiss = onHitEvenOnMiss,
             lifesteal = lifestealPercent,
             spotanimUnlessPraying = spotanimUnlessPraying,
+            spotanimOnLanded = spotanimOnLanded,
             penetrationWhen = penetrationWhen,
             hazard = hazardHit,
         )

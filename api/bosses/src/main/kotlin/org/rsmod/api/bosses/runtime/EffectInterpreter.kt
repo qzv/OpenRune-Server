@@ -464,11 +464,11 @@ class EffectInterpreter internal constructor(
         val hit = proj.hit ?: return
         if (player == null) return
         val damage = rollDamage(hit, player)
-        if (damage > 0 && !hit.spotanimUnlessPraying) {
-            val delay = hit.spotanimDelay ?: projAnim.clientCycles
-            hit.spotanim?.let { player.spotanim(it, delay = delay, height = hit.spotanimHeight) }
-        }
+        val spotanimDelay = hit.spotanimDelay ?: projAnim.clientCycles
         if (proj.resolveOnImpact) {
+            if (damage > 0 && !hit.spotanimUnlessPraying) {
+                showHitSpotanim(hit, player, spotanimDelay)
+            }
             val conditionalPenetration = hit.penetrationWhen != null
             player.queueCombatRetaliate(npc, ticks)
             player.queueImpactHit(
@@ -485,7 +485,15 @@ class EffectInterpreter internal constructor(
         val hitType = hit.type.toEngine()
         val landed =
             player.finishNpcHit(npc, ticks, hitType, damage, deps.playerHitModifier, hit.penetration).damage
+        val showSpotanim = if (hit.spotanimOnLanded) landed > 0 else damage > 0
+        if (showSpotanim && !hit.spotanimUnlessPraying) {
+            showHitSpotanim(hit, player, spotanimDelay)
+        }
         scheduleLanding(access, hit, player, damage, landed, ticks, projAnim.clientCycles)
+    }
+
+    private fun showHitSpotanim(hit: Effect.Hit, player: Player, delay: Int) {
+        hit.spotanim?.let { player.spotanim(it, delay = delay, height = hit.spotanimHeight) }
     }
 
     /** Resolves prayer, penetration, the defend anim and lifesteal/on-hit on the impact tick. */
