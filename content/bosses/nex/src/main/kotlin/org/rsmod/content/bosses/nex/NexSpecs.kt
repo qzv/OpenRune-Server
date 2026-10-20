@@ -18,12 +18,13 @@ internal object NexSpecs {
     private const val SMOKE = "smoke"
     private const val SHADOW = "shadow"
     private const val BLOOD = "blood"
+    private const val ICE = "ice"
     private const val ATTACK_RATE = 4
     private const val MAGE_ATTACK_RATE = 5
     private const val REAVER_ATTACK_RATE = 5
     private const val STANDARDS_PER_SPECIAL = 5
 
-    val PHASES: List<String> = listOf(SMOKE, SHADOW, BLOOD)
+    val PHASES: List<String> = listOf(SMOKE, SHADOW, BLOOD, ICE)
 
     val spec: BossSpec =
         boss(
@@ -37,10 +38,12 @@ internal object NexSpecs {
             rotationPhase(SMOKE, SMOKE_SPECIAL, SMOKE_STANDARD)
             rotationPhase(SHADOW, SHADOW_SPECIAL, SHADOW_STANDARD)
             rotationPhase(BLOOD, BLOOD_SPECIAL, BLOOD_STANDARD)
+            phase(ICE) {}
         }
 
     val MAGES: Map<String, BossSpec> =
-        listOf("npc.nex_smokemage", "npc.nex_shadowmage").associateWith(::mage)
+        listOf("npc.nex_smokemage", "npc.nex_shadowmage", "npc.nex_bloodmage")
+            .associateWith(::mage)
 
     val REAVER: BossSpec =
         boss("npc.nex_prison_blood_reaver_boss") {

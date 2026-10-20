@@ -10,6 +10,7 @@ import org.rsmod.api.bosses.runtime.suppressAttacks
 import org.rsmod.api.npc.access.StandardNpcAccess
 import org.rsmod.api.npc.apPlayer2
 import org.rsmod.api.npc.events.NpcHitEvents
+import org.rsmod.api.npc.heal
 import org.rsmod.api.npc.hit.NpcHitpointsFloorHook
 import org.rsmod.api.npc.interact.AiPlayerInteractions
 import org.rsmod.api.player.isValidTarget
@@ -81,9 +82,14 @@ constructor(
         mage.anim(MAGE_CAST_SEQ)
         deps.worldRepo.soundArea(mage.coords, attack.castSynth, radius = MAGE_CAST_SOUND_RADIUS)
         val result = casts.cast(mage, target, attack.spell) ?: return
-        if (attack.blinds && result.damage != null) {
-            deps.worldQueues.add(result.impactTick) { blind(target) }
-        }
+        val damage = result.damage ?: return
+        if (attack.blinds) deps.worldQueues.add(result.impactTick) { blind(target) }
+        val healed = attack.healDivisor?.let { damage / it } ?: 0
+        if (healed > 0) deps.worldQueues.add(result.impactTick) { selfHeal(mage, healed) }
+    }
+
+    private fun selfHeal(mage: Npc, amount: Int) {
+        if (mage.isSlotAssigned && mage.hitpoints > 0) mage.heal(amount, showHitsplat = true)
     }
 
     private fun blind(target: Player) {
@@ -173,6 +179,22 @@ constructor(
                             ),
                         blinds = true,
                     ),
+                "npc.nex_bloodmage" to
+                    NexMageAttack(
+                        castSynth = "synth.blood_cast",
+                        spell =
+                            NexSpell(
+                                spotanim = null,
+                                travel = null,
+                                impact = "spotanim.spell_blood_barrage_impact",
+                                impactHeight = 0,
+                                impactSynth = "synth.blood_barrage_impact",
+                                maxHit = 29,
+                                penetration = 0,
+                                minEndTime = 60,
+                            ),
+                        healDivisor = 4,
+                    ),
             )
     }
 }
@@ -181,6 +203,7 @@ internal class NexMageAttack(
     val castSynth: String,
     val spell: NexSpell,
     val blinds: Boolean = false,
+    val healDivisor: Int? = null,
 )
 
 internal class NexFloorHook @Inject constructor(private val phases: NexPhases) :
