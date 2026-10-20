@@ -46,16 +46,6 @@ internal fun ProtectedAccess.restoreIfDrained(
     )
 }
 
-internal fun ProtectedAccess.restoreHitpointsIfDrained(
-    amount: Int,
-) {
-    restoreIfDrained(
-        stat = HITPOINTS,
-        constant = amount,
-        percent = 0,
-    )
-}
-
 internal fun divineRefusalMessage(damage: Int): String =
     "You need more than $damage hitpoints to survive the power of a divine potion."
 

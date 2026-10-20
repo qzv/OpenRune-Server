@@ -5,6 +5,7 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.table.PotionEffectRow
+import org.rsmod.content.other.consumables.potion.PotionHealing
 import org.rsmod.content.other.consumables.potion.PotionStatBoost
 import org.rsmod.content.other.consumables.potion.applyStatBoost
 import org.rsmod.content.other.consumables.potion.drainCurrentStats
@@ -17,6 +18,7 @@ class CoxPotionEffect
 constructor(
     private val prayerEnhance: CoxPrayerEnhanceEffect,
     private val overload: CoxOverloadEffect,
+    private val healing: PotionHealing,
 ) {
     fun handles(
         handler: String,
@@ -98,8 +100,8 @@ constructor(
     private fun ProtectedAccess.applyXericsAid(
         tier: CoxPotionTier,
     ) {
-        statBoost(
-            stat = HITPOINTS,
+        healing.boost(
+            access = this,
             constant = tier.xericsAidHealConstant,
             percent = tier.xericsAidHealPercent,
         )

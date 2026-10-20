@@ -8,6 +8,7 @@ import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.stat.stat
 import org.rsmod.api.player.stat.statBase
 import org.rsmod.api.table.PotionEffectRow
+import org.rsmod.content.other.consumables.potion.PotionHealing
 import org.rsmod.content.other.consumables.potion.drainCurrentStats
 import org.rsmod.content.other.consumables.potion.restoreIfDrained
 import org.rsmod.game.entity.Player
@@ -19,6 +20,7 @@ constructor(
     private val smellingSalts: ToaSmellingSaltsEffect,
     private val liquidAdrenaline: ToaLiquidAdrenalineEffect,
     private val overTimeEffects: ToaOverTimeEffect,
+    private val healing: PotionHealing,
 ) {
     fun handles(handler: String): Boolean =
         handler in HANDLERS
@@ -74,8 +76,8 @@ constructor(
     }
 
     private fun ProtectedAccess.applyNectar() {
-        statBoost(
-            stat = HITPOINTS,
+        healing.boost(
+            access = this,
             constant = NECTAR_HEAL_CONSTANT,
             percent = NECTAR_HEAL_PERCENT,
         )
@@ -88,10 +90,14 @@ constructor(
     }
 
     private fun ProtectedAccess.applyAmbrosia() {
-        restoreToBoostedTarget(
-            stat = HITPOINTS,
-            percent = AMBROSIA_HITPOINTS_PERCENT,
-            constant = AMBROSIA_HITPOINTS_CONSTANT,
+        healing.restoreTo(
+            access = this,
+            target =
+                boostedTarget(
+                    stat = HITPOINTS,
+                    percent = AMBROSIA_HITPOINTS_PERCENT,
+                    constant = AMBROSIA_HITPOINTS_CONSTANT,
+                ),
         )
 
         restoreToBoostedTarget(
@@ -108,13 +114,12 @@ constructor(
         percent: Int,
         constant: Int,
     ) {
-        val base =
-            player.statBase(stat)
-
         val target =
-            base +
-                base * percent / 100 +
-                constant
+            boostedTarget(
+                stat = stat,
+                percent = percent,
+                constant = constant,
+            )
 
         val current =
             player.stat(stat)
@@ -128,6 +133,19 @@ constructor(
             constant = target - current,
             percent = 0,
         )
+    }
+
+    private fun ProtectedAccess.boostedTarget(
+        stat: String,
+        percent: Int,
+        constant: Int,
+    ): Int {
+        val base =
+            player.statBase(stat)
+
+        return base +
+            base * percent / 100 +
+            constant
     }
 
     private fun ProtectedAccess.restoreFullRunEnergy() {

@@ -4,6 +4,8 @@ import dev.openrune.types.ItemServerType
 import jakarta.inject.Inject
 import org.rsmod.api.area.checker.AreaChecker
 import org.rsmod.api.area.checker.isInWilderness
+import org.rsmod.api.player.hook.PlayerHealCapHook
+import org.rsmod.api.player.hook.limit
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.stat.baseHitpointsLvl
 import org.rsmod.api.player.stat.hitpoints
@@ -25,6 +27,7 @@ constructor(
     private val areaChecker: AreaChecker,
     private val effects: FoodEffectService,
     private val specialEffects: FoodSpecialEffectService,
+    private val healCaps: Set<@JvmSuppressWildcards PlayerHealCapHook>,
 ) : PluginScript() {
     override fun ScriptContext.startup() {
         val registrations =
@@ -250,17 +253,15 @@ constructor(
             return
         }
 
-        val oldHitpoints =
-            player.hitpoints
-
         anim(eatAnimation())
         soundSynth(EAT_FOOD_SOUND)
 
-        heal(
-            amount = outcome.healAmount,
-            maximumHitpoints =
-                outcome.maximumHitpoints,
-        )
+        val healed =
+            heal(
+                amount = outcome.healAmount,
+                maximumHitpoints =
+                    outcome.maximumHitpoints,
+            )
 
         applyConsumptionDelays(
             food = food,
@@ -279,7 +280,7 @@ constructor(
 
         if (
             outcome.showGenericHealMessage &&
-            player.hitpoints > oldHitpoints
+            healed
         ) {
             mes("It heals some health.")
         }
@@ -413,12 +414,12 @@ constructor(
     private fun ProtectedAccess.heal(
         amount: Int,
         maximumHitpoints: Int,
-    ) {
+    ): Boolean {
         if (amount <= 0) {
-            return
+            return false
         }
 
-        val actual =
+        val uncapped =
             (
                 maximumHitpoints -
                     player.hitpoints
@@ -427,15 +428,28 @@ constructor(
                     maximumValue = amount,
                 )
 
-        if (actual <= 0) {
-            return
+        val actual =
+            (
+                healCaps.limit(
+                    player,
+                    player.hitpoints,
+                    maximumHitpoints,
+                ) -
+                    player.hitpoints
+                ).coerceIn(
+                    minimumValue = 0,
+                    maximumValue = amount,
+                )
+
+        if (actual > 0) {
+            statAdd(
+                stat = HITPOINTS,
+                constant = actual,
+                percent = 0,
+            )
         }
 
-        statAdd(
-            stat = HITPOINTS,
-            constant = actual,
-            percent = 0,
-        )
+        return uncapped > 0
     }
 
     private fun ProtectedAccess.eatAnimation(): String =

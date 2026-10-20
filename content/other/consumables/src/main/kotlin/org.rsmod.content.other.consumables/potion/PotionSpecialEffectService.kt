@@ -30,6 +30,7 @@ constructor(
     private val moonlightEffects: MoonlightPotionEffect,
     private val relicymEffects: RelicymEffect,
     private val heartEffects: HeartEffectService,
+    private val healing: PotionHealing,
     private val worldClock: MapClock,
 ) {
     internal fun handles(
@@ -202,8 +203,8 @@ constructor(
     }
 
     private fun ProtectedAccess.applySaradominBrew() {
-        statBoost(
-            stat = "stat.hitpoints",
+        healing.boost(
+            access = this,
             constant = 2,
             percent = 15,
         )
@@ -222,8 +223,8 @@ constructor(
     }
 
     private fun ProtectedAccess.applyArmadylBrew() {
-        statBoost(
-            stat = "stat.hitpoints",
+        healing.boost(
+            access = this,
             constant = 2,
             percent = 10,
         )
@@ -391,8 +392,8 @@ constructor(
     }
 
     private fun ProtectedAccess.applyGuthixRest() {
-        statBoost(
-            stat = "stat.hitpoints",
+        healing.boost(
+            access = this,
             constant = GUTHIX_REST_HEAL,
             percent = 0,
         )

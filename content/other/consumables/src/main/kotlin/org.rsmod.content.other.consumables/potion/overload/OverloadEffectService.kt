@@ -1,23 +1,28 @@
 package org.rsmod.content.other.consumables.potion.overload
 
+import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.rsmod.api.player.output.runClientScript
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.stat.hitpoints
 import org.rsmod.api.player.vars.VarPlayerIntMapSetter
+import org.rsmod.content.other.consumables.potion.PotionHealing
 import org.rsmod.content.other.consumables.potion.PotionStatBoost
 import org.rsmod.content.other.consumables.potion.applyStatBoost
 import org.rsmod.content.other.consumables.potion.durationUnits
 import org.rsmod.content.other.consumables.potion.nextTimedEffectDelay
 import org.rsmod.content.other.consumables.potion.playPotionVisual
 import org.rsmod.content.other.consumables.potion.restartTimer
-import org.rsmod.content.other.consumables.potion.restoreHitpointsIfDrained
 import org.rsmod.content.other.consumables.potion.restoreStatsToBase
 import org.rsmod.game.entity.Player
 import org.rsmod.game.hit.HitType
 
 @Singleton
-class OverloadEffectService {
+class OverloadEffectService
+@Inject
+constructor(
+    private val healing: PotionHealing,
+) {
     internal fun canApply(
         access: ProtectedAccess,
         type: OverloadType,
@@ -156,8 +161,10 @@ class OverloadEffectService {
                     type = type,
                 )
 
-                restoreHitpointsIfDrained(
-                    definition.totalDamage,
+                healing.restore(
+                    access = this,
+                    constant = definition.totalDamage,
+                    percent = 0,
                 )
 
                 mes(definition.expiryMessage)

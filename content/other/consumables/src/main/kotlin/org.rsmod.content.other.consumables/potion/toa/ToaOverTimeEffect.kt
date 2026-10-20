@@ -1,19 +1,25 @@
 package org.rsmod.content.other.consumables.potion.toa
 
+import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.rsmod.api.attr.AttributeKey
 import org.rsmod.api.player.protect.ProtectedAccess
+import org.rsmod.content.other.consumables.potion.PotionHealing
 import org.rsmod.content.other.consumables.potion.restoreIfDrained
 import org.rsmod.game.entity.Player
 
 @Singleton
-class ToaOverTimeEffect {
+class ToaOverTimeEffect
+@Inject
+constructor(
+    private val healing: PotionHealing,
+) {
     fun applySilkDressing(
         access: ProtectedAccess,
     ) {
         with(access) {
-            restoreIfDrained(
-                stat = HITPOINTS,
+            healing.restore(
+                access = this,
                 constant = SILK_DRESSING_HEAL,
                 percent = 0,
             )
@@ -38,8 +44,8 @@ class ToaOverTimeEffect {
                 expiryMessage =
                     "The effects of the silk dressing have worn off.",
             ) {
-                restoreIfDrained(
-                    stat = HITPOINTS,
+                healing.restore(
+                    access = this,
                     constant = SILK_DRESSING_HEAL,
                     percent = 0,
                 )
@@ -176,9 +182,6 @@ class ToaOverTimeEffect {
 
         private const val BLESSED_SCARAB_DELAYED_PULSES: Int = 9
         private const val BLESSED_SCARAB_RESTORE: Int = 8
-
-        private const val HITPOINTS: String =
-            "stat.hitpoints"
 
         private const val PRAYER: String =
             "stat.prayer"

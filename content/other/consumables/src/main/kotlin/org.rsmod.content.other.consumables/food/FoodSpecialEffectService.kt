@@ -4,6 +4,7 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.rsmod.api.mechanics.toxins.impl.PlayerPoison
 import org.rsmod.api.mechanics.toxins.impl.PlayerVenom
+import org.rsmod.api.player.hook.PlayerHealCapHook
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.stat.baseHitpointsLvl
 import org.rsmod.api.player.stat.hitpoints
@@ -11,7 +12,9 @@ import org.rsmod.content.other.consumables.food.kebab.KebabEffect
 import org.rsmod.content.other.consumables.food.kebab.KebabOutcome
 import org.rsmod.content.other.consumables.food.stew.SpicyStewEffect
 import org.rsmod.content.other.consumables.food.stew.SpicyStewState
+import org.rsmod.content.other.consumables.healAmount
 import org.rsmod.content.other.consumables.restoreRunEnergy
+import org.rsmod.content.other.consumables.restoredHitpoints
 
 @Singleton
 class FoodSpecialEffectService
@@ -19,6 +22,7 @@ class FoodSpecialEffectService
 constructor(
     private val spicyStew: SpicyStewEffect,
     private val kebab: KebabEffect,
+    private val healCaps: Set<@JvmSuppressWildcards PlayerHealCapHook>,
 ) {
     internal fun handles(
         effect: String,
@@ -405,13 +409,17 @@ constructor(
         }
 
         val actual =
-            (
-                player.baseHitpointsLvl -
-                    player.hitpoints
-                ).coerceIn(
-                    minimumValue = 0,
-                    maximumValue = amount,
-                )
+            healCaps.healAmount(
+                player = player,
+                hitpoints = player.hitpoints,
+                target =
+                    restoredHitpoints(
+                        base = player.baseHitpointsLvl,
+                        current = player.hitpoints,
+                        constant = amount,
+                        percent = 0,
+                    ),
+            )
 
         if (actual <= 0) {
             return

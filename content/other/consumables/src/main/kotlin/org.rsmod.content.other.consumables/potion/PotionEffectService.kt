@@ -27,6 +27,7 @@ class PotionEffectService
 @Inject
 constructor(
     private val specialEffects: PotionSpecialEffectService,
+    private val healing: PotionHealing,
     private val worldClock: MapClock,
 ) {
     fun supports(
@@ -77,13 +78,11 @@ constructor(
             return
         }
 
-        with(access) {
-            restoreIfDrained(
-                stat = "stat.hitpoints",
-                constant = amount,
-                percent = 0,
-            )
-        }
+        healing.restore(
+            access = access,
+            constant = amount,
+            percent = 0,
+        )
     }
 
     fun processDivineEffects(
