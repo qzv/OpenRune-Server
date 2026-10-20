@@ -6,6 +6,7 @@ import dev.openrune.rscm.RSCMType
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.rsmod.api.bosses.runtime.BossDeps
+import org.rsmod.api.combat.commons.CombatEffects
 import org.rsmod.api.player.isValidTarget
 import org.rsmod.api.player.output.soundSynth
 import org.rsmod.api.player.stat.statSub
@@ -71,7 +72,7 @@ constructor(
         deps.worldQueues.add(LEECH_DRAIN_DELAY) {
             if (!target.isValidTarget()) return@add
             target.soundSynth(LEECH_DRAIN_SYNTH)
-            for (stat in LEECHED_STATS) target.statSub(stat, LEECH_DRAIN, 0)
+            CombatEffects.statDrain(target, LEECHED_STATS, LEECH_DRAIN)
         }
     }
 
@@ -126,7 +127,6 @@ constructor(
     }
 
     private companion object {
-        private const val PRAYER = "stat.prayer"
         private const val SOUND_RADIUS = 15
         private const val ATTACK_RANGE = 10
         private const val TRANSFORM_SYNTH = "synth.nex_transform"
@@ -163,7 +163,7 @@ constructor(
                 impactSynth = "synth.nex_finale_impact",
                 maxHit = 33,
                 penetration = 50,
-                minEndTime = 60,
+                minFlight = 60,
                 extraHitDelay = 1,
             )
     }

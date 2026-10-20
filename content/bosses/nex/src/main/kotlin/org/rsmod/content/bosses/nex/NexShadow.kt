@@ -65,7 +65,7 @@ constructor(
                 continue
             }
             val travel = ProjAnim.fromNpcToPlayer(nex, target, spotanim, type)
-            val endTime = max(SHOT_MIN_END_TIME, travel.endTime)
+            val endTime = max(SHOT_MIN_FLIGHT, travel.endTime)
             deps.worldRepo.projAnim(travel.copy(endTime = endTime, startCoord = centre))
             val impactTick = NexGeometry.impactTick(endTime)
             target.queueCombatRetaliate(nex, impactTick + 1)
@@ -187,7 +187,6 @@ constructor(
     private companion object {
         private const val ATTACK_RANGE = 10
         private const val IMMEDIATE = 1
-        private const val PRAYER = "stat.prayer"
         private const val PROTECT_MISSILES = "varbit.prayer_protectfrommissiles"
 
         private const val MELEE_START_CHANCE = 21
@@ -199,7 +198,7 @@ constructor(
         private const val SHOT_SYNTH = "synth.nex_shadow_cast"
         private const val SHOT_IMPACT_SYNTH = "synth.nex_shadow_impact"
         private const val SHOT_SOUND_RADIUS = 15
-        private const val SHOT_MIN_END_TIME = 60
+        private const val SHOT_MIN_FLIGHT = 60
         private const val SHOT_PENETRATION = 50
         private const val PRAYER_DRAIN_DIVISOR = 2
         private const val FURTHEST_MAX_HIT_DISTANCE = 9

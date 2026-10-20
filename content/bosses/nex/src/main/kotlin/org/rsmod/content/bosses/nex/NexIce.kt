@@ -113,7 +113,7 @@ constructor(
         val centre = NexGeometry.centre(nex.coords, nex.size)
         deps.worldRepo.soundArea(centre, PRISON_CAST_SYNTH, radius = SOUND_RADIUS)
         deps.encounter(nex).nextAttackTick = deps.mapClock.cycle + PRISON_NEXT_ATTACK
-        casts.launch(nex, target, PRISON_SPOTANIM, PRISON_TRAVEL, MIN_END_TIME) ?: return
+        casts.launch(nex, target, PRISON_SPOTANIM, PRISON_TRAVEL, MIN_FLIGHT) ?: return
         val distance = NexGeometry.footprintDistance(nex.coords, nex.size, target.coords)
         deps.worldQueues.add(NexGeometry.magicImpactTick(distance)) { trap(fight, nex, target) }
     }
@@ -226,14 +226,11 @@ constructor(
     }
 
     private companion object {
-        private const val PRAYER = "stat.prayer"
         private const val SOUND_RADIUS = 15
         private const val ATTACK_RANGE = 10
-        private const val MIN_END_TIME = 60
+        private const val MIN_FLIGHT = 60
         private const val MISSILES_PENETRATION = 50
-        private const val FREEZE_TIMER = "timer.combat_freeze"
         private const val COMBAT_STANCE = "varp.com_mode"
-        private const val INJURED_MESSAGE = "You've been injured and can't use protection prayers!"
         private const val BLOCKING_LOC = "loc.invisible_type8_blocking"
         private const val ICE_TRAP_SYNTH = "synth.nex_ice_trap"
 
@@ -251,7 +248,7 @@ constructor(
                 impactSynth = "synth.ice_barrage_impact",
                 maxHit = 33,
                 penetration = 50,
-                minEndTime = MIN_END_TIME,
+                minFlight = MIN_FLIGHT,
             )
 
         private const val PRISON_LINE = "Die now, in a prison of ice!"

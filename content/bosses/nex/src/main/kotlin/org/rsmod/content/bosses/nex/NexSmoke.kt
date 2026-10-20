@@ -182,7 +182,7 @@ constructor(
                 impactSynth = "synth.nex_smoke_impact",
                 maxHit = 33,
                 penetration = 50,
-                minEndTime = 60,
+                minFlight = 60,
             )
         private const val POISON_DAMAGE = 8
         private const val POISON_CHANCE = 3
@@ -196,7 +196,6 @@ constructor(
         private const val DRAG_OUT_OF = 4
         private const val DRAG_PRAYING_OUT_OF = 8
         private const val DRAG_MESSAGE = "<col=ff3045>Nex draws you in...</col>"
-        private const val INJURED_MESSAGE = "You've been injured and can't use protection prayers!"
 
         private const val VIRUS_LINE = "Let the virus flow through you!"
         private const val VIRUS_SEQ = "seq.nex_alternate_cast_attack"
@@ -213,7 +212,6 @@ constructor(
         private const val COUGH_HEIGHT = 160
         private const val COUGH_SYNTH = "synth.nex_cough"
         private const val COUGH_DRAIN = 4
-        private const val PRAYER = "stat.prayer"
 
         private const val DASH_LINE = "There is..."
         private const val DASH_LEAP_LINE = "NO ESCAPE!"

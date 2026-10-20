@@ -25,7 +25,7 @@ internal data class NexSpell(
     val impactSynth: String,
     val maxHit: Int,
     val penetration: Int,
-    val minEndTime: Int = 0,
+    val minFlight: Int = 0,
     val alwaysHits: Boolean = false,
     val extraHitDelay: Int = 0,
 )
@@ -75,21 +75,21 @@ internal class NexCasts @Inject constructor(private val deps: BossDeps) {
         target: Player,
         spotanim: String,
         travel: String,
-        minEndTime: Int,
+        minFlight: Int,
     ): Int? {
         val type = ServerCacheManager.getProjectile(travel.asRSCM(RSCMType.PROJANIM)) ?: return null
         val spotanimId = spotanim.asRSCM(RSCMType.SPOTANIM)
         val proj = ProjAnim.fromNpcToPlayer(caster, target, spotanimId, type)
-        val endTime = max(minEndTime, proj.endTime)
+        val endTime = max(minFlight, proj.endTime)
         val source = NexGeometry.centre(caster.coords, caster.size)
         deps.worldRepo.projAnim(proj.copy(endTime = endTime, startCoord = source))
         return endTime
     }
 
     private fun launch(caster: Npc, target: Player, spell: NexSpell): Int? {
-        val travel = spell.travel ?: return spell.minEndTime
+        val travel = spell.travel ?: return spell.minFlight
         val spotanim = spell.spotanim ?: return null
-        return launch(caster, target, spotanim, travel, spell.minEndTime)
+        return launch(caster, target, spotanim, travel, spell.minFlight)
     }
 
     private companion object {

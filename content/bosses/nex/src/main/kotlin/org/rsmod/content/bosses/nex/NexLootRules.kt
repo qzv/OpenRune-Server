@@ -40,7 +40,8 @@ internal object NexLootRules {
         return roll < (chance * SCALE).toLong().coerceAtMost(rate.toLong() * SCALE)
     }
 
-    fun seconds(ticks: Int): Int = (ticks.coerceAtLeast(0) * TENTHS_PER_TICK + TENTHS / 2) / TENTHS
+    private fun seconds(ticks: Int): Int =
+        (ticks.coerceAtLeast(0) * TENTHS_PER_TICK + TENTHS / 2) / TENTHS
 
     fun clock(ticks: Int): String {
         val seconds = seconds(ticks)

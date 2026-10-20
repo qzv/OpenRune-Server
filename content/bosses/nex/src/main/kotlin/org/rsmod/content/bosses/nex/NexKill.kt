@@ -12,7 +12,6 @@ import org.rsmod.api.npc.access.StandardNpcAccess
 import org.rsmod.api.player.hit.queueHit
 import org.rsmod.api.player.midiSong
 import org.rsmod.api.player.output.mes
-import org.rsmod.api.player.vars.intVarBit
 import org.rsmod.api.player.vars.intVarp
 import org.rsmod.game.entity.Player
 import org.rsmod.game.hit.HitType
@@ -30,7 +29,6 @@ constructor(
     private val spawn: NexSpawn,
     private val loot: NexLoot,
 ) {
-    private var Player.nexBarrier by intVarBit("varbit.nex_barrier")
     private var Player.nexKills by intVarp("varp.total_nex_kills")
     private var Player.nexBestTime by intVarp("varp.nex_best_time")
 

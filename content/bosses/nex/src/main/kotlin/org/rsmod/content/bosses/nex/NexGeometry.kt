@@ -18,12 +18,6 @@ internal object NexGeometry {
         return max(dx, dz)
     }
 
-    fun footprintGap(swA: CoordGrid, sizeA: Int, swB: CoordGrid, sizeB: Int): Int {
-        val dx = max(0, max(swA.x - (swB.x + sizeB - 1), swB.x - (swA.x + sizeA - 1)))
-        val dz = max(0, max(swA.z - (swB.z + sizeB - 1), swB.z - (swA.z + sizeA - 1)))
-        return max(dx, dz)
-    }
-
     fun footprint(sw: CoordGrid, size: Int): List<CoordGrid> =
         (0 until size).flatMap { x -> (0 until size).map { z -> sw.translate(x, z) } }
 

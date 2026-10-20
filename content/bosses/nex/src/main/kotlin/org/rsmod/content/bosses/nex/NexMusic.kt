@@ -11,28 +11,27 @@ import org.rsmod.game.entity.Player
 internal class NexMusic
 @Inject
 constructor(private val music: MusicPlayer, private val repo: MusicRepository) {
-    private val smokeAndShadow: MusicRow? by lazy { track(SMOKE_AND_SHADOW_TRACK) }
-    private val laterPhases: MusicRow? by lazy { track(LATER_PHASES_TRACK) }
+    private val smokeAndShadow: MusicRow by lazy { MusicRow.getRow(SMOKE_AND_SHADOW_TRACK) }
+    private val laterPhases: MusicRow by lazy { MusicRow.getRow(LATER_PHASES_TRACK) }
 
     fun fightStart(player: Player) {
-        smokeAndShadow?.let { row ->
-            if (isLocked(player, row)) music.unlockAndPlay(player, row) else music.play(player, row)
+        if (isLocked(player, smokeAndShadow)) {
+            music.unlockAndPlay(player, smokeAndShadow)
+        } else {
+            music.play(player, smokeAndShadow)
         }
-        laterPhases?.let { row -> if (isLocked(player, row)) music.unlock(player, row) }
+        if (isLocked(player, laterPhases)) music.unlock(player, laterPhases)
     }
 
     fun playLaterPhases(player: Player) {
-        laterPhases?.let { music.play(player, it) }
+        music.play(player, laterPhases)
     }
 
     private fun isLocked(player: Player, row: MusicRow): Boolean =
         repo.forRow(row)?.canUnlock == true && !music.hasUnlocked(player, row)
 
-    private fun track(name: String): MusicRow? =
-        MusicRow.all().firstOrNull { it.displayname == name }
-
     private companion object {
-        private const val SMOKE_AND_SHADOW_TRACK = "Zaros Zeitgeist"
-        private const val LATER_PHASES_TRACK = "The Angel's Fury"
+        private const val SMOKE_AND_SHADOW_TRACK = "dbrow.music_zaros_zeitgeist"
+        private const val LATER_PHASES_TRACK = "dbrow.music_the_angels_fury"
     }
 }

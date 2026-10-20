@@ -12,8 +12,7 @@ internal enum class NexSpecial {
 }
 
 internal class NexSpecialCounter {
-    var used: Int = 0
-        private set
+    private var used: Int = 0
 
     fun next(slots: List<NexSpecial>): NexSpecial = slots[used++ % slots.size]
 

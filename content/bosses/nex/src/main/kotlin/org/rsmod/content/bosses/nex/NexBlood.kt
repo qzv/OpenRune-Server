@@ -237,7 +237,6 @@ constructor(
         get() = isSlotAssigned && hitpoints > 0
 
     private companion object {
-        private const val PRAYER = "stat.prayer"
         private const val SOUND_RADIUS = 15
 
         private const val MELEE_START_CHANCE = 27
@@ -255,7 +254,7 @@ constructor(
                 impactSynth = "synth.nex_blood_impact",
                 maxHit = 33,
                 penetration = 50,
-                minEndTime = 60,
+                minFlight = 60,
                 alwaysHits = true,
             )
 
@@ -290,7 +289,7 @@ constructor(
                 impactSynth = "synth.blood_rush_impact",
                 maxHit = 20,
                 penetration = 0,
-                minEndTime = 60,
+                minFlight = 60,
             )
 
         private const val SACRIFICE_LINE = "I demand a blood sacrifice!"
@@ -325,7 +324,7 @@ constructor(
                 impactSynth = "synth.nex_sacrifice_impact",
                 maxHit = 80,
                 penetration = 62,
-                minEndTime = 60,
+                minFlight = 60,
                 alwaysHits = true,
             )
         private val BYSTANDER_SPELL = SACRIFICE_SPELL.copy(maxHit = 12, penetration = 100)

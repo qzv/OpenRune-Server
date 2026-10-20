@@ -23,8 +23,4 @@ constructor(private val fights: NexFights, private val mapClock: MapClock) :
         }
         return NpcAttackValidateResult.Pass
     }
-
-    private companion object {
-        private const val NEX_IMMUNE = "Nex is immune to your attacks!"
-    }
 }

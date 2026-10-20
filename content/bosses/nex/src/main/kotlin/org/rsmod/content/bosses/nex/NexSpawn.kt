@@ -14,10 +14,8 @@ import org.rsmod.api.instances.InstanceManager
 import org.rsmod.api.instances.InstanceSession
 import org.rsmod.api.npc.apPlayer2
 import org.rsmod.api.npc.interact.AiPlayerInteractions
-import org.rsmod.api.player.vars.intVarBit
 import org.rsmod.api.table.NexPhasesRow
 import org.rsmod.game.entity.Npc
-import org.rsmod.game.entity.Player
 import org.rsmod.game.map.Direction
 import org.rsmod.game.proj.ProjAnim
 import org.rsmod.map.CoordGrid
@@ -33,8 +31,6 @@ constructor(
     private val music: NexMusic,
     private val interactions: AiPlayerInteractions,
 ) {
-    private var Player.nexBarrier by intVarBit("varbit.nex_barrier")
-
     fun schedule(session: InstanceSession, delay: Int) {
         val fight = fights.getOrCreate(session.id)
         if (fight.spawnScheduled || fight.inProgress) return
@@ -130,7 +126,6 @@ constructor(
 
         private const val SPAWN_LINE = "AT LAST!"
         private const val SPAWN_SEQ = "seq.nex_blast_away"
-        private const val MAGE_CAST_SEQ = "seq.zaros_vertical_casting"
         private const val MAGE_ARRIVE_SPOTANIM = "spotanim.abyssal_demon_teleport"
         private const val MAGE_BEAM = "projanim.nex_mage_beam"
         private const val MAGE_BEAM_SPOTANIM = "spotanim.nex_spot_leech_projanim_defence"

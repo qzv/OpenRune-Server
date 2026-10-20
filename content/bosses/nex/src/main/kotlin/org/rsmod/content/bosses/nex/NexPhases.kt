@@ -199,7 +199,7 @@ constructor(
                             impactSynth = "synth.shadow_barrage_impact",
                             maxHit = 29,
                             penetration = 0,
-                            minEndTime = 60,
+                            minFlight = 60,
                         ),
                 ),
                 NexMageSpell(
@@ -213,7 +213,7 @@ constructor(
                             impactSynth = "synth.blood_barrage_impact",
                             maxHit = 29,
                             penetration = 0,
-                            minEndTime = 60,
+                            minFlight = 60,
                         ),
                 ),
                 NexMageSpell(
@@ -227,7 +227,7 @@ constructor(
                             impactSynth = "synth.ice_barrage_impact",
                             maxHit = 29,
                             penetration = 0,
-                            minEndTime = 60,
+                            minFlight = 60,
                         ),
                 ),
             )

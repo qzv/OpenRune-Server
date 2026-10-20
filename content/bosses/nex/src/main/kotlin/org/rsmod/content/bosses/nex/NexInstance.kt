@@ -10,7 +10,6 @@ import org.rsmod.api.instances.InstanceManager
 import org.rsmod.api.instances.InstanceScript
 import org.rsmod.api.player.protect.ProtectedAccess
 import org.rsmod.api.player.vars.boolVarBit
-import org.rsmod.api.player.vars.intVarBit
 import org.rsmod.api.script.onOpLoc2
 import org.rsmod.game.entity.Player
 import org.rsmod.plugin.scripts.ScriptContext
@@ -23,7 +22,6 @@ internal constructor(
     private val spawn: NexSpawn,
 ) : InstanceScript(registry) {
 
-    private var Player.nexBarrier by intVarBit("varbit.nex_barrier")
     private var Player.barrierWarningHidden by boolVarBit("varbit.nex_barrier_warning_hidden")
 
     override fun settingsRow(): String = SETTINGS_ROW
