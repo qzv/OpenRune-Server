@@ -50,6 +50,7 @@ public class LineValidator(private val flags: CollisionFlagMap) {
         destWidth: Int = 1,
         destLength: Int = 1,
         extraFlag: Int = 0,
+        sourceTileFlag: Int = LOC,
     ): Boolean {
         return rayCast(
             level = level,
@@ -65,7 +66,7 @@ public class LineValidator(private val flags: CollisionFlagMap) {
             flagEast = SIGHT_BLOCKED_EAST or extraFlag,
             flagSouth = SIGHT_BLOCKED_SOUTH or extraFlag,
             flagNorth = SIGHT_BLOCKED_NORTH or extraFlag,
-            flagLocation = LOC or extraFlag,
+            flagLocation = sourceTileFlag or extraFlag,
             flagProjectileBlocker = LOC_PROJ_BLOCKER or extraFlag,
             los = true,
         )

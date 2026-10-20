@@ -384,6 +384,7 @@ constructor(
                 destWidth = size,
                 destLength = size,
                 extraFlag = CollisionFlag.BLOCK_PLAYERS,
+                sourceTileFlag = CollisionFlag.LOC_PROJ_BLOCKER,
             )
         return hasLos
     }
