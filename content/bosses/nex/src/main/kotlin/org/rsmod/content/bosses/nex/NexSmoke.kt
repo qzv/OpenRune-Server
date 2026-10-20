@@ -7,6 +7,8 @@ import org.rsmod.api.bosses.runtime.BossDeps
 import org.rsmod.api.bosses.runtime.encounter
 import org.rsmod.api.bosses.runtime.suppressAttacks
 import org.rsmod.api.combat.commons.CombatEffects
+import org.rsmod.api.npc.apPlayer2
+import org.rsmod.api.npc.interact.AiPlayerInteractions
 import org.rsmod.api.player.bonus.WornBonuses
 import org.rsmod.api.player.disableOverheadPrayers
 import org.rsmod.api.player.isValidTarget
@@ -30,6 +32,7 @@ constructor(
     private val casts: NexCasts,
     private val melee: NexMelee,
     private val bonuses: WornBonuses,
+    private val interactions: AiPlayerInteractions,
 ) {
     fun standard(nex: Npc, target: Player) {
         val fight = fights.fightFor(nex) ?: return
@@ -42,7 +45,7 @@ constructor(
         val fight = fights.fightFor(nex) ?: return
         when (fight.specials.next(NexSpecialCounter.SMOKE)) {
             NexSpecial.Virus -> virus(fight, nex, target)
-            NexSpecial.Dash -> dash(fight, nex)
+            NexSpecial.Dash -> dash(fight, nex, target)
             else -> Unit
         }
     }
@@ -125,7 +128,7 @@ constructor(
         return NexDrains.drainedStat(melee, bonuses.offRange, bonuses.offMagic)
     }
 
-    private fun dash(fight: NexFight, nex: Npc) {
+    private fun dash(fight: NexFight, nex: Npc, target: Player) {
         val home = fight.home ?: return
         val direction = deps.random.pick(DASH_AISLES)
         val aisle = home.translate(direction.xOff * DASH_LENGTH, direction.zOff * DASH_LENGTH)
@@ -144,6 +147,10 @@ constructor(
             nex.teleport(deps.collision, home)
             nex.pendingExactMove = returnMove(aisle, home)
             nex.movementLocked = false
+            if (target.isValidTarget()) {
+                nex.facePlayer(target)
+                nex.apPlayer2(target, interactions)
+            }
         }
         deps.worldQueues.add(DASH_RESET_DELAY) {
             if (fight.nex === nex && nex.hitpoints > 0) nex.resetAnim()
